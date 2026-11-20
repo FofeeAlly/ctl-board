@@ -1,0 +1,171 @@
+<!-- ===== CALCULATOR COMPONENT (same block in the landing page and the standalone calculator) ===== -->
+<style>
+.calc{--c-bg:#fff;position:relative;background:var(--c-bg);color:var(--ink);border-radius:34px;padding:30px;box-shadow:0 40px 100px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.4) inset;display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:30px}
+.calc h3{font-family:var(--display);font-size:26px;letter-spacing:-.02em;color:var(--navy);margin:0 0 4px}
+.calc .hint{font-size:13.5px;font-weight:600;color:var(--muted);margin:0 0 18px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+.presets button{font:inherit;font-weight:800;font-size:13px;border:2px solid #DDE0F0;background:#fff;color:var(--navy);border-radius:999px;padding:7px 13px;cursor:pointer}
+.presets button[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.fld{margin:0 0 18px}
+.fld .top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
+.fld label{font-weight:800;font-size:15px;color:var(--ink)}
+.fld output{font-family:var(--display);font-size:24px;color:var(--navy);letter-spacing:-.02em}
+.fld small{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-top:6px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:999px;background:linear-gradient(90deg,var(--green) var(--p,50%),#E4E6F2 var(--p,50%));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;border:6px solid var(--green);box-shadow:0 4px 14px rgba(0,165,105,.5);transition:transform .15s}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.15)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:6px solid var(--green)}
+input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px}
+.res{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-content:start;min-width:0}.calc>div{min-width:0}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.box{border-radius:22px;padding:18px}
+.box small{display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.box b{display:block;font-family:var(--display);font-size:clamp(26px,3vw,38px);line-height:1.05;letter-spacing:-.03em;margin:6px 0 2px}
+.box span{font-size:13px;font-weight:700}
+.box.rent{background:#F0F1FA}.box.rent small{color:var(--muted)}.box.rent b{color:var(--muted);text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:rgba(229,72,77,.6)}.box.rent span{color:var(--muted)}
+.box.own{background:linear-gradient(150deg,#000F96,#3D5BFF);color:#fff;box-shadow:0 20px 40px rgba(0,15,150,.3)}.box.own small{color:var(--neon)}.box.own b{color:#fff}.box.own span{color:#C9CEFF}
+.housewrap{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center;background:#F2FCF7;border-radius:22px;padding:16px 18px}
+.house{width:150px;height:130px}
+.house .fill{transition:height .6s cubic-bezier(.2,.8,.2,1),y .6s cubic-bezier(.2,.8,.2,1)}
+.housewrap b{display:block;font-family:var(--display);font-size:46px;line-height:1;color:var(--green);letter-spacing:-.03em}
+.housewrap p{margin:4px 0 0;font-weight:700;font-size:14px;color:var(--ink)}
+.chart{background:#fff;border:2px solid #E4E6F2;border-radius:22px;padding:14px 14px 8px}
+.chart .lg{display:flex;gap:14px;font-size:12px;font-weight:800;margin:0 0 6px}.chart .lg i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.chart svg{width:100%;height:auto;display:block}
+.chart .ln{fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.disc{font-size:12px;font-weight:600;color:var(--muted);margin:0}
+.keep{display:grid;gap:10px;background:var(--deep);color:#fff;border-radius:22px;padding:18px}
+.keep p{margin:0;font-weight:800;font-size:15px}
+.keep .row{display:flex;gap:8px}
+.keep input{flex:1;min-width:0;font:inherit;font-size:16px;font-weight:600;border:0;border-radius:999px;padding:13px 16px}
+.keep .go2{font:inherit;font-weight:800;font-size:15px;border:0;border-radius:999px;padding:13px 18px;background:var(--neon);color:var(--deep);cursor:pointer;white-space:nowrap}
+.keep .tools{display:flex;flex-wrap:wrap;gap:6px}
+.keep .tools button{font:inherit;font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:8px 13px;cursor:pointer}
+.keep .tools button:hover{background:rgba(255,255,255,.2)}
+.keep .msg{font-size:13px;font-weight:700;color:var(--neon);min-height:1em}
+@media (max-width:900px){.calc{grid-template-columns:minmax(0,1fr);padding:20px;border-radius:26px}.keep .row{flex-wrap:wrap}.keep .row input,.keep .go2{flex:1 1 100%}.duo{gap:8px}.box{padding:14px}.duo{grid-template-columns:1fr 1fr}.housewrap{grid-template-columns:110px 1fr}.house{width:110px;height:96px}}
+@media print{.keep .row,.keep .tools,.presets{display:none}.calc{box-shadow:none;grid-template-columns:1fr 1fr}}
+</style>
+
+<div class="calc" id="calc" role="region" aria-labelledby="calc-h">
+  <div>
+    <h3 id="calc-h">Your numbers</h3>
+    <p class="hint">Move the sliders. Everything updates as you go.</p>
+    <div class="presets" role="group" aria-label="Start from"><button type="button" data-preset="city" aria-pressed="true" id="pr-city">Manchester average</button><button type="button" data-preset="mine" aria-pressed="false">My own numbers</button></div>
+    <div class="fld"><div class="top"><label for="c-rent">Your rent a month</label><output id="o-rent" for="c-rent"></output></div><input type="range" id="c-rent" min="500" max="3000" step="10"></div>
+    <div class="fld"><div class="top"><label for="c-price">The home you want</label><output id="o-price" for="c-price"></output></div><input type="range" id="c-price" min="100000" max="600000" step="1000"></div>
+    <div class="fld"><div class="top"><label for="c-dep">Your home deposit</label><output id="o-dep" for="c-dep"></output></div><input type="range" id="c-dep" min="5000" max="150000" step="500"><small id="s-dep"></small></div>
+    <div class="fld"><div class="top"><label for="c-more">Put towards more of your home, a month</label><output id="o-more" for="c-more"></output></div><input type="range" id="c-more" min="0" max="2000" step="25"></div>
+    <div class="fld"><div class="top"><label for="c-yrs">Over how many years</label><output id="o-yrs" for="c-yrs"></output></div><input type="range" id="c-yrs" min="1" max="25" step="1"></div>
+  </div>
+  <div class="res" aria-live="polite">
+    <div class="duo">
+      <div class="box rent"><small>Renting</small><b id="r-rent">£0</b><span>of rent, owned: nothing</span></div>
+      <div class="box own"><small>Co owning</small><b id="r-own">£0</b><span>of your home is yours</span></div>
+    </div>
+    <div class="housewrap">
+      <svg class="house" viewBox="0 0 150 130" aria-hidden="true">
+        <defs><clipPath id="hc"><path d="M75 6 L144 62 L130 62 L130 124 L20 124 L20 62 L6 62 Z"/></clipPath></defs>
+        <path d="M75 6 L144 62 L130 62 L130 124 L20 124 L20 62 L6 62 Z" fill="#E4E6F2"/>
+        <rect class="fill" id="h-fill" x="0" y="124" width="150" height="0" fill="url(#hg)" clip-path="url(#hc)"/>
+        <linearGradient id="hg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#00A569"/><stop offset="1" stop-color="#2BE08F"/></linearGradient>
+        <path d="M75 6 L144 62 L130 62 L130 124 L20 124 L20 62 L6 62 Z" fill="none" stroke="#000F96" stroke-width="5" stroke-linejoin="round"/>
+        <rect x="62" y="88" width="26" height="36" rx="4" fill="#000F96"/>
+      </svg>
+      <div><b id="r-share">0%</b><p id="r-share-t">of the home is yours after 10 years</p><p id="r-rentdrop" style="color:var(--green)"></p></div>
+    </div>
+    <div class="chart">
+      <div class="lg"><span><i style="background:#B9BED8"></i>Rent paid, renting</span><span><i style="background:#00A569"></i>Rent paid, co owning</span></div>
+      <svg id="c-svg" viewBox="0 0 400 170" role="img" aria-label="Rent paid over time, renting against co owning"></svg>
+    </div>
+    <p class="disc">Illustration only, not a quote or a forecast. It keeps today's rent and home price the same and assumes the rent on the part you don't own falls in line with your share [confirm with the product team how rent on the rest is set]. Your real figures depend on the home, its rent and when you buy more.</p>
+    <div class="keep">
+      <p>Keep your numbers</p>
+      <form class="row" id="c-form" novalidate><label class="sr" for="c-email">Your email</label><input id="c-email" type="email" placeholder="Your email" autocomplete="email"><button class="go2" type="submit">Email me my numbers</button></form>
+      <div class="tools"><button type="button" id="c-png">⬇ Download as image</button><button type="button" id="c-pdf">🖨 Print or PDF</button><button type="button" id="c-link">🔗 Copy my link</button></div>
+      <div class="msg" id="c-msg" role="status"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var C = window.CALC = Object.assign({city:'Manchester', rent:1380, price:241000, dep:24100, more:200, yrs:10, page:'CALC-1'}, window.CALC_DEFAULTS||{});
+  var q = new URLSearchParams(location.search), $ = function(id){ return document.getElementById(id); };
+  var S = {rent:+q.get('rent')||C.rent, price:+q.get('price')||C.price, dep:+q.get('dep')||C.dep, more:q.get('more')!=null?+q.get('more'):C.more, yrs:+q.get('yrs')||C.yrs};
+  var IN = {rent:$('c-rent'), price:$('c-price'), dep:$('c-dep'), more:$('c-more'), yrs:$('c-yrs')};
+  var gbp = function(v){ return '£'+Math.round(v).toLocaleString('en-GB'); };
+  var tk = window.track || function(){};
+  function model(){
+    var share = Math.min(1, S.dep / S.price), months = S.yrs*12, rentPaid = 0, ctlPaid = 0, ptsR = [0], ptsC = [0], first = S.rent*(1-share), lastRent = first;
+    for(var m=1; m<=months; m++){
+      lastRent = S.rent*(1-share); ctlPaid += lastRent; rentPaid += S.rent;
+      share = Math.min(1, share + S.more / S.price);
+      if(m % Math.max(1, Math.round(months/40)) === 0 || m === months){ ptsR.push(rentPaid); ptsC.push(ctlPaid); }
+    }
+    return {rentPaid:rentPaid, ctlPaid:ctlPaid, share:share, first:first, last:lastRent, ptsR:ptsR, ptsC:ptsC};
+  }
+  var anim = {};
+  function tween(el, to, fmt){ var from = anim[el.id]||0; anim[el.id] = to; var t0 = performance.now(), d = 450;
+    (function f(t){ var k = Math.min(1,(t-t0)/d), e = 1-Math.pow(1-k,3); el.textContent = fmt(from+(to-from)*e); if(k<1) requestAnimationFrame(f); })(t0); }
+  function draw(r){
+    var W = 400, H = 170, pad = 8, max = Math.max(r.ptsR[r.ptsR.length-1], 1), n = r.ptsR.length-1;
+    var pt = function(v,i){ return (pad+(W-2*pad)*i/n).toFixed(1)+','+(H-pad-(H-2*pad)*v/max).toFixed(1); };
+    var path = function(p){ return p.map(function(v,i){ return (i?'L':'M')+pt(v,i); }).join(''); };
+    var back = r.ptsC.map(function(v,i){ return 'L'+pt(v,i); }).reverse().join('');
+    var gap = path(r.ptsR) + back;
+    $('c-svg').innerHTML = '<path d="'+gap+'Z" fill="rgba(43,224,143,.18)"/><path class="ln" d="'+path(r.ptsR)+'" stroke="#B9BED8"/><path class="ln" d="'+path(r.ptsC)+'" stroke="#00A569"/>'
+      + '<text x="'+(W-pad)+'" y="16" text-anchor="end" font-size="12" font-weight="800" fill="#00704A">You keep '+gbp(r.rentPaid-r.ctlPaid)+' of rent</text>';
+  }
+  function update(src){
+    if(S.dep > S.price*0.9) S.dep = Math.round(S.price*0.9/500)*500;
+    Object.keys(IN).forEach(function(k){ var el = IN[k]; el.value = S[k]; el.style.setProperty('--p', ((S[k]-el.min)/(el.max-el.min)*100)+'%'); });
+    $('o-rent').textContent = gbp(S.rent); $('o-price').textContent = gbp(S.price); $('o-dep').textContent = gbp(S.dep); $('o-more').textContent = gbp(S.more); $('o-yrs').textContent = S.yrs+(S.yrs>1?' years':' year');
+    $('s-dep').textContent = 'That buys '+Math.round(S.dep/S.price*100)+'% of the home on day one.';
+    var r = model();
+    tween($('r-rent'), r.rentPaid, gbp); tween($('r-own'), r.share*S.price, gbp); tween($('r-share'), r.share*100, function(v){ return Math.round(v)+'%'; });
+    $('r-share-t').textContent = 'of the home is yours after '+S.yrs+(S.yrs>1?' years':' year');
+    $('r-rentdrop').textContent = 'Your rent: '+gbp(r.first)+' a month at the start, '+gbp(r.last)+' by the end.';
+    var h = 118*r.share; $('h-fill').setAttribute('y', 124-h); $('h-fill').setAttribute('height', h);
+    draw(r); C.last = r;
+    if(src) tk('calculator_used', {field: src, rent:S.rent, price:S.price, home_deposit:S.dep, monthly_more:S.more, years:S.yrs});
+  }
+  var used = {};
+  Object.keys(IN).forEach(function(k){ IN[k].addEventListener('input', function(){ S[k] = +IN[k].value; document.querySelectorAll('[data-preset]').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.preset==='mine'); }); update(); });
+    IN[k].addEventListener('change', function(){ if(!used[k]){ used[k] = 1; update(k); } }); });
+  document.querySelectorAll('[data-preset]').forEach(function(b){ b.addEventListener('click', function(){ document.querySelectorAll('[data-preset]').forEach(function(x){ x.setAttribute('aria-pressed', x===b); });
+    if(b.dataset.preset==='city'){ S = {rent:C.rent, price:C.price, dep:C.dep, more:C.more, yrs:C.yrs}; update(); } else IN.rent.focus(); }); });
+  $('pr-city').textContent = C.city+' average';
+  function link(){ var u = new URL(C.shareUrl || location.href); ['rent','price','dep','more','yrs'].forEach(function(k){ u.searchParams.set(k, S[k]); }); return u.toString(); }
+  function msg(t){ $('c-msg').textContent = t; }
+  $('c-link').addEventListener('click', function(){ var l = link(); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function(){ msg('Link copied. Open it any time to see your numbers again.'); }, function(){ prompt('Copy your link:', l); }); tk('calculator_link_copied'); });
+  $('c-pdf').addEventListener('click', function(){ tk('calculator_printed'); print(); });
+  $('c-png').addEventListener('click', function(){
+    var r = C.last, cv = document.createElement('canvas'), W = 1080, H = 1350, x = cv.getContext('2d'); cv.width = W; cv.height = H;
+    var g = x.createLinearGradient(0,0,W,H); g.addColorStop(0,'#3D5BFF'); g.addColorStop(.55,'#000F96'); g.addColorStop(1,'#030733'); x.fillStyle = g; x.fillRect(0,0,W,H);
+    var f = function(w,s){ return w+' '+s+'px "Bricolage Grotesque", "Manrope", system-ui, sans-serif'; };
+    x.fillStyle = '#2BE08F'; x.font = f(800,30); x.fillText('MY '+C.city.toUpperCase()+' NUMBERS', 80, 130);
+    x.fillStyle = '#fff'; x.font = f(800,84); x.fillText('In '+S.yrs+' years,', 80, 240); x.fillStyle = '#2BE08F'; x.fillText(Math.round(r.share*100)+'% of my home', 80, 340); x.fillStyle = '#fff'; x.fillText('could be mine.', 80, 440);
+    function card(y, label, val, sub, hot){ x.fillStyle = hot ? '#2BE08F' : 'rgba(255,255,255,.1)'; x.beginPath(); x.roundRect(80,y,920,190,36); x.fill();
+      x.fillStyle = hot ? '#030733' : '#C9CEFF'; x.font = f(800,26); x.fillText(label, 120, y+56); x.fillStyle = hot ? '#030733' : '#fff'; x.font = f(800,72); x.fillText(val, 120, y+136); x.font = f(600,24); x.fillStyle = hot ? '#003D27' : '#C9CEFF'; x.fillText(sub, 120, y+172); }
+    card(520, 'RENTING', gbp(r.rentPaid), 'of rent, owned: nothing', false);
+    card(740, 'CO OWNING', gbp(r.share*S.price), 'of the home is mine', true);
+    card(960, 'MY RENT', gbp(r.first)+' → '+gbp(r.last), 'a month, start to end', false);
+    x.fillStyle = '#C9CEFF'; x.font = f(600,22); x.fillText('Illustration only, not a quote. Rent '+gbp(S.rent)+', home '+gbp(S.price)+',', 80, 1205); x.fillText('home deposit '+gbp(S.dep)+', '+gbp(S.more)+' a month towards more of the home.', 80, 1236);
+    x.fillStyle = '#fff'; x.font = f(800,28); x.fillText('CrowdtoLive by Bayuti · crowdtolive.bayuti.com', 80, 1280);
+    var a = document.createElement('a'); a.download = 'my-'+C.city.toLowerCase()+'-numbers.png'; a.href = cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
+    msg('Downloaded. Check your downloads folder.'); tk('calculator_downloaded');
+  });
+  $('c-form').addEventListener('submit', function(e){ e.preventDefault(); var em = $('c-email').value.trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){ msg('Please check your email address.'); $('c-email').focus(); return; }
+    var r = C.last, first = (window.CTL_UTM||{}).first || {};
+    /* DEV · Customer.io: identify with the numbers (used by CALC-E1), then calculator_results_requested starts Flow 4 */
+    if(window._cio && _cio.identify) _cio.identify({id: em, email: em, city_slug: (C.city||'').toLowerCase(), persona:'wants_numbers', calc_rent:S.rent, calc_price:S.price, calc_home_deposit:S.dep, calc_monthly_more:S.more, calc_years:S.yrs,
+      calc_ten_year_rent: gbp(S.rent*120), calc_share_end: Math.round(r.share*100), calc_link: link(), first_utm_source: first.utm_source, first_utm_campaign: first.utm_campaign, first_utm_content: first.utm_content, created_at: Math.floor(Date.now()/1000)});
+    tk('calculator_results_requested', {years:S.yrs, share_end: Math.round(r.share*100)});
+    msg('Sent. Your numbers are on their way to '+em+'.'); $('c-form').style.display = 'none';
+  });
+  update();
+})();
+</script>
+<!-- ===== END CALCULATOR COMPONENT ===== -->
