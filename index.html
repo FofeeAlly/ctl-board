@@ -709,7 +709,7 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .bb-explain li b{display:inline-block;background:#000F96;color:#fff;border-radius:6px;padding:0 7px;font-size:12.5px;margin-right:4px}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
-<meta name="robots" content="noindex,nofollow"><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
+<meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .ctl-who-card h2{margin:0 0 6px;font-size:24px;color:#000F96}.ctl-who-card p{margin:0 0 14px;color:#3D4060}
 .ctl-who-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
@@ -1974,15 +1974,15 @@ const HB = {
     track:['Same as HB-W1 with utm_campaign = rt','Meta and TikTok custom audiences from the pixel','Fofee','Audience size above 1,000 before spend']})
  ],
  data:[
-  B('HB-D1','data','Who they are and what they agreed to',{owner:'Ridhima', also:'Fofee (HubSpot)',
+  B('HB-D1','data','Who they are and what they agreed to',{owner:'Omar', also:'Ridhima (checks it), Fofee (HubSpot)',
     what:'email, first_name, mobile (optional), marketing_consent, sms_consent, web_push_opt_in.',
     fields:[['email','email','id (Customer.io person id)','Quick Score form'],['first_name','firstname','first_name','Quick Score form'],['mobile','phone','phone','Webinar or call booking'],['marketing consent','hs_marketable_status + subscription','unsubscribed (false)','Form tick box'],['sms_consent','new: sms_consent','sms_consent','Form tick box'],['web push','not in HubSpot','web_push_opt_in','Browser']],
     track:['identify on form submit','Page to Customer.io; HubSpot form','Ridhima','Seed test shows consent fields filled in both tools']}),
-  B('HB-D2','data','The Quick Score answers (the simulation)',{owner:'Ridhima', also:'Omar, Fofee',
+  B('HB-D2','data','The Quick Score answers (the simulation)',{owner:'Omar', also:'Ridhima (checks it), Fofee',
     what:'Every answer goes into Customer.io as person attributes and on the quick_score_completed event, not only a segment. The emails use these numbers.',
     fields:[['home deposit (£)','deposit_amount_ctl (number)','home_deposit','Quick Score'],['home deposit status','deposit_status (Deposit ready, Partial, No deposit yet) set by rule','home_deposit_status','Rule: 10% of city price'],['income band','new: income_band','income_band','Quick Score'],['monthly debts (£)','new: monthly_debts','monthly_debts','Quick Score'],['work type','new: work_type','work_type','Quick Score'],['credit (self rated)','new: credit_self_rated','credit_self_rated','Quick Score'],['when','when_are_you_planning_to_buy_your_home_','timing','Quick Score'],['city','which_city_are_you_planning_to_buy_a_property_in (dropdown)','city, city_slug','Quick Score or ?city='],['score and band','new: quick_score, quick_score_band','quick_score, quick_score_band','Calculated on the page']],
     track:['quick_score_completed {all answers}','Page to Customer.io and HubSpot','Ridhima','All fields filled for 3 test people in 3 cities']}),
-  B('HB-D3','data','Where they came from',{owner:'Fofee', also:'Omar',
+  B('HB-D3','data','Where they came from',{owner:'Omar', also:'Fofee (HubSpot dropdown)',
     what:'First and last touch, kept forever, so cost per lead and cost per call can be worked out per ad.',
     fields:[['first utm source, medium, campaign, content','primary_lead_source (add: linkedin, referral, webinar, ai_answer, event)','first_utm_*','URL on first visit'],['latest utm','latest_lead_source','last_utm_*','URL on latest visit'],['landing page','hs_analytics_first_url','first_landing_page','Page'],['ad id','new: first_ad_id','first_ad_id','utm_content']],
     track:['Stored on identify','Customer.io JS reads the URL; HubSpot form hidden fields','Fofee','primary_lead_source is no longer blank on new contacts']}),
@@ -1990,7 +1990,7 @@ const HB = {
     what:'engagement_score adds up points (simulator 10, home submitted 25, chat 15, call 25, explainer 5, FAQ 3, trust page 3, Kit item 2, email click 2). highest_goal goes 0 to 9.',
     fields:[['engagement_score','new: engagement_score (synced daily)','engagement_score','Customer.io calculates'],['highest_goal','new: highest_goal','highest_goal','Customer.io calculates']],
     track:['Customer.io attribute updates on each event','Customer.io to HubSpot sync','Fofee','Score rises when a test person clicks']}),
-  B('HB-D5','data','The full Bayuti Score',{owner:'Ridhima', also:'Omar',
+  B('HB-D5','data','The full Bayuti Score',{owner:'Omar', also:'Ridhima (checks it)',
     what:'bayuti_score and band (Ready 75+, Nearly ready 50 to 74, Not ready under 50; placeholders until the real rules are in).',
     fields:[['bayuti_score','new: bayuti_score','bayuti_score','Score page or app'],['band','new: bayuti_band; sets home_buyer_funnel_stage by rule','bayuti_band','Calculated'],['score_date','new: bayuti_score_date','bayuti_score_date','Calculated']],
     track:['bayuti_score_completed {score, band}','Backend to Customer.io and HubSpot','Ridhima','Band lands in both tools and starts the right branch']}),
@@ -1998,7 +1998,7 @@ const HB = {
     what:'Booked and completed calls come from HubSpot meetings and call logs back into Customer.io so the emails stop when a call happens.',
     fields:[['call booked','HubSpot meeting (success-bayuti link)','call_booked event','HubSpot to Customer.io'],['call outcome','call_stage + new: call_outcome (completed, no show, no answer)','call_completed / call_no_show','Sales log'],['lost reason','new: lost_reason (price, area, timing, partner, not ready, other)','lost_reason','Sales log']],
     track:['call_booked, call_completed, call_no_show','HubSpot workflow webhook to Customer.io','Fofee','Booking a test call stops Flow 1 within 5 minutes']}),
-  B('HB-D7','fix','Fix what is broken in HubSpot today',{owner:'Fofee', also:'Omar',
+  B('HB-D7','fix','Fix what is broken in HubSpot today',{owner:'Omar', also:'Fofee',
     what:'From the 3 Nov audit of 904 home buyer contacts.',
     list:['City is free text (typos, street addresses): replace with a dropdown on every form','primary_lead_source is blank on all 800 checked: map it from UTMs','deposit_status and home_buyer_funnel_stage disagree often: set both from one rule','Meta Pixel sends PageView only: add Lead','HubSpot tracking also runs on staging: wrap it so test visits don\'t count']}),
   B('HB-D8','process','Audit live HubSpot workflows before go live',{owner:'Fofee',
@@ -2442,7 +2442,7 @@ HB.sections.emails = HB.sections.emails.concat([
  B('HB-A1','app','App: the home deposit plan screen',{owner:'Omar', also:'Fofee, SJ then Anouar', when:'Grow lane', what:'Target home deposit for their city, monthly amount, plan value so far, a progress bar and the target date. Risk warning on the screen. Auto reinvest switch right under it.', exp:[['Weekly opens per active plan',1.5,'','A screen people come back to.']], track:['progress_viewed, auto_reinvest_on','App to Customer.io','Omar','Events fire from the backend']})
 ]);
 HB.sections.data = HB.sections.data.concat([
- B('HB-D9','data','Grow lane: app, money and plan',{owner:'Omar', also:'Ridhima',
+ B('HB-D9','data','Grow lane: app, money and plan',{owner:'Omar', also:'Ridhima (checks it)',
   what:'Everything the grow lane needs, from the backend only (money line events never come from the app client).',
   fields:[['plan target','new: home_deposit_target','home_deposit_target','Score page or app'],['plan monthly','new: plan_monthly_amount','plan_monthly_amount','App'],['KYC','kyc_status, kyc_approved_date','kyc_status','Onfido and Mangopay'],['invested','total_invested_amount, bayuti_has_invested','total_invested','Bayuti sync'],['Direct Debit','recurring_mandate_active','mandate_active','Mangopay'],['dividends','last_dividend_amount, total_dividends_received','last_dividend_*','Backend'],['auto reinvest','new: auto_reinvest_on','auto_reinvest_on','App settings'],['progress','new: plan_progress_pct','plan_progress_pct','Backend, monthly']],
   track:['grow_plan_chosen, app_installed, kyc_passed, investment_completed, mandate_created, dividend_paid, auto_reinvest_on, target_reached','Backend to Customer.io and HubSpot','Omar','A test person moves through every step']}),
@@ -3668,7 +3668,7 @@ const HBD_EXPLAIN = {
    'Omar: send the same form to HubSpot, so the contact is created or updated with firstname, phone and the subscription status.',
    'Fofee: add a new HubSpot property sms_consent (yes or no). Add a separate, unticked SMS box on the forms. SMS only goes to people who ticked it.',
    'Omar: web_push_opt_in lives in Customer.io only. Set it when the person accepts the browser permission.',
-   'Ridhima: an unsubscribe in either tool must reach the other within 15 minutes (HubSpot subscription status and Customer.io unsubscribed).'],
+   'Omar: an unsubscribe in either tool must reach the other within 15 minutes (HubSpot subscription status and Customer.io unsubscribed).'],
   test:['Submit the Quick Score 3 times with test emails: marketing yes and SMS no; both yes; both no.','Check each test person in HubSpot and in Customer.io: the fields match.','Unsubscribe one test person in Customer.io. Within 15 minutes, HubSpot shows them as unsubscribed.'],
   done:'Every new home buyer has email, first name and both consent fields filled in HubSpot and Customer.io, and the two tools agree.',
   watch:['Never pre-tick a consent box.','Mobile is optional: never block the form if it is empty.','Keep the proof of consent (date and which form) on the contact.']
@@ -3679,7 +3679,7 @@ const HBD_EXPLAIN = {
    'Omar: every Quick Score answer becomes a Customer.io person attribute and a HubSpot property, using the names in the table below.',
    'Omar: fire one quick_score_completed event with all the answers inside it.',
    'Omar: city comes from a dropdown only, and is also sent as city_slug (for example manchester) so links and pages can use it.',
-   'Ridhima: one rule sets home_deposit_status in Customer.io and deposit_status in HubSpot: Deposit ready if the home deposit is at least 10% of the city price, Partial if it is less, No deposit yet if it is zero.',
+   'Omar: one rule sets home_deposit_status in Customer.io and deposit_status in HubSpot: Deposit ready if the home deposit is at least 10% of the city price, Partial if it is less, No deposit yet if it is zero.',
    'Omar: quick_score and quick_score_band are worked out on the page and sent with the event.'],
   test:['Run 3 test people through the Quick Score: 3 different cities and 3 different home deposit amounts.','Every field in the table is filled for all 3, in both tools.','Preview HB-E1 for each test person: the email shows their own numbers and city.'],
   done:'No blank fields on test contacts, and every email preview shows real values instead of the default words.',
@@ -3702,7 +3702,7 @@ const HBD_EXPLAIN = {
   steps:[
    'Fofee: in Customer.io, add points on each event: simulator 10, home submitted 25, chat 15, call 25, explainer 5, FAQ 3, trust page 3, Kit item 2, email click 2.',
    'Fofee: set highest_goal to the goal number when a goal is reached, only if it is higher than the current one.',
-   'Ridhima: sync engagement_score and highest_goal to HubSpot on change (or at least daily).',
+   'Omar: sync engagement_score and highest_goal to HubSpot on change (or at least daily).',
    'Alex: add a HubSpot view for sales sorted by engagement_score, highest first.'],
   test:['A test person clicks an email and opens the FAQ: their points go up by 5.','The test person reaches goal 3: highest_goal shows 3, and it does not drop when they do something smaller later.'],
   done:'Both numbers show on test contacts in HubSpot, and sales can sort by them.',
@@ -3711,11 +3711,11 @@ const HBD_EXPLAIN = {
  'HB-D5': {
   why:'The Quick Score is a two minute first look. The full Bayuti Score is the real readiness check, and its band decides which path the person goes down: Ready, Nearly ready or Not ready.',
   steps:[
-   'Ridhima: work out the score on the score page or in the app.',
-   'Ridhima: send bayuti_score_completed with the score and band to Customer.io and HubSpot.',
-   'Ridhima: write bayuti_score, bayuti_band and bayuti_score_date to both tools.',
+   'Omar: work out the score on the score page or in the app.',
+   'Omar: send bayuti_score_completed with the score and band to Customer.io and HubSpot.',
+   'Omar: write bayuti_score, bayuti_band and bayuti_score_date to both tools.',
    'Fofee: one rule turns the band into home_buyer_funnel_stage in HubSpot.',
-   'Product: confirm the real band rules. Until then the bands are placeholders (Ready 75+, Nearly ready 50 to 74, Not ready under 50).'],
+   'Ridhima: get product to confirm the real band rules. Until then the bands are placeholders (Ready 75+, Nearly ready 50 to 74, Not ready under 50).'],
   test:['Three test people, one per band.','Each one starts the right path in Customer.io, and the band shows in HubSpot.'],
   done:'Band lands in both tools and starts the right path for all three test people.',
   watch:['The bands are placeholders until product confirms them.','The score is a readiness guide, never a lending decision: the wording must say so (SJ to check).']
@@ -3737,12 +3737,12 @@ const HBD_EXPLAIN = {
   steps:[
    'Omar: replace the free text city field with a dropdown on every form, using the same city list as city_slug.',
    'Fofee: map primary_lead_source from the UTMs (see HB-D3).',
-   'Ridhima: set deposit_status and home_buyer_funnel_stage from one rule, so they stop disagreeing.',
+   'Omar: set deposit_status and home_buyer_funnel_stage from one rule, so they stop disagreeing.',
    'Omar: add the Lead event to the Meta Pixel on form submit (today it only sends PageView).',
    'Omar: switch off HubSpot tracking on staging, so test visits stop counting.'],
   test:['One week after the fixes, check 50 new contacts: city from the list, lead source filled, deposit status and stage agree.','In Meta Events Manager, a test form submit shows a Lead event.'],
   done:'All five fixed and the 50 contact check is clean.',
-  watch:['Old contacts keep their free text city until cleaned: list the worst ones for Ridhima to tidy.']
+  watch:['Old contacts keep their free text city until cleaned: list the worst ones for Omar to tidy.']
  },
  'HB-D8': {
   why:'The HubSpot connector cannot list workflows, so nobody has a full picture of what HubSpot sends today. If an old HubSpot workflow and a new Customer.io campaign both email the same person, they get two emails.',
@@ -3760,8 +3760,8 @@ const HBD_EXPLAIN = {
   steps:[
    'Omar: the backend sends each event to Customer.io and HubSpot (never from the app itself, because money events must be trusted): grow_plan_chosen, app_installed, kyc_passed, investment_completed, mandate_created, dividend_paid, auto_reinvest_on, target_reached.',
    'Fofee: create the new properties in HubSpot: home_deposit_target, plan_monthly_amount, auto_reinvest_on, plan_progress_pct.',
-   'Ridhima: plan_progress_pct is worked out monthly by the backend.',
-   'Ridhima: check why SCA shows false for everyone in HubSpot, and fill recurring_mandate_active from Mangopay (it is empty today).'],
+   'Omar: plan_progress_pct is worked out monthly by the backend.',
+   'Omar: check why SCA shows false for everyone in HubSpot, and fill recurring_mandate_active from Mangopay (it is empty today).'],
   test:['One test person goes through every step in the app; each event shows in Customer.io and HubSpot within 15 minutes.'],
   done:'Every step in the table fires for the test person, and the counts in HubSpot start moving.',
   watch:['Money events only come from the backend.','Keep the risk warning on every grow lane message (SJ).']
