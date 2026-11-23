@@ -660,6 +660,30 @@ table.ot{font-size:13px}table.ot td{vertical-align:top;color:#1A1A2E}table.ot tr
 .own-sel{min-height:36px;border-radius:10px;border:1.5px solid #C9CDF0;background:#fff;color:#1A1A2E;-webkit-text-fill-color:#1A1A2E;font:700 14px/1.2 inherit;padding:4px 8px;max-width:100%}
 .own-sel:focus-visible{outline:3px solid #6B7CFF;outline-offset:2px}.own-w{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px}
 .own-was{color:#7A4E00;font-weight:700;font-size:12px}.own-role{color:#3D4060;font-size:13px}
+.cl-t,.cl-t td,.cl-t th,.cl-t textarea,.cl-t input,.cl-t small,.cl-t b{font-family:var(--body)}
+.cl-groups{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px}
+.cl-g{min-height:40px;border-radius:999px;border:1.5px solid #C9CDF0;background:#fff;color:#1A1A2E;font:700 14px/1 inherit;padding:0 14px;cursor:pointer}
+.cl-g b{color:#000F96;margin-left:4px}.cl-g.on{background:#000F96;color:#fff;border-color:#000F96}.cl-g.on b{color:#7CF5C8}
+.cl-count{color:#3D4060;font-size:14px;margin:0 0 8px}
+.cl-wrap{overflow-x:auto}.cl-t{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden}
+.cl-t th{background:#000F96;color:#fff;text-align:left;font-size:13px;padding:10px 12px}
+.cl-t td{border-top:1px solid #E3E6F5;padding:12px;vertical-align:top;color:#1A1A2E}
+.cl-id{width:200px}.cl-id b{display:block;color:#000F96;font-size:14px;word-break:break-all}.cl-id small{display:block;color:#3D4060;font-size:13px;margin:2px 0 6px}
+.cl-ch{display:inline-block;font-size:12px;font-weight:800;color:#1A1A2E;background:#EEF0FF;border-radius:999px;padding:3px 9px}
+.cl-lab{display:block;font-size:13px;font-weight:800;color:#3D4060;margin-bottom:4px}
+.cl-txt textarea{width:100%;font:16px/1.45 inherit;color:#1A1A2E;-webkit-text-fill-color:#1A1A2E;background:#FBFBFF;border:1.5px solid #C9CDF0;border-radius:10px;padding:8px 10px;resize:vertical}
+.cl-txt textarea:focus-visible{outline:3px solid #6B7CFF;outline-offset:1px}
+.cl-meta{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:6px;font-size:13px}.cl-n{color:#3D4060}.cl-n.over{color:#9B1C10;font-weight:800}
+.cl-flag{color:#7A4E00;background:#FFF1D6;border-radius:6px;padding:2px 7px;font-weight:700}
+.cl-rev{width:290px}.cl-st{display:inline-block;font-weight:800;font-size:13px;border-radius:8px;padding:4px 9px;margin-bottom:8px}
+.cl-st.st-wait{background:#EEF0FF;color:#000F96}.cl-st.st-sj{background:#E1F7EE;color:#00704A}.cl-st.st-ready{background:#00704A;color:#fff}.cl-st.st-changes,.cl-st.st-changed{background:#FFD9D6;color:#9B1C10}
+.cl-btns{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0}.cl-btns>span{width:56px;font-weight:800;font-size:13px}
+.cl-btns small{color:#3D4060;font-size:12px;width:100%;padding-left:62px}
+.btn.sm{min-height:34px;padding:0 11px;font-size:13px}.btn.ok.on{background:#00704A;color:#fff;border-color:#00704A}.btn.no.on{background:#9B1C10;color:#fff;border-color:#9B1C10}
+.cl-note{display:flex;gap:6px;margin-top:6px}.cl-note input{flex:1;min-height:36px;border-radius:8px;border:1.5px solid #C9CDF0;padding:0 8px;font-size:16px;color:#1A1A2E}
+.cl-c{margin:6px 0 0;font-size:13px;color:#1A1A2E}.cl-c small{color:#3D4060}
+.cl-row.cl-ready td{background:#F6FCF9}.cl-row.cl-changes td,.cl-row.cl-changed td{background:#FFF8F7}
+@media(max-width:700px){.cl-id,.cl-rev{width:auto}.cl-btns small{padding-left:0}}
 </style>
 <meta name="robots" content="noindex,nofollow"><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -3620,8 +3644,8 @@ const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':
 const $ = (sel, el=document) => el.querySelector(sel);
 const ST = {flow:'hb', zoom:(function(){ try{ return +localStorage.getItem('ctl-zoom')||1; }catch(e){ return 1; } })(), heroFold:(function(){ try{ return localStorage.getItem('ctl-hero')!=='0'; }catch(e){ return true; } })(), fold:(function(){ try{ return localStorage.getItem('ctl-fold')!=='0'; }catch(e){ return true; } })(), view:(function(){ try{ return localStorage.getItem('ctl-view')||'journey'; }catch(e){ return 'journey'; } })(), edits:{}, reviews:{}, counts:{}, wopen:null, due:{}, pings:[], owner:'', q:'', checks:{}, actuals:{}, notes:[], db:null, user:null, me:null, names:{}, canWrite:true, live:false, open:null};
 const LS = 'ctl-build-local';
-function localLoad(){ try{ const x = JSON.parse(localStorage.getItem(LS)||'{}'); ST.checks = x.checks||{}; ST.actuals = x.actuals||{}; ST.notes = x.notes||[]; ST.due = x.due||{}; ST.pings = x.pings||[]; ST.edits = x.edits||{}; ST.reviews = x.reviews||{}; ST.counts = x.counts||{}; applyEdits(); }catch(e){} }
-function localSave(){ try{ localStorage.setItem(LS, JSON.stringify({checks:ST.checks, actuals:ST.actuals, notes:ST.notes, due:ST.due, pings:ST.pings, edits:ST.edits, reviews:ST.reviews, counts:ST.counts})); }catch(e){} }
+function localLoad(){ try{ const x = JSON.parse(localStorage.getItem(LS)||'{}'); ST.checks = x.checks||{}; ST.actuals = x.actuals||{}; ST.notes = x.notes||[]; ST.due = x.due||{}; ST.pings = x.pings||[]; ST.edits = x.edits||{}; ST.reviews = x.reviews||{}; ST.counts = x.counts||{}; ST.copyrev = x.copyrev||{}; applyEdits(); }catch(e){} }
+function localSave(){ try{ localStorage.setItem(LS, JSON.stringify({checks:ST.checks, actuals:ST.actuals, notes:ST.notes, due:ST.due, pings:ST.pings, edits:ST.edits, reviews:ST.reviews, counts:ST.counts, copyrev:ST.copyrev})); }catch(e){} }
 
 /* ---------- gates, blocks, helpers ---------- */
 function gates(F){
@@ -3660,6 +3684,7 @@ async function connect(){
     db.collection('pings').orderBy('at').limit(500).onSnapshot(s=>{ ST.pings = s.docs.map(d=>Object.assign({id:d.id}, d.data())); render(); }, ()=>{});
     db.collection('edits').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.edits=o; applyEdits(); render(); }, ()=>{});
     db.collection('reviews').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.reviews=o; noticeReviews(o); render(); }, ()=>{});
+    db.collection('copyrev').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.copyrev=o; resolveNames(); render(); }, ()=>{});
     db.collection('counts').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.counts=o; render(); }, ()=>{});
     db.collection('notes').orderBy('at').limit(1000).onSnapshot(s=>{ ST.notes = s.docs.map(d=>Object.assign({id:d.id}, d.data())); resolveNames(); render(); }, ()=>{});
   }catch(e){ render(); }
@@ -3979,9 +4004,9 @@ function render(){
   const sc = {m: mainEl?mainEl.scrollTop:0, s: sideEl?sideEl.scrollTop:0, j: jw?jw.scrollLeft:0, open: ST._lastOpen};
   const status = ST.live ? (ST.stale ? 'Shared ticks can\'t be reached yet; showing what we have.' : (ST.canWrite ? 'Everything you tick, type or approve is shared with everyone on this link, with your name.' : 'You can look; ask Fofee for edit access to tick or approve.')) : 'Ticks are kept on this device only (sign in to share them).';
   const allOwners = [...new Set(FLOWS.flatMap(f=>blocksOf(f,true).map(b=>b.owner)))];
-  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['mix','Channel mix']]);
+  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['mix','Channel mix']]);
   const ac = alertCount(F) + changesAsked().length;
-  const body = ST.view==='dev'?viewDev(F):ST.view==='az'?viewAZ(F):ST.view==='approve'?viewApprove(F):ST.view==='numbers'?viewNumbers():ST.view==='words'?viewWords():ST.view==='mcr'?viewMcr(F):ST.view==='journey'?viewJourneyFull(F):ST.view==='build'?viewBuild(F):ST.view==='analytics'?viewAnalytics(F):ST.view==='alerts'?viewAlerts(F):ST.view==='open'?viewOpen(F):viewMix();
+  const body = ST.view==='copy'?viewCopy(F):ST.view==='dev'?viewDev(F):ST.view==='az'?viewAZ(F):ST.view==='approve'?viewApprove(F):ST.view==='numbers'?viewNumbers():ST.view==='words'?viewWords():ST.view==='mcr'?viewMcr(F):ST.view==='journey'?viewJourneyFull(F):ST.view==='build'?viewBuild(F):ST.view==='analytics'?viewAnalytics(F):ST.view==='alerts'?viewAlerts(F):ST.view==='open'?viewOpen(F):viewMix();
   const soloTop = ST.solo ? `<div class="solo-top"><h2>CrowdtoLive open tasks<span>Live: every date, tick and approval changes here and on the full board at the same moment.</span></h2><div class="sp"></div><button type="button" class="btn" data-solo="0">Open the full board</button></div>` : '';
   wrap.innerHTML = soloTop + `<div class="bb-bar">
     <div class="bb-seg" role="tablist" aria-label="Flow">${FLOWS.map(f=>`<button type="button" role="tab" aria-selected="${f.id===ST.flow}" data-flow="${f.id}">${esc(f.name)}</button>`).join('')}</div>
@@ -4532,6 +4557,123 @@ function viewOpen(F){
    </tbody></table></div>${rows.length?'':'<p class="bb-empty">Nothing here.</p>'}</section>`;
 }
 
+/* ================= COPY LIBRARY: one row per sentence ================= */
+const CL_GROUPS = ['Ads','Social and press','Landing pages','Emails','Push and SMS','In app','Video scripts'];
+function clRid(bid, path){ return (bid+'.'+path).replace(/[^A-Za-z0-9_-]/g,'_'); }
+function libRows(){
+  const F = flowOf('hb'), rows = [], seenE = new Set();
+  const add = (b, tbid, path, label, ch, lim, group, short) => {
+    const v = getP(tgtOf(tbid), path); if(typeof v!=='string' || !v.trim() || /^\{\{[^}]*\}\}$/.test(v.trim())) return;
+    rows.push({rid:clRid(tbid,path), bid:tbid, owner:b.id, path, label, ch, lim, group, v, id:b.id+'.'+(short||path.replace(/~/g,'.')), where:b.t});
+  };
+  blocksOf(F,true).forEach(b=>{
+    const a = b.ad || {}, id = b.id;
+    if(b.platform==='meta') (a.variants||[]).forEach((v,i)=>{ const p='ad~variants~'+i+'~', n='Story '+(i+1), s='s'+(i+1)+'.';
+      add(b,id,p+'bigline',n+' · big words on the picture','Meta ad',40,'Ads',s+'picture');
+      add(b,id,p+'smallline',n+' · small words on the picture','Meta ad',60,'Ads',s+'picture2');
+      add(b,id,p+'primary',n+' · main text','Meta ad',0,'Ads',s+'primary');
+      add(b,id,p+'headline',n+' · headline','Meta ad',40,'Ads',s+'headline');
+      add(b,id,p+'desc',n+' · line under the headline','Meta ad',30,'Ads',s+'desc');
+      add(b,id,p+'cta',n+' · button','Meta ad',20,'Ads',s+'button'); });
+    else if(b.platform==='tiktok') (a.videos||[]).forEach((v,i)=>{ const p='ad~videos~'+i+'~', n='Video '+(i+1), s='v'+(i+1)+'.';
+      add(b,id,p+'bigline',n+' · big words on screen','TikTok',40,'Ads',s+'onscreen');
+      add(b,id,p+'smallline',n+' · small words on screen','TikTok',60,'Ads',s+'onscreen2');
+      (v.script||[]).forEach((x,j)=>add(b,id,p+'script~'+j+'~1',n+' · '+x[0],'TikTok',0,'Ads',s+'line'+(j+1)));
+      add(b,id,p+'caption',n+' · caption','TikTok',150,'Ads',s+'caption'); });
+    else if(b.platform==='google'){ (a.headlines||[]).forEach((x,i)=>add(b,id,'ad~headlines~'+i,'Headline '+(i+1),'Google ad',30,'Ads','headline'+(i+1)));
+      (a.descriptions||[]).forEach((x,i)=>add(b,id,'ad~descriptions~'+i,'Description '+(i+1),'Google ad',90,'Ads','desc'+(i+1)));
+      (a.sitelinks||[]).forEach((x,i)=>add(b,id,'ad~sitelinks~'+i,'Sitelink '+(i+1),'Google ad',25,'Ads','sitelink'+(i+1))); }
+    else if(b.platform==='linkedin12') (a.posts||[]).forEach((x,i)=>{ add(b,id,'ad~posts~'+i+'~hook','Post '+x.n+' · first line','LinkedIn',150,'Social and press','p'+x.n+'.hook'); add(b,id,'ad~posts~'+i+'~body','Post '+x.n+' · the post','LinkedIn',3000,'Social and press','p'+x.n+'.body'); });
+    else if(b.platform==='trade') (a.pieces||[]).forEach((x,i)=>{ add(b,id,'ad~pieces~'+i+'~headline',x.outlet+' · headline','Trade press',0,'Social and press','t'+(i+1)+'.headline'); add(b,id,'ad~pieces~'+i+'~angle',x.outlet+' · the angle','Trade press',0,'Social and press','t'+(i+1)+'.angle'); });
+    else if(b.platform==='reddit') (a.answers||[]).forEach((x,i)=>add(b,id,'ad~answers~'+i+'~a',x.sub+' · our answer','Reddit',0,'Social and press','r'+(i+1)));
+    else if(b.platform==='pr'){ add(b,id,'ad~headline','Press release headline','Press',0,'Social and press','headline'); add(b,id,'ad~quote',"Anouar's quote",'Press',0,'Social and press','quote'); }
+    else if(b.platform==='event') add(b,id,'ad~headline','Flyer headline','Event',0,'Social and press','headline');
+    if(b.type==='page' && b.head){ add(b,id,'kicker','Small line above the headline','Landing page',40,'Landing pages','kicker'); add(b,id,'head','Headline (city version)','Landing page',60,'Landing pages','headline'); add(b,id,'headG','Headline (generic version)','Landing page',60,'Landing pages','headlineG'); add(b,id,'sub','Line under the headline','Landing page',160,'Landing pages','sub'); add(b,id,'cta','The one button','Landing page',30,'Landing pages','button'); (b.chips||[]).forEach((x,i)=>add(b,id,'chips~'+i,'Badge '+(i+1),'Landing page',24,'Landing pages','badge'+(i+1))); }
+    if(b.sec==='app' && typeof b.subject==='string'){ add(b,id,'subject','In app title','In app',50,'In app','title'); add(b,id,'body','In app message','In app',150,'In app','body'); add(b,id,'cta','In app button','In app',25,'In app','button'); }
+    if(Array.isArray(b.script)) b.script.forEach((x,j)=>{ if(Array.isArray(x)) add(b,id,'script~'+j+'~1',(x[0]||'Line '+(j+1)),'Video',0,'Video scripts','line'+(j+1)); });
+    if(b.msg && EMAILS[b.msg] && !seenE.has(b.msg)){ seenE.add(b.msg); const E = EMAILS[b.msg], eb = 'EMAIL-'+b.msg;
+      add(b,eb,'subject','Subject line','Email',60,'Emails','subject'); add(b,eb,'preview','Preview text','Email',90,'Emails','preview');
+      add(b,eb,'kicker','Small line above the headline','Email',40,'Emails','kicker'); add(b,eb,'h','Big headline','Email',80,'Emails','headline'); add(b,eb,'sub','Line under the headline','Email',140,'Emails','sub');
+      (E.blocks||[]).forEach((bl,i)=>{ if(!Array.isArray(bl)) return; const ty = bl[0]; const walk = (x, path, n) => { if(typeof x==='string') add(b,eb,path,'Body · '+(ty==='p'?'paragraph':ty==='h'?'heading':ty)+' '+(i+1)+(n?' · '+n:''),'Email',0,'Emails','body'+(i+1)+(n?'.'+n:'')); else if(Array.isArray(x)) x.forEach((y,k)=>walk(y, path+'~'+k, (n?n+'.':'')+(k+1))); };
+        bl.slice(1).forEach((x,k)=>walk(x, 'blocks~'+i+'~'+(k+1), bl.length>2?String(k+1):'')); });
+      if(Array.isArray(E.cta)) add(b,eb,'cta~0','Button','Email',30,'Emails','button');
+      add(b,eb,'ps','P.S.','Email',0,'Emails','ps');
+      if(Array.isArray(E.push)){ add(b,eb,'push~0','Push title','Push',50,'Push and SMS','push.title'); add(b,eb,'push~1','Push message','Push',120,'Push and SMS','push.body'); }
+      if(typeof E.sms==='string') add(b,eb,'sms','SMS','SMS',160,'Push and SMS','sms'); else if(Array.isArray(E.sms)) E.sms.forEach((x,k)=>typeof x==='string' && add(b,eb,'sms~'+k,'SMS '+(k+1),'SMS',160,'Push and SMS','sms'+(k+1)));
+    }
+  });
+  rows.forEach(r=>{ r.id = r.id.replace(/\s+/g,''); });
+  return rows;
+}
+function clLen(v){ return String(v).replace(/\{\{[^}]*default:\s*"([^"]*)"[^}]*\}\}/g,'$1').replace(/\{\{[^}]*\}\}/g,'xxxxxx').length; }
+function clFlags(r){
+  const v = r.v, f = [];
+  if(/[–—]/.test(v) || / - /.test(v)) f.push('Has a dash');
+  if(/\bsav(e|ed|es|ing|ings)\b/i.test(v)) f.push('Says "save"');
+  if(/deposit/i.test(v) && /(^|[^e]\s|^)deposit/i.test(v.replace(/home deposit/ig,''))) f.push('Say "home deposit"');
+  if(r.group==='Ads' && /\d\s?%/.test(v)) f.push('Rate in an ad');
+  const n = clLen(v); if(r.lim && n > r.lim) f.push('Too long');
+  return f;
+}
+function clState(r){
+  const d = (ST.copyrev||{})[r.rid] || {}, sj = d.sj, an = d.an;
+  if(sj && sj.s==='approved' && sj.txt!==r.v) return ['changed','Changed since SJ approved'];
+  if(sj && sj.s==='rejected') return ['changes','SJ asked for changes'];
+  if(an && an.s==='rejected') return ['changes','Anouar asked for changes'];
+  if(sj && sj.s==='approved' && an && an.s==='approved' && an.txt===r.v) return ['ready','Approved by SJ and Anouar'];
+  if(sj && sj.s==='approved') return ['sj','SJ approved'];
+  return ['wait','Waiting for SJ'];
+}
+async function saveCopyRev(rid, who_, s, txt){
+  const cur = JSON.parse(JSON.stringify((ST.copyrev||{})[rid] || {}));
+  cur[who_] = {s, by: ST.me||'local', at: new Date().toISOString(), txt};
+  if(who_==='sj' && s!=='approved') delete cur.an;
+  ST.copyrev = ST.copyrev || {}; ST.copyrev[rid] = cur; render();
+  if(ST.db){ await ST.db.doc('copyrev/'+rid).set(cur).catch(()=>alertBox('That approval could not be shared. Try again.')); } else localSave();
+}
+function clExport(kind){
+  const rows = libRows().filter(r=>{ const k = clState(r)[0]; return k==='ready' || k==='sj'; });
+  if(kind==='json'){ const o = {}; rows.forEach(r=>{ o[r.id.replace(/[^A-Za-z0-9_]/g,'_')] = r.v; }); return JSON.stringify(o, null, 2); }
+  const q = s => '"'+String(s).replace(/"/g,'""')+'"';
+  return ['id,channel,where,text,status'].concat(libRows().map(r=>[r.id, r.ch, r.where, r.v, clState(r)[1]].map(q).join(','))).join('\n');
+}
+function viewCopy(F){
+  const all = libRows(), q = (ST.q||'').toLowerCase();
+  const fs = ST.clF || 'all', gs = ST.clG || '';
+  const st = r => clState(r)[0];
+  const cnt = {all:all.length, wait:0, changes:0, changed:0, sj:0, ready:0, flag:0};
+  all.forEach(r=>{ cnt[st(r)]++; if(clFlags(r).length) cnt.flag++; });
+  const pass = r => (fs==='all' || (fs==='flag' ? clFlags(r).length>0 : fs==='ok' ? ['sj','ready'].includes(st(r)) : st(r)===fs)) && (!gs || r.group===gs) && (!q || (r.id+' '+r.v+' '+r.where+' '+r.label).toLowerCase().includes(q)) && (!ST.owner || (findBlock(r.owner)||{}).owner===ST.owner);
+  const rows = all.filter(pass), N = ST.clN || 80, shown = rows.slice(0, N);
+  const chip = (k, lab, n) => `<button type="button" class="ot-chip${fs===k?' on':''}" data-clf="${k}" aria-pressed="${fs===k}">${lab} <b>${n}</b></button>`;
+  const grpN = g => all.filter(r=>r.group===g).length;
+  const dis = ST.canWrite ? '' : 'disabled';
+  const row = r => { const [k, lab] = clState(r), d = (ST.copyrev||{})[r.rid] || {}, fl = clFlags(r), n = clLen(r.v);
+    const e = ST.edits[r.bid] && ST.edits[r.bid].f && ST.edits[r.bid].f[r.path];
+    const rowsN = Math.min(8, Math.max(1, Math.ceil(n/60)));
+    const by = x => x ? ` <small>${esc(who(x.by))} · ${ago(x.at)}</small>` : '';
+    return `<tr class="cl-row cl-${k}">
+     <td class="cl-id"><b>${esc(r.id)}</b><small>${esc(r.where)}</small><span class="cl-ch">${esc(r.ch)}</span></td>
+     <td class="cl-txt"><label class="cl-lab" for="cl-${r.rid}">${esc(r.label)}${e?` <span class="az-ed">✎ ${esc(who(e.by))} · ${ago(e.at)}</span>`:''}</label>
+       <textarea id="cl-${r.rid}" rows="${rowsN}" data-edit="${esc(r.bid)}|${esc(r.path)}|txt" data-lim="${r.lim||0}" ${dis}>${esc(r.v)}</textarea>
+       <div class="cl-meta"><span class="cl-n${r.lim&&n>r.lim?' over':''}" data-n>${n}${r.lim?' of '+r.lim:''} characters</span>${fl.map(x=>`<span class="cl-flag">⚠ ${esc(x)}</span>`).join('')}</div></td>
+     <td class="cl-rev"><span class="cl-st st-${k}">${esc(lab)}</span>
+       <div class="cl-btns"><span>SJ</span><button type="button" class="btn sm ok${d.sj&&d.sj.s==='approved'&&k!=='changed'?' on':''}" data-cl="${r.rid}|sj|approved" ${dis}>Approve</button><button type="button" class="btn sm no${d.sj&&d.sj.s==='rejected'?' on':''}" data-cl="${r.rid}|sj|rejected" ${dis}>Changes</button>${by(d.sj)}</div>
+       <div class="cl-btns"><span>Anouar</span><button type="button" class="btn sm ok${d.an&&d.an.s==='approved'&&d.an.txt===r.v?' on':''}" data-cl="${r.rid}|an|approved" ${d.sj&&d.sj.s==='approved'&&k!=='changed'?dis:'disabled'}>Approve</button><button type="button" class="btn sm no${d.an&&d.an.s==='rejected'?' on':''}" data-cl="${r.rid}|an|rejected" ${dis}>Changes</button>${by(d.an)}</div>
+       ${k==='changes'||ST.clNote===r.rid?`<form class="cl-note" data-clnote="${r.rid}|${esc(r.owner)}"><label class="sr" for="cn-${r.rid}">What should change in ${esc(r.id)}</label><input id="cn-${r.rid}" placeholder="What should change?" maxlength="300"><button type="submit" class="btn sm">Send</button></form>`:''}
+       ${notesFor(r.owner).filter(x=>(x.text||'').startsWith('['+r.id+']')).slice(-2).map(x=>`<p class="cl-c">💬 ${esc(x.text.slice(r.id.length+3))} <small>${esc(who(x.by))} · ${ago(x.at)}</small></p>`).join('')}
+     </td></tr>`; };
+  return `<section class="bb-sec cl"><div class="ot-head"><h2>Copy library</h2>
+    <p>Every sentence we send or show, one row each, with an ID (for example <code>HB-E1.subject</code>). Edit a line here and it changes everywhere on the board. SJ approves each line, then Anouar. If a line changes after approval, it goes back to SJ.</p></div>
+    <div class="ot-share"><button type="button" class="btn" data-clexport="json">Copy approved lines for Customer.io</button><button type="button" class="btn" data-clexport="csv">Copy everything as a spreadsheet</button></div>
+    <div class="ot-chips">${chip('all','All lines',cnt.all)}${chip('wait','Waiting for SJ',cnt.wait)}${chip('changes','Changes asked',cnt.changes)}${chip('changed','Changed since approval',cnt.changed)}${chip('ok','Approved',cnt.sj+cnt.ready)}${chip('flag','Needs a fix',cnt.flag)}</div>
+    <div class="cl-groups"><button type="button" class="cl-g${!gs?' on':''}" data-clg="">Everything</button>${CL_GROUPS.filter(grpN).map(g=>`<button type="button" class="cl-g${gs===g?' on':''}" data-clg="${g}">${g} <b>${grpN(g)}</b></button>`).join('')}</div>
+    <p class="cl-count">${rows.length} ${rows.length===1?'line':'lines'}${rows.length>N?`, showing the first ${N}`:''}. Use the search box at the top to find any word.</p>
+    <div class="cl-wrap"><table class="cl-t stack"><thead><tr><th>ID and where</th><th>The words</th><th>Approval</th></tr></thead><tbody>${shown.map(row).join('')||`<tr><td colspan="3">Nothing matches. Try another filter.</td></tr>`}</tbody></table></div>
+    ${rows.length>N?`<p><button type="button" class="btn" data-clmore="1">Show ${Math.min(80, rows.length-N)} more</button></p>`:''}
+  </section>`;
+}
+
 function setZoom(z){ ST.zoom = Math.round(z*100)/100; try{ localStorage.setItem('ctl-zoom', ST.zoom); }catch(e){} const jr = document.getElementById('jr'); if(jr){ jr.style.zoom = ST.zoom; const lab = document.querySelector('[data-zoom="1"]'); if(lab) lab.textContent = Math.round(ST.zoom*100)+'%'; requestAnimationFrame(drawLinks); } else render(); }
 function onClick(e){
   const t = e.target.closest('button, a, [data-close]'); if(!t || !document.getElementById('buildwrap').contains(t)) return;
@@ -4555,6 +4697,11 @@ function onClick(e){
     saveReview(bid, i, who_, st, txt ? '['+label+'] '+(st==='rejected'?'Needs changes ('+(who_==='sj'?'SJ':'Anouar')+'): ':'Approved ('+(who_==='sj'?'SJ':'Anouar')+'): ')+txt : ''); return; }
   if(t.dataset.solo!=null){ const on = t.dataset.solo==='1'; ST.solo=on; ST.view = on?'open':'journey'; document.body.classList.toggle('is-solo', on); if(!on && location.hash==='#tasks'){ history.replaceState(null,'',location.pathname+location.search); } render(); const m=$('#bb-main'); if(m) m.scrollTop=0; window.scrollTo(0,0); return; }
   if(t.dataset.digest!=null){ copyText(digestText(), 'Copied. Paste it into Teams.'); return; }
+  if(t.dataset.clf){ ST.clF = t.dataset.clf; ST.clN = 80; render(); return; }
+  if(t.dataset.clg!=null){ ST.clG = t.dataset.clg; ST.clN = 80; render(); return; }
+  if(t.dataset.clmore){ ST.clN = (ST.clN||80) + 80; render(); return; }
+  if(t.dataset.clexport){ copyText(clExport(t.dataset.clexport), t.dataset.clexport==='json' ? 'Approved lines copied. Paste them into Customer.io.' : 'Copied. Paste into a Google Sheet.'); return; }
+  if(t.dataset.cl){ const [rid, w, s] = t.dataset.cl.split('|'); const r = libRows().find(x=>x.rid===rid); if(!r) return; if(s==='rejected') ST.clNote = rid; saveCopyRev(rid, w, s, r.v); return; }
   if(t.dataset.copytxt){ copyText(t.dataset.copytxt, 'Link copied.'); return; }
   if(t.dataset.open){ ST.open = t.dataset.open; render(); if(t.dataset.item!=null){ const it = document.querySelectorAll('#bb-side .az-item')[+t.dataset.item]; if(it){ it.scrollIntoView({block:'start'}); it.classList.add('flash'); } } const n = document.querySelector(`#bb-main [data-node="${ST.open}"]`); if(n && (ST.view==='journey'||ST.view==='mcr') && !t.closest('#bb-main')) n.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'}); return; }
   if(t.dataset.ping){ const b = blocksOf(F,true).find(x=>x.id===t.dataset.ping); if(b) addPing(b,''); return; }
@@ -4576,6 +4723,7 @@ function copyText(txt, ok, showAlways){
 }
 function onInput(e){
   const t = e.target;
+  if(t.dataset.lim!=null && t.closest('.cl-row')){ const m = t.closest('td').querySelector('[data-n]'), L = +t.dataset.lim, n = clLen(t.value); if(m){ m.textContent = n+(L?' of '+L:'')+' characters'; m.classList.toggle('over', !!L && n>L); } }
   if(t.id==='bb-q'){ ST.q = t.value.toLowerCase().trim(); clearTimeout(onInput.tm); onInput.tm = setTimeout(render, 250); }
 }
 function onChange(e){
@@ -4589,6 +4737,7 @@ function onChange(e){
   if(t.dataset.due){ const b = blocksOf(F,true).find(x=>x.id===t.dataset.due); if(b && t.value) setDue(b, t.value); }
 }
 function onSubmit(e){
+  const fc = e.target.closest('form[data-clnote]'); if(fc){ e.preventDefault(); const inp = fc.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [rid, bid] = fc.dataset.clnote.split('|'); const r = libRows().find(x=>x.rid===rid); inp.value=''; ST.clNote = null; addNote({id:bid}, '['+(r?r.id:rid)+'] '+v); return; }
   const fi = e.target.closest('form[data-inote]'); if(fi){ e.preventDefault(); const inp = fi.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [bid, label] = fi.dataset.inote.split('|'); inp.value=''; addNote({id:bid}, '['+label+'] '+v); return; }
   const f = e.target.closest('form[data-note]'); if(!f) return; e.preventDefault();
   const ta = f.querySelector('textarea'); const v = ta.value.trim(); if(!v) return;
