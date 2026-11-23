@@ -684,6 +684,30 @@ table.ot{font-size:13px}table.ot td{vertical-align:top;color:#1A1A2E}table.ot tr
 .cl-c{margin:6px 0 0;font-size:13px;color:#1A1A2E}.cl-c small{color:#3D4060}
 .cl-row.cl-ready td{background:#F6FCF9}.cl-row.cl-changes td,.cl-row.cl-changed td{background:#FFF8F7}
 @media(max-width:700px){.cl-id,.cl-rev{width:auto}.cl-btns small{padding-left:0}}
+/* light map (default) */
+body.map-light .jr-wrap{background-color:#F4F6FF;background-image:radial-gradient(rgba(0,15,150,.12) 1px,transparent 1px);border:1px solid #D5DAF0}
+body.map-light .jr-sh{color:#1A1A2E}body.map-light .jr-sh small{color:#3D4060;font-size:13px}body.map-light .jr-sh em{color:#00704A}
+body.map-light .jr-lh{background:#E1F7EE;border-color:#7FD9B0}body.map-light .jr-lh b{color:#00704A}body.map-light .jr-lh span{color:#1A1A2E;font-size:13px}
+body.map-light .jr-goal2{background:#EAFBF3;border-color:#7FD9B0}body.map-light .jr-goal2 b{color:#1A1A2E;font-size:13.5px}body.map-light .jr-goal2 span{color:#00704A}body.map-light .jr-goal2 small{color:#3D4060;font-size:12px}
+body.map-light .jr-goal2.kpi,body.map-light .jr-col.z .jr-goal2{background:#FFF4DA;border-color:#F6B233}body.map-light .jr-goal2.kpi span{color:#7A4E00}
+body.map-light .jn{background:#fff;border:1px solid #CDD3EE;color:#1A1A2E;box-shadow:0 1px 3px rgba(0,15,150,.08)}
+body.map-light .jn.t-push,body.map-light .jn.t-sms{border-left:4px solid #8B6CFF}body.map-light .jn.t-video,body.map-light .jn.t-webinar{border-left:4px solid #F08A3C}
+body.map-light .jn.t-page,body.map-light .jn.t-form,body.map-light .jn.t-component{border-left:4px solid #13A8B5}body.map-light .jn.t-ad{border-left:4px solid #E0A800}
+body.map-light .jn.t-app{border-left:4px solid #E5486A}body.map-light .jn.t-call{border-left:4px solid #7A809E}body.map-light .jn{border-left-width:4px}
+body.map-light .jn:hover{background:#F7F8FF;box-shadow:0 8px 20px rgba(0,15,150,.14)}body.map-light .jn.sel{background:#E9FBF3;box-shadow:0 0 0 2px #00A569}
+body.map-light .jn.st-overdue{border-color:#E5486A}body.map-light .jn.st-done .jn-t::after{color:#00A569}
+body.map-light .jn-t{font-size:14px}body.map-light .jn-top{font-size:12px}body.map-light .jn-top i{background:#EEF0FF}body.map-light .jn-top em{color:#3D4060}
+body.map-light .jn-w{color:#3D4060;font-size:12.5px}body.map-light .jn-f{color:#1A1A2E;font-size:12.5px}
+body.map-light .jn-dots b{background:#D5DAF0}body.map-light .jn-dots b.on{background:#00A569;box-shadow:none}
+body.map-light .jn-rv{background:#EEF0FF;color:#000F96;font-size:11.5px}body.map-light .jn-rv.ok{background:#00A569;color:#fff}body.map-light .jn-rv.bad{background:#FFD9D6;color:#9B1C10}
+body.map-light .jn-lad{color:#9B1C10;font-size:11px}
+body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
+.jr-zoom button[data-maptheme]{font-size:13px;white-space:nowrap}
+.bb-explain{background:#F6F7FF;border:1px solid #D5DAF0;border-radius:14px;padding:14px 16px;margin:12px 0;color:#1A1A2E;font-size:15px;line-height:1.55}
+.bb-explain h5{margin:14px 0 6px;font-size:13px;color:#000F96;text-transform:none;letter-spacing:0}.bb-explain h5:first-child{margin-top:0}
+.bb-explain p{margin:0}.bb-explain ol,.bb-explain ul{margin:0;padding-left:22px}.bb-explain li{margin:5px 0}
+.bb-explain li b{display:inline-block;background:#000F96;color:#fff;border-radius:6px;padding:0 7px;font-size:12.5px;margin-right:4px}
+.bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -3635,6 +3659,126 @@ HB.sections.app.push(GUIDE);
   c.lp = false; }
 })();
 
+/* ================= HB-D: fuller explanations for the data boxes ================= */
+const HBD_EXPLAIN = {
+ 'HB-D1': {
+  why:'Every message we send depends on two things: who the person is, and what they said yes to. If the consent ticks are not in both HubSpot and Customer.io, one tool can email or text someone who never agreed. That is a compliance problem, and it also means the two tools disagree about who we can contact.',
+  steps:[
+   'Omar: on every form (Quick Score, webinar, guide, calculator), call Customer.io identify with the email as the person id, and send first_name, marketing_consent and sms_consent with it.',
+   'Omar: send the same form to HubSpot, so the contact is created or updated with firstname, phone and the subscription status.',
+   'Fofee: add a new HubSpot property sms_consent (yes or no). Add a separate, unticked SMS box on the forms. SMS only goes to people who ticked it.',
+   'Omar: web_push_opt_in lives in Customer.io only. Set it when the person accepts the browser permission.',
+   'Ridhima: an unsubscribe in either tool must reach the other within 15 minutes (HubSpot subscription status and Customer.io unsubscribed).'],
+  test:['Submit the Quick Score 3 times with test emails: marketing yes and SMS no; both yes; both no.','Check each test person in HubSpot and in Customer.io: the fields match.','Unsubscribe one test person in Customer.io. Within 15 minutes, HubSpot shows them as unsubscribed.'],
+  done:'Every new home buyer has email, first name and both consent fields filled in HubSpot and Customer.io, and the two tools agree.',
+  watch:['Never pre-tick a consent box.','Mobile is optional: never block the form if it is empty.','Keep the proof of consent (date and which form) on the contact.']
+ },
+ 'HB-D2': {
+  why:'The emails, the score page and sales all use the person\'s own answers: their home deposit, their city, when they want to buy. If the answers only end up in a segment, no email can quote them and sales cannot see them.',
+  steps:[
+   'Omar: every Quick Score answer becomes a Customer.io person attribute and a HubSpot property, using the names in the table below.',
+   'Omar: fire one quick_score_completed event with all the answers inside it.',
+   'Omar: city comes from a dropdown only, and is also sent as city_slug (for example manchester) so links and pages can use it.',
+   'Ridhima: one rule sets home_deposit_status in Customer.io and deposit_status in HubSpot: Deposit ready if the home deposit is at least 10% of the city price, Partial if it is less, No deposit yet if it is zero.',
+   'Omar: quick_score and quick_score_band are worked out on the page and sent with the event.'],
+  test:['Run 3 test people through the Quick Score: 3 different cities and 3 different home deposit amounts.','Every field in the table is filled for all 3, in both tools.','Preview HB-E1 for each test person: the email shows their own numbers and city.'],
+  done:'No blank fields on test contacts, and every email preview shows real values instead of the default words.',
+  watch:['Send numbers as numbers (15000), not text ("£15,000").','The city dropdown values must match the city_slug list exactly.','The home deposit rule lives in one place only, so HubSpot and Customer.io can never disagree.']
+ },
+ 'HB-D3': {
+  why:'The 3 Nov audit found primary_lead_source blank on every contact checked, so today we cannot say which ad brings home buyers or what a lead costs. First touch is kept forever; last touch updates each visit. Together they give cost per lead and cost per call for every ad.',
+  steps:[
+   'Omar: on the first visit, the page reads utm_source, utm_medium, utm_campaign and utm_content from the link and keeps them as first touch. The new landing pages already do this.',
+   'Omar: on every form, send first_utm_* and last_utm_* to Customer.io, and as hidden fields to HubSpot.',
+   'Fofee: map utm_source to primary_lead_source. Add the missing options to the HubSpot dropdown: linkedin, referral, webinar, ai_answer, event.',
+   'Omar: first_ad_id is the utm_content of the first visit (every ad on this board has its own).',
+   'Omar: first_landing_page is the first page they saw.'],
+  test:['Open a landing page with a test link from any "Copy link" button on this board and submit the form. Both tools show the source.','Come back with a different link and submit again: first touch stays the same, last touch changes.'],
+  done:'primary_lead_source is no longer blank on new contacts, and we can count leads per ad.',
+  watch:['Never overwrite first touch.','app_install_source is empty in HubSpot today, so people who sign up in the app need their own source (store links with a campaign tag). See the app boxes.']
+ },
+ 'HB-D4': {
+  why:'Sales need to know who is warm. Points add up from what people do. highest_goal is the furthest step a person has reached (0 to 9). Together they decide who sales calls first and which email comes next.',
+  steps:[
+   'Fofee: in Customer.io, add points on each event: simulator 10, home submitted 25, chat 15, call 25, explainer 5, FAQ 3, trust page 3, Kit item 2, email click 2.',
+   'Fofee: set highest_goal to the goal number when a goal is reached, only if it is higher than the current one.',
+   'Ridhima: sync engagement_score and highest_goal to HubSpot on change (or at least daily).',
+   'Alex: add a HubSpot view for sales sorted by engagement_score, highest first.'],
+  test:['A test person clicks an email and opens the FAQ: their points go up by 5.','The test person reaches goal 3: highest_goal shows 3, and it does not drop when they do something smaller later.'],
+  done:'Both numbers show on test contacts in HubSpot, and sales can sort by them.',
+  watch:['Count a click on the same email once, not every time.','Points never go down on their own (unless we decide to add that later).']
+ },
+ 'HB-D5': {
+  why:'The Quick Score is a two minute first look. The full Bayuti Score is the real readiness check, and its band decides which path the person goes down: Ready, Nearly ready or Not ready.',
+  steps:[
+   'Ridhima: work out the score on the score page or in the app.',
+   'Ridhima: send bayuti_score_completed with the score and band to Customer.io and HubSpot.',
+   'Ridhima: write bayuti_score, bayuti_band and bayuti_score_date to both tools.',
+   'Fofee: one rule turns the band into home_buyer_funnel_stage in HubSpot.',
+   'Product: confirm the real band rules. Until then the bands are placeholders (Ready 75+, Nearly ready 50 to 74, Not ready under 50).'],
+  test:['Three test people, one per band.','Each one starts the right path in Customer.io, and the band shows in HubSpot.'],
+  done:'Band lands in both tools and starts the right path for all three test people.',
+  watch:['The bands are placeholders until product confirms them.','The score is a readiness guide, never a lending decision: the wording must say so (SJ to check).']
+ },
+ 'HB-D6': {
+  why:'When someone books or has a call, the automatic emails must stop, otherwise they get "book a call" emails after speaking to us. And sales outcomes tell us why people drop out.',
+  steps:[
+   'Alex: every booking uses the HubSpot meeting link (success-bayuti), so it creates a meeting on the contact.',
+   'Fofee: a HubSpot workflow sends a webhook to Customer.io when a meeting is booked (call_booked).',
+   'Alex: after each call, sales pick the outcome from a dropdown: completed, no show or no answer (call_outcome). If lost, pick lost_reason: price, area, timing, partner, not ready, other.',
+   'Fofee: the outcome is sent to Customer.io as call_completed or call_no_show.',
+   'Fofee: in Customer.io, call_booked exits Flow 1; call_no_show starts the rebook nudge.'],
+  test:['Book a test call: Flow 1 emails stop within 5 minutes.','Mark the test call as a no show: the rebook email arrives.'],
+  done:'Booking a test call stops Flow 1 within 5 minutes, and every outcome lands in Customer.io.',
+  watch:['Sales must log the outcome the same day, or the person gets stuck.','Calls booked any other way (phone, WhatsApp) must still be logged as a meeting.']
+ },
+ 'HB-D7': {
+  why:'These five problems came out of the 3 Nov audit of 904 home buyer contacts. Each one breaks something downstream: emails with the wrong city, no lead source, or ads Meta cannot learn from.',
+  steps:[
+   'Omar: replace the free text city field with a dropdown on every form, using the same city list as city_slug.',
+   'Fofee: map primary_lead_source from the UTMs (see HB-D3).',
+   'Ridhima: set deposit_status and home_buyer_funnel_stage from one rule, so they stop disagreeing.',
+   'Omar: add the Lead event to the Meta Pixel on form submit (today it only sends PageView).',
+   'Omar: switch off HubSpot tracking on staging, so test visits stop counting.'],
+  test:['One week after the fixes, check 50 new contacts: city from the list, lead source filled, deposit status and stage agree.','In Meta Events Manager, a test form submit shows a Lead event.'],
+  done:'All five fixed and the 50 contact check is clean.',
+  watch:['Old contacts keep their free text city until cleaned: list the worst ones for Ridhima to tidy.']
+ },
+ 'HB-D8': {
+  why:'The HubSpot connector cannot list workflows, so nobody has a full picture of what HubSpot sends today. If an old HubSpot workflow and a new Customer.io campaign both email the same person, they get two emails.',
+  steps:[
+   'Fofee: in HubSpot, go to Automation, then Workflows, and filter to contact workflows.',
+   'Fofee: list every workflow that uses home_buyer_funnel_stage, deposit_status or city, or that sends an email to home buyers.',
+   'Fofee: mark each one: keep (sales tasks only), move to Customer.io, or switch off.',
+   'Fofee: switch off the "switch off" ones on go live day, not before, and write the date in a comment on this box.'],
+  test:['On go live day, a test home buyer gets emails from Customer.io only, none from HubSpot.'],
+  done:'Every workflow on the list is marked and the switch off dates are in the comments.',
+  watch:['Do not delete workflows, only switch them off, so they can come back if needed.']
+ },
+ 'HB-D9': {
+  why:'The grow lane follows people inside the app: checks, bank, first investment, monthly plan. From HubSpot today: 29 KYC verified, 32 appropriateness tests done, SCA false for everyone, 11 bank accounts added, 8 invested, and recurring_mandate empty. Most of these steps are not tracked as events yet, so we cannot nudge people at the right moment.',
+  steps:[
+   'Omar: the backend sends each event to Customer.io and HubSpot (never from the app itself, because money events must be trusted): grow_plan_chosen, app_installed, kyc_passed, investment_completed, mandate_created, dividend_paid, auto_reinvest_on, target_reached.',
+   'Fofee: create the new properties in HubSpot: home_deposit_target, plan_monthly_amount, auto_reinvest_on, plan_progress_pct.',
+   'Ridhima: plan_progress_pct is worked out monthly by the backend.',
+   'Ridhima: check why SCA shows false for everyone in HubSpot, and fill recurring_mandate_active from Mangopay (it is empty today).'],
+  test:['One test person goes through every step in the app; each event shows in Customer.io and HubSpot within 15 minutes.'],
+  done:'Every step in the table fires for the test person, and the counts in HubSpot start moving.',
+  watch:['Money events only come from the backend.','Keep the risk warning on every grow lane message (SJ).']
+ },
+ 'HB-D10': {
+  why:'Once someone submits a home, the work moves to sales in HubSpot. Customer.io needs to know each stage so the person gets the right email, and we can measure time from first ad to keys.',
+  steps:[
+   'Alex: every home submitted creates a deal in the home buyer pipeline.',
+   'Alex: sales record the review outcome and a reason code (property_review_outcome).',
+   'Fofee: a HubSpot workflow sends stage_changed to Customer.io each time the deal moves stage, and keys_collected at Completion.',
+   'Alex: share_owned_pct is filled at completion.'],
+  test:['Move a test deal through every stage: one email per stage arrives, and keys_collected fires at Completion.'],
+  done:'A test deal moving through the pipeline sends one email per stage.',
+  watch:['Deals moved backwards must not resend emails.']
+ }
+};
+
 </script>
 <script>
 
@@ -3642,7 +3786,7 @@ HB.sections.app.push(GUIDE);
 (function(){
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $ = (sel, el=document) => el.querySelector(sel);
-const ST = {flow:'hb', zoom:(function(){ try{ return +localStorage.getItem('ctl-zoom')||1; }catch(e){ return 1; } })(), heroFold:(function(){ try{ return localStorage.getItem('ctl-hero')!=='0'; }catch(e){ return true; } })(), fold:(function(){ try{ return localStorage.getItem('ctl-fold')!=='0'; }catch(e){ return true; } })(), view:(function(){ try{ return localStorage.getItem('ctl-view')||'journey'; }catch(e){ return 'journey'; } })(), edits:{}, reviews:{}, counts:{}, wopen:null, due:{}, pings:[], owner:'', q:'', checks:{}, actuals:{}, notes:[], db:null, user:null, me:null, names:{}, canWrite:true, live:false, open:null};
+const ST = {mapDark:(function(){ try{ return localStorage.getItem('ctl-mapdark')==='1'; }catch(e){ return false; } })(), flow:'hb', zoom:(function(){ try{ return +localStorage.getItem('ctl-zoom')||1; }catch(e){ return 1; } })(), heroFold:(function(){ try{ return localStorage.getItem('ctl-hero')!=='0'; }catch(e){ return true; } })(), fold:(function(){ try{ return localStorage.getItem('ctl-fold')!=='0'; }catch(e){ return true; } })(), view:(function(){ try{ return localStorage.getItem('ctl-view')||'journey'; }catch(e){ return 'journey'; } })(), edits:{}, reviews:{}, counts:{}, wopen:null, due:{}, pings:[], owner:'', q:'', checks:{}, actuals:{}, notes:[], db:null, user:null, me:null, names:{}, canWrite:true, live:false, open:null};
 const LS = 'ctl-build-local';
 function localLoad(){ try{ const x = JSON.parse(localStorage.getItem(LS)||'{}'); ST.checks = x.checks||{}; ST.actuals = x.actuals||{}; ST.notes = x.notes||[]; ST.due = x.due||{}; ST.pings = x.pings||[]; ST.edits = x.edits||{}; ST.reviews = x.reviews||{}; ST.counts = x.counts||{}; ST.copyrev = x.copyrev||{}; applyEdits(); }catch(e){} }
 function localSave(){ try{ localStorage.setItem(LS, JSON.stringify({checks:ST.checks, actuals:ST.actuals, notes:ST.notes, due:ST.due, pings:ST.pings, edits:ST.edits, reviews:ST.reviews, counts:ST.counts, copyrev:ST.copyrev})); }catch(e){} }
@@ -3929,6 +4073,7 @@ function drawer(id){
      <div class="bb-mini"><iframe title="Email preview: ${esc(E.subject)}" sandbox="" srcdoc="${esc(ST.liquid?emailHTML(b.msg,F,b.id):sampleOf(emailHTML(b.msg,F,b.id)))}"></iframe></div>`:''}
    <h5>The build</h5>
    <dl class="bb-kv">${kv('Build owner', ownerSel(b,'dr')+(PEOPLE[b.owner]?' <span class="own-role">'+esc(PEOPLE[b.owner].role)+'</span>':''))}${kv('Also involved', esc(b.also||''))}${kv('When', esc(b.when||''))}${kv('Budget', esc(b.budget||''))}${kv('What it is', esc(b.what||''))}${b.fix?kv('Fix first', esc(b.fix)):''}</dl>
+   ${(()=>{ const X = (typeof HBD_EXPLAIN!=='undefined') && HBD_EXPLAIN[b.id]; if(!X) return ''; return `<div class="bb-explain"><h5>Why it matters</h5><p>${esc(X.why)}</p><h5>How to build it</h5><ol>${X.steps.map(x=>{ const m = x.match(/^([A-Z][a-zA-Z]+): /); return `<li>${m?`<b>${esc(m[1])}</b> `+esc(x.slice(m[0].length)):esc(x)}</li>`; }).join('')}</ol><h5>How to test it</h5><ol>${X.test.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><h5>Done when</h5><p class="bb-done">✓ ${esc(X.done)}</p>${X.watch&&X.watch.length?`<h5>Watch out for</h5><ul>${X.watch.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`; })()}
    ${b.type==='video'?`<dl class="bb-kv">${kv('Length', esc(b.length||''))}${kv('Used in', esc(b.used||''))}${kv('Formats', esc(b.formats||''))}${kv('Rule', esc(b.rule||''))}${kv('Note', esc(b.how||''))}</dl>`:''}
    ${b.script?`<h5>Script</h5><div class="bb-matrix"><table><thead><tr><th>Time</th><th>Voice</th><th>On screen</th></tr></thead><tbody>${b.script.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}
    ${b.shots?`<h5>Screens and shots to capture</h5><ul class="bb-list">${b.shots.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
@@ -3967,7 +4112,7 @@ function viewJourney(F, J, offs){
       <span class="jn-w">${esc((b.when||b.length||'').slice(0,60))}</span>${b.ladder?'<span class="jn-lad">⏱ 2h push · 24h email · 48h SMS · 3d ad · 5d video · 7d Evergreen</span>':''}
       <span class="jn-f"><span class="jn-dots">${checksOf(b).map(c=>`<b class="${isDone(b,c)?'on':''}" title="${esc(c)}"></b>`).join('')}</span><span>${esc(b.owner)}</span>${nc?`<span>💬${nc}</span>`:''}</span></button>`; };
   const z = ST.zoom||1;
-  return `<div class="jr-zoom" role="group" aria-label="Zoom the map"><button type="button" data-zoom="-" aria-label="Zoom out">−</button><button type="button" data-zoom="1" aria-label="Reset zoom">${Math.round(z*100)}%</button><button type="button" data-zoom="+" aria-label="Zoom in">+</button><button type="button" data-zoom="fit" aria-label="Fit the whole map">Fit</button></div><div class="jr-wrap"><div class="jr" id="jr" style="zoom:${z}">
+  return `<div class="jr-zoom" role="group" aria-label="Zoom the map"><button type="button" data-zoom="-" aria-label="Zoom out">−</button><button type="button" data-zoom="1" aria-label="Reset zoom">${Math.round(z*100)}%</button><button type="button" data-zoom="+" aria-label="Zoom in">+</button><button type="button" data-zoom="fit" aria-label="Fit the whole map">Fit</button><button type="button" data-maptheme="1" aria-label="Switch map colours">${ST.mapDark?'☀ Light':'☾ Dark'}</button></div><div class="jr-wrap"><div class="jr" id="jr" style="zoom:${z}">
    <svg class="jr-svg" id="jr-svg" aria-hidden="true"></svg>
    ${J.map(L=>`<div class="jr-lane l-${L.lane}" style="margin-left:${(offs[L.lane]||0)*(COL+GAP)}px">
      <div class="jr-lh"><b>${esc(L.name)}</b><span>${esc(L.sub)}</span></div>
@@ -3995,6 +4140,7 @@ function drawLinks(){
 }
 /* ---------- shell ---------- */
 function render(){
+  document.body.classList.toggle('map-light', !ST.mapDark);
   try{ if(!ST.solo) localStorage.setItem('ctl-view', ST.view); }catch(e){}
   const wrap = document.getElementById('buildwrap'); if(!wrap || wrap.hidden) return;
   const F = flowOf(ST.flow);
@@ -4681,6 +4827,7 @@ function onClick(e){
   if(t.dataset.flow){ ST.flow = t.dataset.flow; ST.open=null; location.hash = ST.flow==='hb'?'build':'build-inv'; return; }
   if(t.dataset.view){ if(ST.solo && t.dataset.view!=='open'){ location.hash='build'; return; } ST.view = t.dataset.view; render(); const m=$('#bb-main'); if(m) m.scrollTop=0; if(t.dataset.gotoafter){ const s=document.getElementById(t.dataset.gotoafter); if(s) s.scrollIntoView({block:'start'}); } return; }
   if(t.dataset.ck){ e.stopPropagation(); const b = blocksOf(F,true).find(x=>x.id===t.dataset.ck) || (/^AZ-/.test(t.dataset.ck) ? {id:t.dataset.ck, checks:AZC} : null); if(b) toggleCheck(b, t.dataset.c); return; }
+  if(t.dataset.maptheme){ ST.mapDark = !ST.mapDark; try{ localStorage.setItem('ctl-mapdark', ST.mapDark?'1':'0'); }catch(e){} render(); return; }
   if(t.dataset.zoom){ const v = t.dataset.zoom; let z = ST.zoom||1;
     if(v==='+') z = Math.min(1.5, z+0.1); else if(v==='-') z = Math.max(0.3, z-0.1); else if(v==='1') z = 1;
     else { const jr = document.getElementById('jr'), w = document.querySelector('.jr-wrap'); if(jr&&w) z = Math.max(0.3, Math.min(1, (w.clientWidth-10) / (jr.scrollWidth||1) * (ST.zoom||1))); }
