@@ -704,6 +704,7 @@ body.map-light .jn-lad{color:#9B1C10;font-size:11px}
 body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .jr-zoom button[data-maptheme]{font-size:13px;white-space:nowrap}
 .bb-explain{background:#F6F7FF;border:1px solid #D5DAF0;border-radius:14px;padding:14px 16px;margin:12px 0;color:#1A1A2E;font-size:15px;line-height:1.55}
+.bb-explain h4{margin:0 0 10px;font-size:16px;color:#fff;background:#000F96;border-radius:8px;padding:6px 10px;display:inline-block}
 .bb-explain h5{margin:14px 0 6px;font-size:13px;color:#000F96;text-transform:none;letter-spacing:0}.bb-explain h5:first-child{margin-top:0}
 .bb-explain p{margin:0}.bb-explain ol,.bb-explain ul{margin:0;padding-left:22px}.bb-explain li{margin:5px 0}
 .bb-explain li b{display:inline-block;background:#000F96;color:#fff;border-radius:6px;padding:0 7px;font-size:12.5px;margin-right:4px}
@@ -3779,6 +3780,164 @@ const HBD_EXPLAIN = {
  }
 };
 
+/* ================= Customer.io: set up boxes (hand written) ================= */
+const CIO_EXPLAIN = {
+ 'MCR-CIO': {
+  why:'This is where every Manchester lead lands, whichever way they came in. If this box is wrong, every email after it goes to the wrong people or not at all.',
+  steps:[
+   'Fofee: in Customer.io, go to People and check a test lead shows city = Manchester, city_slug = manchester, all Quick Score answers, first_utm_* and first_ad_id (these come from HB-D1 to HB-D3).',
+   'Fofee: Segments, then Create segment, then Data driven. Name it "MCR · All leads". Rule: city_slug equals manchester AND quick_score exists.',
+   'Fofee: make one segment per way in, each the rule above plus first_utm_source equals meta, tiktok, google, customerio (email invite), pr, linkedin, event, webinar. Name them "MCR · Meta" and so on.',
+   'Fofee: Campaigns, then C1 Flow 1 Nurture. Trigger: event quick_score_completed. Filter: city_slug exists. This starts HB-E1.',
+   'Omar: a webhook action at the top of C1 sends the person to HubSpot (create or update contact, which_city = Manchester, primary_lead_source from the UTM, lifecycle stage lead).',
+   'Fofee: Integrations, then Meta and TikTok audience sync: add "MCR · All leads" as an exclusion audience on the Manchester ads, so we stop paying to show ads to people we already have.'],
+  test:['Take the Quick Score as a test person through a Meta test link.','Within 15 minutes: they are in "MCR · All leads" and "MCR · Meta", HB-E1 is in their Activity log, and HubSpot has the contact with Manchester and source meta.'],
+  done:'The Manchester segment counts match HubSpot within 1%, and every test person got HB-E1.',
+  watch:['Never build segments on free text city: use city_slug only.','Data driven segments update on their own; manual segments do not. Use data driven.']
+ },
+ 'HB-M2': {
+  why:'One master email layout means a new email takes an hour, not a day, and every email looks the same and carries the same footer, unsubscribe link and risk warning.',
+  steps:[
+   'Fofee: Content, then Layouts, then New layout. Build the frame once: logo, body area, footer with the company line ("Bayuti is a trading name of Elite Capital and Management Services Limited, regulated by the FCA (FRN 822039)") and the unsubscribe link.',
+   'Fofee: Content, then Snippets: make one snippet per block (hero, big number, steps, FAQ, quote, video, button, risk warning).',
+   'Fofee: each email on the board uses this layout and drops in the blocks its card lists.',
+   'Fofee: the words come from Copy library snippets (for example {{snippets.HB_E1_subject}}), never typed into the email.'],
+  test:['Send one test email built from the layout to Gmail, Outlook and an iPhone: it reads well on all three.','The unsubscribe link works and the footer shows.'],
+  done:'The layout and blocks are set up, and HB-E1 is built from them.',
+  watch:['Dark mode: check the logo and buttons on a phone in dark mode.','Keep the risk warning block in every email that mentions investing.']
+ },
+ 'HB-M3': {
+  why:'Emails and pages quote each city\'s numbers (rent, price, ten years of rent, 10% home deposit). Keeping them in one Customer.io Collection means one monthly update changes every email at once.',
+  steps:[
+   'Fofee: Data and Integrations, then Collections, then New collection. Name it cities.',
+   'Fofee: one row per city, columns: city_slug, city, avg_rent, ftb_price, ten_years_rent, home_deposit_10pct, ons_month.',
+   'Fofee: in emails, read a value with {% assign c = collections.cities | where: "city_slug", customer.city_slug | first %} then {{ c.ten_years_rent }}.',
+   'Fofee: set a monthly calendar reminder for the ONS release and update the rows the same day.'],
+  test:['Preview HB-E5 for a Manchester test person: the numbers match the Manchester row.','Change one number in the collection and preview again: the email changes.'],
+  done:'All 11 cities are in the collection with this month\'s ONS figures.',
+  watch:['Always show the ONS month in the email footnote.','Numbers as numbers, without the £ sign; the email adds the £.']
+ },
+ 'HB-P1': {
+  why:'Web push reaches people who do not open emails. Each email has one push partner with its own short words.',
+  steps:[
+   'Naveed: confirm the web push tool and connect it to Customer.io (Channels, then Push).',
+   'Omar: add the opt in prompt on the landing pages and score page, after the first useful moment (never on first load). Set web_push_opt_in = true when accepted.',
+   'Fofee: in each email\'s campaign, add a Push action straight after the email, sent only if web_push_opt_in is true. Title {{snippets.<ID>_push_title}}, message {{snippets.<ID>_push_body}} (IDs are in the Copy library).',
+   'Fofee: every push link carries utm_medium=push and the email\'s utm_content.'],
+  test:['Opt in on a test browser, run a test person through HB-E1: the push arrives and the click shows as push_clicked in Customer.io.'],
+  done:'Push pairs live for every email, with click events arriving.',
+  watch:['Push titles 50 characters, messages 120.','Same quiet hours as email: 08:00 to 20:00 UK time.']
+ },
+ 'HB-S1': {
+  why:'SMS is only for reminders that stop no shows: calls and webinars. Nothing else goes by SMS.',
+  steps:[
+   'Fofee: Channels, then SMS (Twilio): check the sender name Bayuti and the STOP handling are on.',
+   'Fofee: in C5 (calls) add two SMS actions: 1 day before and 1 hour before the call time; in C9 (webinar) one SMS 1 hour before.',
+   'Fofee: each SMS sends only if sms_consent is true (see HB-D1).',
+   'Fofee: the words come from the Copy library (Push and SMS lines).'],
+  test:['Book a test call for tomorrow with a test phone that has sms_consent: both reminders arrive.','Reply STOP: the next SMS does not send, and HubSpot shows the opt out.'],
+  done:'Reminders arrive for calls and webinars, and STOP works.',
+  watch:['Never send marketing by SMS.','Each SMS ends with "Reply STOP to opt out" and stays under 160 characters.']
+ },
+ 'HB-T1': {
+  why:'Omar and the team need the same picture of how Customer.io works, so events arrive with the right names and nobody breaks a campaign by renaming something.',
+  steps:[
+   'Fofee: book one hour with Omar and Ridhima.',
+   'Show: a person and their attributes; an event and its data; a segment; a campaign trigger, a wait, a branch and a goal.',
+   'Show the event naming rule: object_action, past tense, lowercase with underscores (quick_score_completed, call_booked).',
+   'Show how to check an event arrived: People, open the test person, Activity log.',
+   'Agree where the event list lives (APP-EV and HB-M6) and that new events are added there first.'],
+  test:['After the session, Omar sends a test event from staging and finds it in the Activity log on his own.'],
+  done:'Omar and Ridhima can each send and find a test event without help.',
+  watch:['Never rename an event once campaigns use it: add a new one instead.']
+ },
+ 'HB-M6': {
+  why:'Every email, nudge and number on this board depends on events arriving in Customer.io quickly and with the right names.',
+  steps:[
+   'Omar: website: load the Customer.io JS through GTM on every page; identify on every form; track page events (page_viewed, lp_cta_clicked, quick_score_completed).',
+   'Omar: backend: send score, call and pipeline events server side with the Customer.io Track API.',
+   'Omar: HubSpot sync both ways for consent, owner, stage and call outcomes (HubSpot workflow webhooks into Customer.io; Customer.io webhooks back to HubSpot).',
+   'Omar: keep one written list of every event and its data (shared with APP-EV).',
+   'Ridhima: plan it in the sprint and check it against the list each day before go live.'],
+  test:['Three seed people go through the flow each day: every event shows in Customer.io within 15 minutes.'],
+  done:'99% of events arrive within 15 minutes for a full week.',
+  watch:['Staging must use a separate Customer.io workspace, so tests do not count.','Event names follow object_action, past tense, snake_case.']
+ },
+ 'APP-EV': {
+  why:'The app nudges, the "Ready to invest" count and the grow lane all need the app to tell Customer.io what each person did.',
+  steps:[
+   'Omar: add the Customer.io mobile SDK to the app, and identify the person with the same id as the website (their email).',
+   'Omar: send each event in the list, once, at the moment it happens: app_installed, app_opened, registration_completed, bayuti_score_completed, property_submitted, property_approved, call_booked, aip_sent, kyc_verified, keys_collected.',
+   'Omar: money events (wallet, bank, investment, mandate, dividend) come from the backend, never from the phone.',
+   'Omar: register the device for push so the app nudges can reach it.',
+   'Ridhima: check every event against the list on a test phone before go live.'],
+  test:['On a test phone, go through the app: each event shows once in the test person\'s Activity log.'],
+  done:'Each event is seen once in the Customer.io log for a test person.',
+  watch:['One person, one id: the app and the website must use the same id, or one person becomes two.']
+ }
+};
+
+/* ================= Customer.io: generated steps for every message box ================= */
+function cioCampaign(b){
+  const id = b.id;
+  if(/^HB-E([1-8])$/.test(id)) return 'C1 Flow 1 Nurture';
+  if(id==='HB-E9') return 'C1 Flow 1 Nurture (abandoned score branch)';
+  if(id==='HB-E10') return 'C3 Ready: find your home';
+  if(/^HB-E1[1-4]$/.test(id)) return 'C5 Home review';
+  if(/^HB-E1[56]$/.test(id)) return 'C6 Application';
+  if(/^HB-E1[78]$/.test(id)) return 'C7 Welcome home';
+  if(id==='HB-E19'||id==='HB-G10') return 'C8 Own and grow';
+  if(/^HB-E2[01]$/.test(id)||/^HB-G\d$/.test(id)) return 'C4 Not ready: grow your home deposit';
+  if(/^HB-WB/.test(id)||id==='MCR-WEB') return 'C9 Webinar';
+  if(/^APP-/.test(id)) return 'C2 App journey';
+  if(/^GD-/.test(id)) return 'Guide lane (button 3)';
+  if(/^CALC-E/.test(id)) return 'Calculator lane (button 4)';
+  if(id==='EVG') return 'Evergreen';
+  if(id==='MCR-EM') return 'Broadcast: MCR invite';
+  return 'The campaign named on this box';
+}
+function cioGuide(b){
+  const E = b.msg && EMAILS[b.msg];
+  const isMsg = E || ['email','push','sms'].includes(b.type) || (b.sec==='app' && /^APP-N/.test(b.id));
+  if(!isMsg || CIO_EXPLAIN[b.id]) return null;
+  const camp = cioCampaign(b), when = b.when || '', evs = [...new Set((when.match(/\b[a-z]+(?:_[a-z]+)+\b/g)||[]))];
+  const onlyIf = when.match(/only if (?:no |not )?([a-z_ ]+)/i), sid = b.id.replace(/[^A-Za-z0-9_]/g,'_');
+  const goal = (b.exp||[]).map(r=>String(r[0])).find(r=>/^Goal:/i.test(r));
+  const ch = E ? 'email' : b.type==='push' ? 'push' : (b.ch||'').toLowerCase().includes('in app') ? 'in_app' : b.type==='sms' ? 'sms' : 'email';
+  const steps = [];
+  steps.push(`Fofee: open Campaigns in Customer.io and go to "${camp}" (create it if it does not exist yet).`);
+  if(/^(instantly |within |same day |on )/i.test(when) || /^On /.test(when)) steps.push(`Fofee: trigger: ${evs.length?'event '+evs[0]:'the event in "When"'}. Timing: ${when}.`);
+  else steps.push(`Fofee: add a Wait before this message: ${when}.${/\d{1,2}:\d{2}/.test(when)?' Use a Time Window so it sends at that UK time.':''}`);
+  if(onlyIf) steps.push(`Fofee: right before sending, add a True/False branch: has the person done ${evs.slice(1).join(' or ')||onlyIf[1].trim()}? If yes, skip this message.`);
+  if(E){
+    steps.push(`Fofee: add an Email action. From: ${E.from||'Bayuti'}. Layout: the master template (HB-M2).`);
+    steps.push(`Fofee: subject {{snippets.${sid}_subject}}, preview {{snippets.${sid}_preview}}; the headline and body come from the ${b.id} lines in the Copy library, pasted as snippets.`);
+    if(E.push) steps.push(`Fofee: straight after the email, add a Push (only if web_push_opt_in is true): title {{snippets.${sid}_push_title}}, message {{snippets.${sid}_push_body}}.`);
+    if(E.sms) steps.push(`Fofee: add an SMS, only if sms_consent is true, with the ${b.id} SMS line from the Copy library.`);
+  } else if(ch==='in_app') steps.push(`Fofee: add an In app message: title {{snippets.${sid}_title}}, message {{snippets.${sid}_body}}, button {{snippets.${sid}_button}}.`);
+  else if(ch==='push') steps.push(`Fofee: add a Push action: title {{snippets.${sid}_title}}, message {{snippets.${sid}_body}}, button opens the right screen in the app (deep link from Omar).`);
+  else steps.push(`Fofee: add an Email action using the master template (HB-M2), with the ${b.id} lines from the Copy library as snippets.`);
+  steps.push(`Fofee: every link carries utm_source=customerio, utm_medium=${ch==='in_app'?'in_app':ch}, utm_campaign=${camp.split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g,'')}, utm_content=${b.id.toLowerCase()}.`);
+  steps.push(goal ? `Fofee: set the conversion goal to ${goal.replace(/^Goal:\s*/i,'')} within 7 days.` : 'Fofee: set the conversion goal to the next step this message asks for (the button).');
+  steps.push('Fofee: exit rule: the person leaves this campaign when call_booked happens or they unsubscribe.');
+  if(E && E.reg) steps.push('Fofee: this message talks about investing: include the risk warning block from the master template.');
+  const test = [
+    `Send a test to yourself from the message editor: no {{ }} showing, every customer field has a default, links carry the UTMs.`,
+    `Run a seed person through the trigger (${evs[0]||'the event in "When"'}): the message shows in their Activity log at the right time${onlyIf?', and does NOT send for a seed person who already did it':''}.`,
+    E&&E.push ? 'On an opted in browser, the push arrives and the click shows as push_clicked.' : 'Open it on a phone: it reads well and the button works.'];
+  return {steps, test,
+    done:`Live in "${camp}", every line Approved in the Copy library, a seed person received it at the right time, and its numbers show against the Expected numbers on this box.`,
+    watch:['Do not edit the words inside Customer.io: change the Copy library line, get SJ to approve it, then update the snippet.','One email a day at most, and nothing between 20:00 and 08:00 UK time.']};
+}
+
+/* ================= Build work belongs to the developers; Ridhima checks ================= */
+const REASSIGN = {
+ 'APP-EV': {owner:'Omar', also:'Ridhima (checks it), Fofee'},
+ 'HB-M6': {owner:'Omar', also:'Ridhima (plans and checks it), Fofee'},
+ 'INV-D7': {owner:'Omar', also:'Ridhima (checks it), Fofee'}
+};
+const TRACK_TO_OMAR = ['MCR-QS','APP-S1','APP-G1','APP-H1','RTI','HB-D1','HB-D2','HB-D5','HB-E8','HB-E9','HB-E21','HB-G9','INV-W3','HB-W6','APP-EV'];
+
 </script>
 <script>
 
@@ -3813,7 +3972,12 @@ function who(id){ return id==='local' ? 'You (this device)' : id==='claude' ? 'C
 function ago(t){ if(!t) return ''; const d=(Date.now()-new Date(t).getTime())/36e5; return d<1?'just now':d<24?Math.round(d)+'h ago':Math.round(d/24)+'d ago'; }
 
 /* ---------- storage ---------- */
+function applyReassign(){
+  Object.entries(REASSIGN).forEach(([id,o])=>{ const b = findBlock(id); if(b) Object.assign(b, o); });
+  TRACK_TO_OMAR.forEach(id=>{ const b = findBlock(id); if(b && Array.isArray(b.track) && b.track[2]) b.track[2] = 'Omar'; });
+}
 async function connect(){
+  applyReassign();
   localLoad();
   try{
     const [db, user] = await Promise.all([claude.use('db'), claude.use('user')]);
@@ -4073,7 +4237,9 @@ function drawer(id){
      <div class="bb-mini"><iframe title="Email preview: ${esc(E.subject)}" sandbox="" srcdoc="${esc(ST.liquid?emailHTML(b.msg,F,b.id):sampleOf(emailHTML(b.msg,F,b.id)))}"></iframe></div>`:''}
    <h5>The build</h5>
    <dl class="bb-kv">${kv('Build owner', ownerSel(b,'dr')+(PEOPLE[b.owner]?' <span class="own-role">'+esc(PEOPLE[b.owner].role)+'</span>':''))}${kv('Also involved', esc(b.also||''))}${kv('When', esc(b.when||''))}${kv('Budget', esc(b.budget||''))}${kv('What it is', esc(b.what||''))}${b.fix?kv('Fix first', esc(b.fix)):''}</dl>
-   ${(()=>{ const X = (typeof HBD_EXPLAIN!=='undefined') && HBD_EXPLAIN[b.id]; if(!X) return ''; return `<div class="bb-explain"><h5>Why it matters</h5><p>${esc(X.why)}</p><h5>How to build it</h5><ol>${X.steps.map(x=>{ const m = x.match(/^([A-Z][a-zA-Z]+): /); return `<li>${m?`<b>${esc(m[1])}</b> `+esc(x.slice(m[0].length)):esc(x)}</li>`; }).join('')}</ol><h5>How to test it</h5><ol>${X.test.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><h5>Done when</h5><p class="bb-done">✓ ${esc(X.done)}</p>${X.watch&&X.watch.length?`<h5>Watch out for</h5><ul>${X.watch.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`; })()}
+   ${(()=>{ const box = (title, X) => `<div class="bb-explain">${title?`<h4>${title}</h4>`:''}${X.why?`<h5>Why it matters</h5><p>${esc(X.why)}</p>`:''}<h5>${title?'Step by step':'How to build it'}</h5><ol>${X.steps.map(x=>{ const m = x.match(/^([A-Z][a-zA-Z]+): /); return `<li>${m?`<b>${esc(m[1])}</b> `+esc(x.slice(m[0].length)):esc(x)}</li>`; }).join('')}</ol><h5>How to test it</h5><ol>${X.test.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><h5>Done when</h5><p class="bb-done">✓ ${esc(X.done)}</p>${X.watch&&X.watch.length?`<h5>Watch out for</h5><ul>${X.watch.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`;
+     const X = HBD_EXPLAIN[b.id], C = CIO_EXPLAIN[b.id], G = cioGuide(b);
+     return (X?box('',X):'') + (C?box('In Customer.io',C):'') + (G?box('Set it up in Customer.io',G):''); })()}
    ${b.type==='video'?`<dl class="bb-kv">${kv('Length', esc(b.length||''))}${kv('Used in', esc(b.used||''))}${kv('Formats', esc(b.formats||''))}${kv('Rule', esc(b.rule||''))}${kv('Note', esc(b.how||''))}</dl>`:''}
    ${b.script?`<h5>Script</h5><div class="bb-matrix"><table><thead><tr><th>Time</th><th>Voice</th><th>On screen</th></tr></thead><tbody>${b.script.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}
    ${b.shots?`<h5>Screens and shots to capture</h5><ul class="bb-list">${b.shots.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
