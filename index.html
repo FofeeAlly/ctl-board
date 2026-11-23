@@ -657,6 +657,9 @@ table.ot{font-size:13px}table.ot td{vertical-align:top;color:#1A1A2E}table.ot tr
 .is-solo #bb-main{max-width:none}
 .is-solo #bb-side:not(.has){display:none}
 .is-solo .bb-layout:not(:has(#bb-side.has)){grid-template-columns:minmax(0,1fr)}
+.own-sel{min-height:36px;border-radius:10px;border:1.5px solid #C9CDF0;background:#fff;color:#1A1A2E;-webkit-text-fill-color:#1A1A2E;font:700 14px/1.2 inherit;padding:4px 8px;max-width:100%}
+.own-sel:focus-visible{outline:3px solid #6B7CFF;outline-offset:2px}.own-w{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px}
+.own-was{color:#7A4E00;font-weight:700;font-size:12px}.own-role{color:#3D4060;font-size:13px}
 </style>
 <meta name="robots" content="noindex,nofollow"><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -3900,7 +3903,7 @@ function drawer(id){
      <div class="bb-emailbar"><button type="button" class="btn" data-copyhtml="${b.msg}">Copy HTML</button><button type="button" class="btn ghost" data-full="${b.msg}">Open full size</button><button type="button" class="btn ghost" data-liquid>${ST.liquid?'Sample data':'Liquid tags'}</button></div>
      <div class="bb-mini"><iframe title="Email preview: ${esc(E.subject)}" sandbox="" srcdoc="${esc(ST.liquid?emailHTML(b.msg,F,b.id):sampleOf(emailHTML(b.msg,F,b.id)))}"></iframe></div>`:''}
    <h5>The build</h5>
-   <dl class="bb-kv">${kv('Build owner', esc(b.owner)+(PEOPLE[b.owner]?' · '+esc(PEOPLE[b.owner].role):''))}${kv('Also involved', esc(b.also||''))}${kv('When', esc(b.when||''))}${kv('Budget', esc(b.budget||''))}${kv('What it is', esc(b.what||''))}${b.fix?kv('Fix first', esc(b.fix)):''}</dl>
+   <dl class="bb-kv">${kv('Build owner', ownerSel(b,'dr')+(PEOPLE[b.owner]?' <span class="own-role">'+esc(PEOPLE[b.owner].role)+'</span>':''))}${kv('Also involved', esc(b.also||''))}${kv('When', esc(b.when||''))}${kv('Budget', esc(b.budget||''))}${kv('What it is', esc(b.what||''))}${b.fix?kv('Fix first', esc(b.fix)):''}</dl>
    ${b.type==='video'?`<dl class="bb-kv">${kv('Length', esc(b.length||''))}${kv('Used in', esc(b.used||''))}${kv('Formats', esc(b.formats||''))}${kv('Rule', esc(b.rule||''))}${kv('Note', esc(b.how||''))}</dl>`:''}
    ${b.script?`<h5>Script</h5><div class="bb-matrix"><table><thead><tr><th>Time</th><th>Voice</th><th>On screen</th></tr></thead><tbody>${b.script.map(r=>`<tr>${r.map(c=>`<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}
    ${b.shots?`<h5>Screens and shots to capture</h5><ul class="bb-list">${b.shots.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
@@ -4489,6 +4492,12 @@ function digestText(){
   out += '\nOpen the board: '+BOARD_URL+'\nThen click Open tasks at the top.';
   return out;
 }
+function ownerSel(b, cls){
+  const names = [...new Set(Object.keys(PEOPLE).filter(n=>n!=='Mudassar'))];
+  if(b.owner && !names.includes(b.owner)) names.unshift(b.owner);
+  const was = ORIG[b.id+'|owner'];
+  return `<span class="own-w ${cls||''}"><label class="sr" for="own-${cls||'x'}-${b.id}">Owner of ${esc(b.id)}</label><select id="own-${cls||'x'}-${b.id}" class="own-sel" data-owner="${esc(b.id)}" ${ST.canWrite?'':'disabled'}>${names.map(n=>`<option${n===b.owner?' selected':''}>${esc(n)}</option>`).join('')}</select>${was&&was!==b.owner?`<small class="own-was">was ${esc(was)}</small>`:''}</span>`;
+}
 function viewOpen(F){
   const flt = ST.openF || 'all', today = TODAY();
   let rows = blocksOf(F,true).filter(visible).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b), st:stateOf(b), t:testOf(b), d:depInfo(b,F)}));
@@ -4515,7 +4524,7 @@ function viewOpen(F){
    ${rows.map(r=>{ const [k,lab] = plainStatus(r.b); return `<tr class="${r.st==='overdue'?'late':''}">
      <td class="ot-due"><label class="sr" for="od-${r.b.id}">Due date for ${r.b.id}</label><input type="date" id="od-${r.b.id}" data-due="${r.b.id}" value="${r.due||''}" ${ST.canWrite?'':'disabled'}><small>${dl(r.due)}</small></td>
      <td><button type="button" class="ot-t" data-open="${r.b.id}"><span>${r.b.id}</span>${esc(r.b.t)}</button></td>
-     <td>${esc(r.b.owner)}</td>
+     <td>${ownerSel(r.b,'ot')}</td>
      <td><span class="az-st s-${k}">${lab}</span><small class="ot-n">${doneCount(r.b)} of ${checksOf(r.b).length} ticks</small></td>
      <td>${r.d.on.length?depList(r.d.on,'')+(r.d.late.length?`<small class="ot-warn">⚠ ${r.d.late.map(x=>x.id).join(', ')} due after this</small>`:''):'<span class="ot-none">Nothing</span>'}</td>
      <td>${r.d.blocks.length?depList(r.d.blocks.slice(0,6),'out')+(r.d.blocks.length>6?`<small class="ot-n">+${r.d.blocks.length-6} more</small>`:''):'<span class="ot-none">Nothing</span>'}</td>
@@ -4576,6 +4585,7 @@ function onChange(e){
   if(t.dataset.edit){ const [bid,k,ty] = t.dataset.edit.split('|'); saveEdit(bid, k, ty==='num' ? (t.value===''?'':Number(t.value)) : t.value); return; }
   if(t.dataset.count){ saveCount(t.dataset.count, t.value); return; }
   if(t.dataset.act){ const b = blocksOf(F).find(x=>x.id===t.dataset.act); if(b) setActual(b, +t.dataset.i, t.value); }
+  if(t.dataset.owner){ const nb = t.value; if(nb) saveEdit(t.dataset.owner, 'owner', nb); return; }
   if(t.dataset.due){ const b = blocksOf(F,true).find(x=>x.id===t.dataset.due); if(b && t.value) setDue(b, t.value); }
 }
 function onSubmit(e){
