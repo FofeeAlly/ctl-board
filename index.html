@@ -708,6 +708,8 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .bb-explain h5{margin:14px 0 6px;font-size:13px;color:#000F96;text-transform:none;letter-spacing:0}.bb-explain h5:first-child{margin-top:0}
 .bb-explain p{margin:0}.bb-explain ol,.bb-explain ul{margin:0;padding-left:22px}.bb-explain li{margin:5px 0}
 .bb-explain li b{display:inline-block;background:#000F96;color:#fff;border-radius:6px;padding:0 7px;font-size:12.5px;margin-right:4px}
+.ot-tester{display:block;margin-top:4px;font-size:12px;font-weight:700;color:#3D4060}
+.bb-tester{margin:0 0 6px!important;font-weight:700;color:#000F96}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -3934,8 +3936,11 @@ function cioGuide(b){
 const REASSIGN = {
  'APP-EV': {owner:'Omar', also:'Ridhima (checks it), Fofee'},
  'HB-M6': {owner:'Omar', also:'Ridhima (plans and checks it), Fofee'},
- 'INV-D7': {owner:'Omar', also:'Ridhima (checks it), Fofee'}
+ 'INV-D7': {owner:'Omar', also:'Ridhima (checks it), Fofee'},
+ 'HB-GATE3': {owner:'Ridhima', also:'Fofee, Omar'},
+ 'INV-GATE3': {owner:'Ridhima', also:'Fofee, Omar'}
 };
+const TESTER = 'Ridhima';
 const TRACK_TO_OMAR = ['MCR-QS','APP-S1','APP-G1','APP-H1','RTI','HB-D1','HB-D2','HB-D5','HB-E8','HB-E9','HB-E21','HB-G9','INV-W3','HB-W6','APP-EV'];
 
 </script>
@@ -4236,8 +4241,8 @@ function drawer(id){
      <div class="bb-emailbar"><button type="button" class="btn" data-copyhtml="${b.msg}">Copy HTML</button><button type="button" class="btn ghost" data-full="${b.msg}">Open full size</button><button type="button" class="btn ghost" data-liquid>${ST.liquid?'Sample data':'Liquid tags'}</button></div>
      <div class="bb-mini"><iframe title="Email preview: ${esc(E.subject)}" sandbox="" srcdoc="${esc(ST.liquid?emailHTML(b.msg,F,b.id):sampleOf(emailHTML(b.msg,F,b.id)))}"></iframe></div>`:''}
    <h5>The build</h5>
-   <dl class="bb-kv">${kv('Build owner', ownerSel(b,'dr')+(PEOPLE[b.owner]?' <span class="own-role">'+esc(PEOPLE[b.owner].role)+'</span>':''))}${kv('Also involved', esc(b.also||''))}${kv('When', esc(b.when||''))}${kv('Budget', esc(b.budget||''))}${kv('What it is', esc(b.what||''))}${b.fix?kv('Fix first', esc(b.fix)):''}</dl>
-   ${(()=>{ const box = (title, X) => `<div class="bb-explain">${title?`<h4>${title}</h4>`:''}${X.why?`<h5>Why it matters</h5><p>${esc(X.why)}</p>`:''}<h5>${title?'Step by step':'How to build it'}</h5><ol>${X.steps.map(x=>{ const m = x.match(/^([A-Z][a-zA-Z]+): /); return `<li>${m?`<b>${esc(m[1])}</b> `+esc(x.slice(m[0].length)):esc(x)}</li>`; }).join('')}</ol><h5>How to test it</h5><ol>${X.test.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><h5>Done when</h5><p class="bb-done">✓ ${esc(X.done)}</p>${X.watch&&X.watch.length?`<h5>Watch out for</h5><ul>${X.watch.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`;
+   <dl class="bb-kv">${kv('Build owner', ownerSel(b,'dr')+(PEOPLE[b.owner]?' <span class="own-role">'+esc(PEOPLE[b.owner].role)+'</span>':''))}${kv('Also involved', esc(b.also||''))}${testerOf(b)?kv('Tested by', '<b>'+esc(testerOf(b))+'</b> <span class="own-role">runs the tests below and ticks '+esc(checksOf(b).filter(c=>TESTC.includes(c)).join(' and '))+'</span>'):''}${kv('When', esc(b.when||''))}${kv('Budget', esc(b.budget||''))}${kv('What it is', esc(b.what||''))}${b.fix?kv('Fix first', esc(b.fix)):''}</dl>
+   ${(()=>{ const box = (title, X) => `<div class="bb-explain">${title?`<h4>${title}</h4>`:''}${X.why?`<h5>Why it matters</h5><p>${esc(X.why)}</p>`:''}<h5>${title?'Step by step':'How to build it'}</h5><ol>${X.steps.map(x=>{ const m = x.match(/^([A-Z][a-zA-Z]+): /); return `<li>${m?`<b>${esc(m[1])}</b> `+esc(x.slice(m[0].length)):esc(x)}</li>`; }).join('')}</ol><h5>How to test it</h5>${testerOf(b)?`<p class="bb-tester">🧪 ${esc(testerOf(b))} runs these tests and ticks ${esc(checksOf(b).filter(c=>TESTC.includes(c)).join(' and '))}.</p>`:''}<ol>${X.test.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><h5>Done when</h5><p class="bb-done">✓ ${esc(X.done)}</p>${X.watch&&X.watch.length?`<h5>Watch out for</h5><ul>${X.watch.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`;
      const X = HBD_EXPLAIN[b.id], C = CIO_EXPLAIN[b.id], G = cioGuide(b);
      return (X?box('',X):'') + (C?box('In Customer.io',C):'') + (G?box('Set it up in Customer.io',G):''); })()}
    ${b.type==='video'?`<dl class="bb-kv">${kv('Length', esc(b.length||''))}${kv('Used in', esc(b.used||''))}${kv('Formats', esc(b.formats||''))}${kv('Rule', esc(b.rule||''))}${kv('Note', esc(b.how||''))}</dl>`:''}
@@ -4808,6 +4813,7 @@ const DEPS = (function(){
 })();
 const TESTC = ['Tested','Tested on phones','Tracking live','Checked'];
 function testOf(b){ const t = checksOf(b).filter(c=>TESTC.includes(c)); if(!t.length) return ['na','No test needed']; const d = t.filter(c=>isDone(b,c)).length; return d===t.length ? ['done','Tested'] : d ? ['part','Testing '+d+' of '+t.length] : ['pend','Testing pending']; }
+function testerOf(b){ return testOf(b)[0]==='na' ? '' : (b.tester || TESTER); }
 function depInfo(b, F){
   const all = blocksOf(F,true), byId = id => all.find(x=>x.id===id);
   const on = (DEPS[b.id]||[]).map(byId).filter(Boolean), myDue = dueOf(b);
@@ -4837,7 +4843,7 @@ function ownerSel(b, cls){
 }
 function viewOpen(F){
   const flt = ST.openF || 'all', today = TODAY();
-  let rows = blocksOf(F,true).filter(visible).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b), st:stateOf(b), t:testOf(b), d:depInfo(b,F)}));
+  let rows = blocksOf(F,true).filter(b=>visible(b) || (ST.owner && testerOf(b)===ST.owner && ['pend','part'].includes(testOf(b)[0]))).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b), st:stateOf(b), t:testOf(b), d:depInfo(b,F)}));
   const cnt = {all:rows.length, overdue:rows.filter(r=>r.st==='overdue').length, week:rows.filter(r=>r.due && (new Date(r.due)-new Date(today))/864e5 <= 7).length, blocked:rows.filter(r=>r.d.open.length).length, risk:rows.filter(r=>r.d.late.length).length, test:rows.filter(r=>r.t[0]==='pend'||r.t[0]==='part').length};
   rows = rows.filter(r=> flt==='all' || (flt==='overdue'&&r.st==='overdue') || (flt==='week'&&r.due&&(new Date(r.due)-new Date(today))/864e5<=7) || (flt==='blocked'&&r.d.open.length) || (flt==='risk'&&r.d.late.length) || (flt==='test'&&(r.t[0]==='pend'||r.t[0]==='part')));
   rows.sort((a,c)=> (a.due||'9') < (c.due||'9') ? -1 : (a.due||'9') > (c.due||'9') ? 1 : a.b.id < c.b.id ? -1 : 1);
@@ -4854,7 +4860,7 @@ function viewOpen(F){
   const cal = `<div class="ot-cal">${wk.map((s,i)=>`<div class="ot-wk${i===0?' now':''}"><p>${i===0?'This week':'w/c '+s.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}<b>${byWeek[i].length}</b></p>${byWeek[i].slice(0,40).map(r=>`<button type="button" class="ot-pill st-${r.st}${r.d.late.length?' risk':''}" data-open="${r.b.id}" title="${esc(r.b.t)} · ${esc(r.b.owner)} · due ${esc(r.due||'')}">${r.d.late.length?'⚠ ':r.d.open.length?'⛓ ':''}${r.b.id}</button>`).join('')}</div>`).join('')}</div>`;
   return `<section class="bb-sec"><div class="bb-sh"><h3>Open tasks</h3><p>Everything not finished, by due date: what it waits on, what it holds up, and whether testing is done. ⛓ waits on something unfinished. ⚠ waits on something due after it, so the date can't hold.</p></div>
    <div class="ot-share"><button type="button" class="btn" data-copytxt="${BOARD_URL}">Copy the board link</button><a class="bb-teams" href="https://teams.microsoft.com/share?href=${encodeURIComponent(BOARD_URL)}&msgText=${encodeURIComponent('CrowdtoLive open tasks: due dates, what waits on what, and testing. Open the link in Chrome or Edge, then click Open tasks at the top.\n'+cnt.risk+' dates clash, '+cnt.overdue+' overdue.')}&preview=true" target="_blank" rel="noopener">Share in Teams</a><button type="button" class="btn" data-digest="1">Copy a summary for Teams</button>${ST.solo?'':`<button type="button" class="btn" data-solo="1">Open tasks full screen</button>`}</div>
-   <div class="ot-chips">${chip('all','All open')}${chip('overdue','Overdue')}${chip('week','Due in 7 days')}${chip('blocked','Waiting on something')}${chip('risk','Dates clash')}${chip('test','Testing pending')}</div>
+   <div class="ot-chips">${chip('all','All open')}${chip('overdue','Overdue')}${chip('week','Due in 7 days')}${chip('blocked','Waiting on something')}${chip('risk','Dates clash')}${chip('test','Testing pending (Ridhima)')}</div>
    <h4 class="ot-h">Calendar</h4>${cal}
    <h4 class="ot-h">The list</h4>
    <div class="bb-matrix"><table class="ot"><thead><tr><th>Due</th><th>Task</th><th>Owner</th><th>Status</th><th>Waits on</th><th>Holds up</th><th>Testing</th></tr></thead><tbody>
@@ -4865,7 +4871,7 @@ function viewOpen(F){
      <td><span class="az-st s-${k}">${lab}</span><small class="ot-n">${doneCount(r.b)} of ${checksOf(r.b).length} ticks</small></td>
      <td>${r.d.on.length?depList(r.d.on,'')+(r.d.late.length?`<small class="ot-warn">⚠ ${r.d.late.map(x=>x.id).join(', ')} due after this</small>`:''):'<span class="ot-none">Nothing</span>'}</td>
      <td>${r.d.blocks.length?depList(r.d.blocks.slice(0,6),'out')+(r.d.blocks.length>6?`<small class="ot-n">+${r.d.blocks.length-6} more</small>`:''):'<span class="ot-none">Nothing</span>'}</td>
-     <td><span class="ot-test t-${r.t[0]}">${r.t[0]==='done'?'✓ ':r.t[0]==='na'?'':'⏳ '}${r.t[1]}</span></td></tr>`; }).join('')}
+     <td><span class="ot-test t-${r.t[0]}">${r.t[0]==='done'?'✓ ':r.t[0]==='na'?'':'⏳ '}${r.t[1]}</span>${testerOf(r.b)?`<small class="ot-tester">Tester: ${esc(testerOf(r.b))}</small>`:''}</td></tr>`; }).join('')}
    </tbody></table></div>${rows.length?'':'<p class="bb-empty">Nothing here.</p>'}</section>`;
 }
 
