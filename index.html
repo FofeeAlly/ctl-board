@@ -676,7 +676,7 @@ table.ot{font-size:13px}table.ot td{vertical-align:top;color:#1A1A2E}table.ot tr
 .cl-meta{display:flex;flex-wrap:wrap;gap:6px 10px;margin-top:6px;font-size:13px}.cl-n{color:#3D4060}.cl-n.over{color:#9B1C10;font-weight:800}
 .cl-flag{color:#7A4E00;background:#FFF1D6;border-radius:6px;padding:2px 7px;font-weight:700}
 .cl-rev{width:290px}.cl-st{display:inline-block;font-weight:800;font-size:13px;border-radius:8px;padding:4px 9px;margin-bottom:8px}
-.cl-st.st-wait{background:#EEF0FF;color:#000F96}.cl-st.st-sj{background:#E1F7EE;color:#00704A}.cl-st.st-ready{background:#00704A;color:#fff}.cl-st.st-changes,.cl-st.st-changed{background:#FFD9D6;color:#9B1C10}
+.cl-st.st-wait{background:#EEF0FF;color:#000F96}.cl-st.st-sj,.cl-st.st-an{background:#E1F7EE;color:#00704A}.cl-st.st-ready{background:#00704A;color:#fff}.cl-st.st-changes,.cl-st.st-changed{background:#FFD9D6;color:#9B1C10}
 .cl-btns{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0}.cl-btns>span{width:56px;font-weight:800;font-size:13px}
 .cl-btns small{color:#3D4060;font-size:12px;width:100%;padding-left:62px}
 .btn.sm{min-height:34px;padding:0 11px;font-size:13px}.btn.ok.on{background:#00704A;color:#fff;border-color:#00704A}.btn.no.on{background:#9B1C10;color:#fff;border-color:#9B1C10}
@@ -2115,17 +2115,17 @@ const INV = {
  goal:'An investor whose first dividend is reinvested automatically (auto_reinvest_on), with a monthly amount set.',
  entry:'Investor ads, bayuti.com "Grow my money", Nearly ready home buyers (from the Home buyer flow), registered people who never invested, referrals',
  exit:'Auto reinvest on and first dividend reinvested; or 30 days idle at any step (to re-engagement)', horizon:'About 45 days to the first dividend',
- rules:['Every email, page, ad, push and SMS is a financial promotion: risk warning first, SJ then Anouar sign off, record of approvals kept.','No target rates in ads, push, SMS, video or email. Rates live only on product and landing pages.','Amana: an indirect investment that pays dividends; never pooled or fund language; recommended notice only; no savings words.','First time investors: the 24 hour cooling off and the appropriateness check in the app must be respected by every nudge [confirm with SJ].','Direct Debit is never pre ticked (Consumer Duty).'],
+ rules:['Every email, page, ad, push and SMS is a financial promotion: risk warning first, Anouar then SJ sign off, record of approvals kept.','No target rates in ads, push, SMS, video or email. Rates live only on product and landing pages.','Amana: an indirect investment that pays dividends; never pooled or fund language; recommended notice only; no savings words.','First time investors: the 24 hour cooling off and the appropriateness check in the app must be respected by every nudge [confirm with SJ].','Direct Debit is never pre ticked (Consumer Duty).'],
  funnel:[['Investor page visitors',1000,''],['Tap to get the app',200,'20%'],['Install',100,'50%'],['Register',70,'70%'],['KYC verified',49,'70%'],['Add funds',27,'55%'],['First investment',23,'85%'],['Monthly amount set',8,'35%'],['Auto reinvest on at first dividend',9,'40% of investors']],
  funnelNote:'Target: 16 new investors a week. At these rates that needs about 700 investor page visitors a week. Starting numbers, replaced by ours after 30 days. There is no mobile measurement partner, so iOS install source is a known gap (see INV-D7).',
  sections:{
  way:[
-  B('INV-W1','ad','Paid social: Wakala and Amana Flex',{owner:'Fofee', also:'Darcy (creative), SJ then Anouar', when:'Always on',
+  B('INV-W1','ad','Paid social: Wakala and Amana Flex',{owner:'Fofee', also:'Darcy (creative), Anouar then SJ', when:'Always on',
     what:'Meta, TikTok and LinkedIn. Products by name and colour (Wakala Flex, Plus, Prime; Amana Flex), "Targets, not guarantees. Capital at risk." on every ad, no rates. Link to bayuti.com/invest with UTMs.',
     budget:'Test: £40 a day across 3 ad sets for 14 days [to confirm]',
     exp:[['Click through rate',0.9,'%','Investment ads with a risk strip click lower than the 1.71% all industry average; 0.9% is Meta\'s penalty line.'],['Cost per click',1.10,'£','',true],['Cost per new investor',48,'£','£1.10 ÷ 2.3% of visitors who invest. Starting estimate.',true]],
     track:['page_viewed with UTMs, app_link_clicked','Meta and TikTok pixels through GTM; Customer.io JS','Fofee','Lead event on app_link_clicked']}),
-  B('INV-W2','page','Investor page: bayuti.com/invest',{owner:'Omar', also:'Fofee, SJ then Anouar', when:'Core page',
+  B('INV-W2','page','Investor page: bayuti.com/invest',{owner:'Omar', also:'Fofee, Anouar then SJ', when:'Core page',
     what:'Risk banner on top. Product cards (Wakala Flex, Plus, Prime and Amana Flex) with target rates, lock ins and notice, the calculator, Shariah certificate, Trustpilot, FAQs, and the app buttons (QR plus "text me the link" on desktop).',
     exp:[['Visitors who tap to get the app',20,'%','The page has one job.']],
     track:['page_viewed, product_card_viewed, calculator_used, app_link_clicked, text_me_link_sent','GTM to Customer.io','Omar','Each event in Customer.io']}),
@@ -2178,19 +2178,19 @@ const INV = {
   B('INV-E11','email','Reinvested · Your dividend went back to work',{owner:'Fofee', msg:'iv11', when:'On dividend_reinvested', exp:[['Open rate',60,'%','Good news about their own money.'],['Review asked after the third',5,'%','App store review prompt, never only to happy people.']], track:['dividend_reinvested','Backend','Omar','']}),
   B('INV-P1','push','App push pairs for every email',{owner:'Fofee', also:'Omar', what:'From app install, push is in app (not web). Each email card shows its push. No rates in push.', exp:[['Push open rate',5,'%','Starting number for app push; replace after 30 days.']], track:['push_opened','Firebase to Customer.io','Omar','']}),
   B('INV-S1','sms','SMS: KYC help and webinar only',{owner:'Fofee', what:'Every investor SMS ends with: '+SMSRISK, exp:[['SMS click rate',10,'%','SMS click rates run around 10% across industries.']], track:['sms_clicked','Customer.io SMS','Fofee','']}),
-  B('INV-V1','video','V6 How Wakala and Amana Flex work',{owner:'Darcy', also:'Fofee, SJ then Anouar', what:'90 seconds, no rates, risk warning on screen at start and end. Lives in the app and the library.', exp:[['Watch to 75%',45,'%','90 seconds, captioned; the risk warning screens cost a little attention.']], track:['video_watched','Player','Omar','']})
+  B('INV-V1','video','V6 How Wakala and Amana Flex work',{owner:'Darcy', also:'Fofee, Anouar then SJ', what:'90 seconds, no rates, risk warning on screen at start and end. Lives in the app and the library.', exp:[['Watch to 75%',45,'%','90 seconds, captioned; the risk warning screens cost a little attention.']], track:['video_watched','Player','Omar','']})
  ],
  web:[
-  B('INV-WB1','webinar','Live: How Bayuti investing works',{owner:'Fofee', also:'Pankaj (presenter), Anouar CFA (guest), SJ then Anouar (slides)', when:'Monthly, Wednesday 19:00, 40 minutes',
+  B('INV-WB1','webinar','Live: How Bayuti investing works',{owner:'Fofee', also:'Pankaj (presenter), Anouar CFA (guest), Anouar then SJ (slides)', when:'Monthly, Wednesday 19:00, 40 minutes',
     what:'Risk warning on screen at the start, the end, and on any slide that shows a target rate. Covers Wakala Flex, Plus, Prime and Amana Flex, lock ins, notice, dividends, auto reinvest. Q&A answers are general; no personal advice.',
     exp:[['Registration to attendance',35,'%','Free live webinars usually see a third to a half of sign ups turn up.'],['Attendee to first investment in 14 days',10,'%','Attendees have spent 40 minutes with us; the app link follows straight after.']],
     track:['webinar_registered, webinar_attended','Webinar tool to Customer.io','Fofee','']}),
   B('INV-WB2','email','You\'re in · investor session',{owner:'Fofee', msg:'ivw1', when:'Instantly', exp:[['Calendar added',40,'%','A one click calendar file is the best predictor of turning up.']], track:['calendar_added','Email','Fofee','']}),
   B('INV-WB3','email','After the session · Your next step',{owner:'Fofee', msg:'ivw2', when:'Straight after', exp:[['Click rate',30,'%','Straight after the session, while it is fresh.']], track:['app_link_clicked, call_booked','Email','Fofee','']}),
-  B('INV-WB4','doc','Slides and talk track',{owner:'Pankaj', also:'SJ then Anouar', what:'Approved deck; record of approval date on this card.', exp:[['Approved 5 working days before',100,'%','No slides go live without sign off.']]})
+  B('INV-WB4','doc','Slides and talk track',{owner:'Pankaj', also:'Anouar then SJ', what:'Approved deck; record of approval date on this card.', exp:[['Approved 5 working days before',100,'%','No slides go live without sign off.']]})
  ],
  machine:[
-  B('INV-M1','tool','Same copy library and template as the Home buyer flow',{owner:'Fofee', also:'SJ', what:'Investor rows are flagged "promotion": they cannot go live without SJ and Anouar ticks, and the risk banner block is locked at the top of every investor email.', exp:[['Promotions live without both ticks',0,'','Must stay at zero.',true]]}),
+  B('INV-M1','tool','Same copy library and template as the Home buyer flow',{owner:'Fofee', also:'SJ', what:'Investor rows are flagged "promotion": they cannot go live without Anouar and SJ ticks, and the risk banner block is locked at the top of every investor email.', exp:[['Promotions live without both ticks',0,'','Must stay at zero.',true]]}),
   B('INV-M2','tool','Compliance agent first pass',{owner:'Fofee', also:'SJ', what:'Every new or changed line runs through the compliance agent: Tier 1 auto approve with a log, Tier 2 suggestions, Tier 3 straight to SJ. SJ still signs every promotion.', exp:[['Lines returned by SJ',10,'%','The agent catches the rest first.',true]]}),
   B('INV-M3','tool','App screens with switchable copy',{owner:'Omar', what:'Product screens and nudge banners read copy from a content file, so a wording change does not need an app release.', exp:[['Time to change app copy',2,'days','',true]]}),
   B('INV-M4','tool','Expected vs actual and Claude helpers',{owner:'Fofee', what:'Same fortnightly review and daily report as the Home buyer flow, plus weekly investors and £ invested against the 16 a week and £1M a month targets.', exp:[['Reviews held on time',100,'%','']]})
@@ -2338,14 +2338,14 @@ SECTIONS.forEach((s,i)=>{ s[1] = (i+1) + ' · ' + s[1].split(' · ')[1]; });
 const V = (id, t, o) => B(id, 'video', t, Object.assign({owner:'Darcy'}, o));
 const HOWTO = [
  'Claude writes the script, shot list, on screen text and captions (SRT) from this card, using the prompt in the playbook card.',
- 'Fofee checks the facts; SJ approves the script before anything is filmed (Anouar too for investor videos).',
+ 'Fofee checks the facts; Anouar approves the script first, then SJ, before anything is filmed.',
  'Record the screens on a phone with a test account, never a real customer\'s data: iPhone or Android screen recording for the app, QuickTime or OBS for the website. Record 9:16 and 16:9.',
  'Take screenshots of each key screen and blur anything personal.',
  'Record the voice: one team member reads the script in a quiet room on a phone; one take per scene so edits are easy.',
  'Edit in the Bayuti template: navy background, neon green highlights, logo end card, "Own together. Owe no one." [editing tool to confirm with Darcy].',
  'Burn in captions (most people watch muted). Investor videos: the risk warning on screen at the start and the end.',
  'Export 16:9 for emails and the website, 9:16 for social; make a thumbnail with a play button for emails.',
- 'SJ approves the final cut (then Anouar for investor videos). Tick SJ approved on this card with the date in a comment.',
+ 'Anouar approves the final cut first, then SJ. Tick each approval on this card with the date in a comment.',
  'Upload to the website library (bayuti.com/learn) and link it from the emails listed on this card; check video_started and 75% events fire.'
 ];
 const PLAYBOOK = (P) => B(P+'-VP','process','The video playbook: how to make any video',{owner:'Darcy', also:'Fofee (scripts), SJ',
@@ -2385,7 +2385,7 @@ INV.sections.emails = INV.sections.emails.filter(b=>b.id!=='INV-V1');
 const RV = 'Risk warning on screen for the first 5 seconds and on the end card. No target rates. No personal advice.';
 INV.sections.video = [
  PLAYBOOK('INV'),
- V('INV-V1','How Wakala and Amana Flex work',{length:'90 seconds', used:'INV-E6, investor page, app, webinar', formats:'16:9 and 9:16', also:'Fofee, SJ then Anouar', rule:RV,
+ V('INV-V1','How Wakala and Amana Flex work',{length:'90 seconds', used:'INV-E6, investor page, app, webinar', formats:'16:9 and 9:16', also:'Fofee, Anouar then SJ', rule:RV,
    script:[['0 to 5s','Risk warning card','Full screen warning'],['5 to 30s','"Bayuti lets you own a share in homes people live in. Their rent is paid out to you as dividends, monthly."','Homes, dividend icon'],['30 to 60s','"Wakala Flex, Plus and Prime: choose by how long you can leave your money." Amana by Bayuti: an indirect investment that pays dividends, not the direct purchase of a property.','The four product cards, no rates'],['60 to 80s','"Targets, not guarantees. Capital at risk."','Text on screen'],['80 to 90s','"See the details in the app." Risk warning end card','End card']],
    shots:['App product cards (rates blurred or cropped out)'], exp:VEXP(45,'90 seconds with warning screens; 45% is realistic.')}),
  V('INV-V2','Sign up and verify in 3 minutes',{length:'60 seconds', used:'INV-E2, INV-E3, INV-E4', formats:'9:16 screen recording', rule:RV,
@@ -2405,7 +2405,7 @@ HB.tag = 'From the hook to the keys, and a home deposit that grows itself';
 HB.goal = 'Keys collected. For people who aren\'t ready yet: a monthly amount set and dividends reinvested towards their home deposit, until they are.';
 HB.exit = 'Keys collected (then Flow 7, buying more), or unsubscribe, or 21 days quiet at any step (Flow 6)';
 HB.horizon = 'About 4 months to keys; the grow lane runs until the target is reached';
-HB.rules = ['The home buying lane carries no investment content. The grow lane is regulated: the risk warning first, SJ then Anouar sign off.','Nobody enters the grow lane without choosing it (Nearly ready result, Not ready opt in, or owners buying more).','One email a day at most across every lane; every email has one push; SMS only for calls, KYC help and webinars.','Quiet hours 21:00 to 08:00 UK. 10% holdout on the nurture emails.','Direct Debit is never pre ticked. First time investors get the 24 hour cooling off [confirm with SJ].'];
+HB.rules = ['The home buying lane carries no investment content. The grow lane is regulated: the risk warning first, Anouar then SJ sign off.','Nobody enters the grow lane without choosing it (Nearly ready result, Not ready opt in, or owners buying more).','One email a day at most across every lane; every email has one push; SMS only for calls, KYC help and webinars.','Quiet hours 21:00 to 08:00 UK. 10% holdout on the nurture emails.','Direct Debit is never pre ticked. First time investors get the 24 hour cooling off [confirm with SJ].'];
 HB.funnel = [['Landing page visitors',1000,''],['Start the Quick Score',250,'25%'],['Give an email (lead)',150,'60%'],['Reach 40 points',52,'35% of leads'],['Full Bayuti Score',30,'20% of leads'],['Ready',12,'40% of scores'],['Call completed',7,'60% of Ready'],['Home approved',5,'70%'],['Keys collected',3,'60%']];
 HB.funnelNote = 'Grow lane, per 100 Nearly ready people: 30 choose a plan, 20 get the app, 14 verify, 10 invest their first £50, 5 set a monthly amount, 4 switch on auto reinvest. Starting numbers, replaced by ours after 30 days.';
 
@@ -2439,7 +2439,7 @@ HB.sections.emails = HB.sections.emails.concat([
  R2('HB-G9','Grow · Target reached: let\'s redo your score',{msg:'hg9', when:'When the plan value reaches the home deposit target', exp:[['Open rate',80,'%','The day they hoped for.'],['Goal: bayuti_score_completed',60,'%','Straight back to Score, then a call.']], track:['target_reached, bayuti_score_completed','Backend and score page','Ridhima','']}),
  R2('HB-G10','Own and grow · Fund your next share',{msg:'hg10', when:'After keys, for owners who opt in', exp:[['Open rate',50,'%',''],['Goal: grow_plan_chosen (owners)',10,'%','Owners who want to staircase sooner.']], track:['grow_plan_chosen','App','Omar','']}),
  B('HB-C3','call','Help call when the grow lane stalls',{owner:'Pankaj', when:'After a second KYC fail, or 14 days verified with no investment', what:'Help with documents or the app. Explain, never advise.', exp:[['Fixed after the call',50,'%','Most stalls are photos or bank transfer questions.']], track:['call_completed','HubSpot','Pankaj','']}),
- B('HB-A1','app','App: the home deposit plan screen',{owner:'Omar', also:'Fofee, SJ then Anouar', when:'Grow lane', what:'Target home deposit for their city, monthly amount, plan value so far, a progress bar and the target date. Risk warning on the screen. Auto reinvest switch right under it.', exp:[['Weekly opens per active plan',1.5,'','A screen people come back to.']], track:['progress_viewed, auto_reinvest_on','App to Customer.io','Omar','Events fire from the backend']})
+ B('HB-A1','app','App: the home deposit plan screen',{owner:'Omar', also:'Fofee, Anouar then SJ', when:'Grow lane', what:'Target home deposit for their city, monthly amount, plan value so far, a progress bar and the target date. Risk warning on the screen. Auto reinvest switch right under it.', exp:[['Weekly opens per active plan',1.5,'','A screen people come back to.']], track:['progress_viewed, auto_reinvest_on','App to Customer.io','Omar','Events fire from the backend']})
 ]);
 HB.sections.data = HB.sections.data.concat([
  B('HB-D9','data','Grow lane: app, money and plan',{owner:'Omar', also:'Ridhima (checks it)',
@@ -2740,7 +2740,7 @@ Object.keys(EMAILS).forEach(k => { EMAILS[k] = Object.assign({}, EMAILS[k], {sig
 const MCR = {city:'Manchester', slug:'manchester', rent:1380, ten:165600, price:241000, dep:24100, renters:32.3};
 const U_ = (src, med, content) => 'https://crowdtolive.bayuti.com/manchester?utm_source='+src+'&utm_medium='+med+'&utm_campaign=hb_mcr_launch&utm_content='+content;
 const SEG = (name, rule) => ({name, rule});
-const MB = (id, type, t, o) => B(id, type, t, Object.assign({checks:['Draft ready','SJ approved','Anouar approved','Tracking live','Live']}, o));
+const MB = (id, type, t, o) => B(id, type, t, Object.assign({checks:['Draft ready','Anouar approved','SJ approved','Tracking live','Live']}, o));
 
 HB.sections.mcr = [
  MB('MCR-META','ad','Meta ads · "The receipt"',{owner:'Fofee', also:'Darcy (design), SJ, Anouar', when:'Launch week, always on', budget:'£30 a day for 14 days (about £420), then move money to the winning variant [to confirm]',
@@ -2842,7 +2842,7 @@ HB.sections.mcr = [
   exp:[['Leads with a known way in',95,'%','Every link carries UTMs; only typed visits are unknown.']],
   track:['identify, quick_score_completed','Customer.io and HubSpot','Fofee','The Manchester segment counts match HubSpot within 1%']})
 ];
-SECTIONS.splice(1, 0, ['mcr','Manchester, end to end','Every way in for one city, with the creative, the link, the tracking, the Customer.io segment and the approvals. Ready for SJ and Anouar to review.']);
+SECTIONS.splice(1, 0, ['mcr','Manchester, end to end','Every way in for one city, with the creative, the link, the tracking, the Customer.io segment and the approvals. Ready for Anouar, then SJ, to review.']);
 SECTIONS.forEach((s,i)=>{ s[1] = (i+1) + ' · ' + s[1].replace(/^\d+ · /,''); });
 PHASES.unshift(['Phase 0 · Manchester launch', '2026-11-27', ['MCR-']]);
 
@@ -2994,7 +2994,7 @@ HB.sections.mcr.splice(evIdx, 0, MB('MCR-RED','ad','Reddit · five honest answer
  track:['page_viewed with utm_source = reddit','GA4 and Customer.io','Fofee','Check each subreddit\'s rules before posting']}));
 
 /* ---------- UTM rules card ---------- */
-HB.sections.mcr.splice(0, 0, B('MCR-UTM','process','UTM rules: every link, one convention',{owner:'Fofee', also:'Everyone who posts a link', checks:['Draft ready','SJ approved','Anouar approved','Tracking live','Live'],
+HB.sections.mcr.splice(0, 0, B('MCR-UTM','process','UTM rules: every link, one convention',{owner:'Fofee', also:'Everyone who posts a link', checks:['Draft ready','Anouar approved','SJ approved','Tracking live','Live'],
  what:'Every link anyone shares for Manchester carries a UTM, so the board can show which piece brought which people.',
  list:['utm_source: meta, tiktok, google, linkedin, reddit, pr, trade_press, customerio, event','utm_medium: paid_social, organic_social, cpc, earned, community, email, offline','utm_campaign: hb_mcr_launch (ads), hb_mcr_linkedin, hb_mcr_trade, hb_mcr_reddit, hb_mcr_invite, hb_mcr_webinar','utm_content: one per piece, e.g. meta_pencilmarks, tt_mum, li_07, tp_ifamagazine, rd_islamicfinance_uk','All lowercase, underscores, no spaces. Never post a link without one; copy them from this board.','Customer.io stores first_utm_* on the first visit and last_utm_* on every visit; HubSpot gets primary_lead_source from first_utm_source'],
  track:['first_utm_*, last_utm_*','Customer.io JS on every page','Fofee','A weekly report of leads by utm_content']}));
@@ -3029,7 +3029,7 @@ MCR_J[0].stages[0].n = [['MCR-META','Clicked','MCR-LP','Scrolled past','MCR-RT']
 TYPE.app = {n:'App screens', set:'copy'};
 SECTIONS.splice(2, 0, ['app','The app: download, register, score','From the download to a verified profile: every screen, every event, every nudge. HubSpot today: 363 home buyers in the app, 358 registered, 25 homes submitted, 29 ID verified (19 Nov 2026).']);
 SECTIONS.forEach((s,i)=>{ s[1] = (i+1) + ' · ' + s[1].replace(/^\d+ · /,''); });
-const APPC = ['Built','Tracking live','SJ approved','Anouar approved','Live'];
+const APPC = ['Built','Tracking live','Anouar approved','SJ approved','Live'];
 HB.sections.app = [
  B('APP-D1','component','Download prompts: score page, email and push',{owner:'Omar', also:'Fofee', checks:APPC, when:'Right after the Quick Score, and in the nudges',
   what:'A "Download the app" button under the Quick Score result, a QR code on desktop, and the same button in emails and web push. Every button carries the deep link so we know which ad brought the download.',
@@ -3128,9 +3128,9 @@ const GLOSS = {
  'Appropriateness test':'Three short questions we must ask before someone invests. They can try again straight away.',
  'Cooling off':'The 24 hours a new customer waits before their first investment [confirm with SJ].',
  'SCA':'Strong customer authentication: a bank level security check with a 6 digit PIN, through Mangopay.',
- 'Draft ready':'The writer says it is ready for SJ to review.',
+ 'Draft ready':'The writer says it is ready for Anouar to review.',
  'SJ approved':'Compliance (SJ) has signed it off.',
- 'Anouar approved':'The CEO has signed it off. Every ad and email needs SJ first, then Anouar.',
+ 'Anouar approved':'The CEO has signed it off. Every ad and email needs Anouar first, then SJ.',
  'Tracking live':'We tested that the clicks and events arrive in Customer.io.',
  'Live':'Switched on. Real people can see it.',
  'Expected':'What we think will happen, with the reason next to it.',
@@ -3179,7 +3179,7 @@ const AZ = {
   {id:'AZ-K', L:'K', t:'They own more, and tell a friend', plain:'They buy more shares over time, so their rent falls. We ask everyone for a review, never for a reward.',
    cta:'Buy more of my home', goal:'Next share bought, review left', event:'share_purchased, review_left', fires:'Admin panel', segment:'Flow 1 · Owner', campaign:'C8 Own and grow', exp:null, why:'Measured at 12 months.', pieces:['HB-E18','HB-E19','HB-G10']}
  ],
- grow:{id:'AZ-Z', t:'Not ready yet: grow the home deposit', plain:'People whose Bayuti Score says "not yet" get a plan with a keys date, and a way to grow their home deposit. Every message here is regulated: risk banner first, SJ then Anouar.',
+ grow:{id:'AZ-Z', t:'Not ready yet: grow the home deposit', plain:'People whose Bayuti Score says "not yet" get a plan with a keys date, and a way to grow their home deposit. Every message here is regulated: risk banner first, Anouar then SJ.',
   cta:'Build my plan', event:'plan_started', exp:22, why:'About 3 in 10 people who finish the score.', pieces:['HB-G1','HB-G2','HB-G3','HB-G4','HB-G5','HB-G6','HB-G7','HB-G8','HB-G9','HB-E21','HB-C3','HB-A1']}
 };
 AZ.steps[0].exp = AZ.sources.reduce((a,s)=>a+s[2],0);
@@ -3201,7 +3201,7 @@ const ADFROM = {'HB-W1':'MCR-META','HB-W1T':'MCR-TIK','HB-W2':'MCR-GOO','HB-W3':
 const FIG = id => 'https://www.figma.com/design/FecRZ0azJlTqY75spPEpzB/Bayuti-Home-Buyer-Screens?node-id='+id;
 const SCR = {'598-17':'Sign up','598-41':'About you','598-65':'Suitability check','598-89':'Your address','598-113':'Onfido ID check','598-137':'Appropriateness question','598-149':'3D Secure PIN (SCA)','599-166':'Notifications','599-181':'My wallet','599-202':'Add money by bank transfer','599-226':'Payment status','599-250':'Monthly amount and dividends','599-274':'Payment methods: add a bank','599-298':'Ready to invest: Wakala','599-322':'Portfolio: Wakala documents'};
 const QC = ['Built','Tracking live','Tested','Live'];
-const NC = ['Draft ready','SJ approved','Anouar approved','Tracking live','Live'];
+const NC = ['Draft ready','Anouar approved','SJ approved','Tracking live','Live'];
 const QB = (n, q, t, o) => B('APP-Q'+n, 'app', t, Object.assign({q, n, checks:QC, platform:null, due:'2026-12-11'}, o));
 const NQ = (n, t, o) => B('APP-N'+n, o.ch==='In app'?'app':(o.ch.includes('Email')?'email':'push'), t, Object.assign({nudge:true, checks:NC, nudgeMsg:true, due:'2026-12-11'}, o));
 const APPQ = [
@@ -3343,7 +3343,7 @@ const LADDER = [['2 hours','Push'],['24 hours','Email'],['48 hours','SMS'],['3 d
 })();
 
 /* three landing pages, one per persona, each with the same three buttons */
-const LPC = ['Draft ready','SJ approved','Anouar approved','Tracking live','Live'];
+const LPC = ['Draft ready','Anouar approved','SJ approved','Tracking live','Live'];
 const LP = (id, persona, head, sub, o) => B(id, 'page', 'Landing page · '+persona, Object.assign({owner:'Omar', also:'Fofee (copy), SJ, Anouar', checks:LPC, lp:true, persona, head, sub,
   cta1:'Download the app', cta2:'Join the '+CITYN+' webinar', cta3:'Email me the guide', when:'Before the ads go live', due:'2026-11-27',
   what:'One message for one kind of buyer. Three buttons: the app (the goal), the webinar, or the guide by email. Every button leads to the app in the end.',
@@ -3603,56 +3603,56 @@ const PLP = {'Ready now':'LP-R','Almost there':'LP-A','Needs a plan':'LP-P','Wan
 /* ---------- LP-R is built: the page, and everything the developers need ---------- */
 (function(){
   const b = fbk('LP-R'); if(!b) return;
-  b.checks = ['Draft ready','SJ approved','Anouar approved','Built','Tracking live','Tested on phones','Live'];
+  b.checks = ['Draft ready','Anouar approved','SJ approved','Built','Tracking live','Tested on phones','Live'];
   b.build = {file:'lp/manchester-ready.html', owner:'Omar', host:'crowdtolive.bayuti.com (WordPress). Add as a page with a blank template, paste the HTML, set the slug /manchester/ready. The generic copy goes at /ready.',
    config:[['city','manchester','Change per city'],['persona','ready_now','ready_now · almost_there · needs_plan · wants_numbers'],['page','LP-R','The board ID'],['cta','app','app · webinar · guide · calculator'],['deepLink','empty','Paste the APP-D3 deep link when it exists; until then the store links are used']],
    events:[['page_viewed','On load','city, persona, page, utm_*, first_utm_source'],['lp_cta_clicked','Any of the four green buttons','cta, placement (nav, hero, sticky, final), device'],['app_store_opened','Phone tap that opens a store','store'],['download_qr_shown','Desktop tap','·'],['qr_scanned','Phone opens the page from the QR','·'],['scroll_depth','25, 50, 75, 100%','depth'],['faq_opened','A question opens','question'],['trustpilot_clicked','Trustpilot badge','·']],
    todo:[['DEV 2','Paste the Customer.io JS snippet with the real Site ID'],['DEV 3','Replace the badge with the official Trustpilot TrustBox (live score only)'],['DEV 5','Add the deferred deep link from APP-D3 to CONFIG.deepLink'],['DEV 6','Optional: self host the QR image'],['Copy','Confirm the ONS month for the Manchester numbers'],['Copy','The phone mock\'s "Keys from this spring" is illustrative; SJ to confirm']],
-   accept:['Opens in under 2.5 seconds on 4G (Lighthouse mobile 90 or more)','iPhone: the button opens the App Store','Android: the button opens Google Play with the UTM in the referrer','Desktop: the button shows the QR; scanning it on a phone opens the right store','page_viewed with the UTM appears in GA4 and in Customer.io for a test visit','lp_cta_clicked fires once per click, with the right placement','GTM does not load on previews or staging (only on bayuti.com)','Keyboard: every button and question reachable, focus visible','No dashes in visible copy; "home deposit" everywhere; footer line exactly as approved','SJ approved, then Anouar approved, before Live']};
+   accept:['Opens in under 2.5 seconds on 4G (Lighthouse mobile 90 or more)','iPhone: the button opens the App Store','Android: the button opens Google Play with the UTM in the referrer','Desktop: the button shows the QR; scanning it on a phone opens the right store','page_viewed with the UTM appears in GA4 and in Customer.io for a test visit','lp_cta_clicked fires once per click, with the right placement','GTM does not load on previews or staging (only on bayuti.com)','Keyboard: every button and question reachable, focus visible','No dashes in visible copy; "home deposit" everywhere; footer line exactly as approved','Anouar approved, then SJ approved, before Live']};
 })();
 (function(){
   const b = fbk('LP-A'); if(!b) return;
-  b.checks = ['Draft ready','SJ approved','Anouar approved','Built','Tracking live','Tested on phones','Live'];
+  b.checks = ['Draft ready','Anouar approved','SJ approved','Built','Tracking live','Tested on phones','Live'];
   b.build = {file:'lp/manchester-almost-there.html', owner:'Omar', host:'crowdtolive.bayuti.com (WordPress). Blank template page, paste the HTML, slug /manchester/almost-there. Generic copy at /almost-there.',
    config:[['city','manchester','Change per city'],['persona','almost_there',''],['page','LP-A','The board ID'],['cta','webinar',''],['session','2026-12-01T19:00:00Z','The next session date and time; the countdown and calendar read it'],['sessionLabel','Tuesday 1 December at 19:00','Shown after booking'],['minutes','45','Calendar length']],
    events:[['page_viewed','On load','city, persona, page, utm_*, first_utm_source'],['lp_cta_clicked','Any "Book my seat" button','cta, placement (nav, hero, sticky)'],['webinar_registered','Form sent','session, has_phone; Customer.io identify first (email, first_name, phone, city_slug, persona, first_utm_*)'],['calendar_added','"Add it to my calendar"','·'],['scroll_depth','25, 50, 75, 100%','depth'],['faq_opened','A question opens','question']],
    todo:[['DEV 2','Paste the Customer.io JS snippet with the real Site ID'],['DEV 5','Set the next session date in CONFIG.session'],['DEV 6','The join link goes in the "You\'re in" email (HB-WB3), not on the page'],['DEV 7','Check webinar_registered starts the "Webinar · You\'re in" campaign in Customer.io'],['DEV 8','Optional: also post the booking to the HubSpot form (portal 7221343) so sales see it'],['Copy','Add the host\'s name and photo']],
-   accept:['Every "Book my seat" button scrolls to the form and puts the cursor in First name','The form checks name and email before sending','After booking: "You\'re in", the session date, and the calendar file opens in Google, Apple and Outlook','The person appears in Customer.io with email, city and first UTM','webinar_registered starts the You\'re in email within 5 minutes','Countdown matches the session date','Opens in under 2.5 seconds on 4G','No dashes in visible copy; footer line exactly as approved','SJ approved, then Anouar approved, before Live']};
+   accept:['Every "Book my seat" button scrolls to the form and puts the cursor in First name','The form checks name and email before sending','After booking: "You\'re in", the session date, and the calendar file opens in Google, Apple and Outlook','The person appears in Customer.io with email, city and first UTM','webinar_registered starts the You\'re in email within 5 minutes','Countdown matches the session date','Opens in under 2.5 seconds on 4G','No dashes in visible copy; footer line exactly as approved','Anouar approved, then SJ approved, before Live']};
 })();
 (function(){
   const b = fbk('LP-P'); if(!b) return;
-  b.checks = ['Draft ready','SJ approved','Anouar approved','Built','Tracking live','Tested on phones','Live'];
+  b.checks = ['Draft ready','Anouar approved','SJ approved','Built','Tracking live','Tested on phones','Live'];
   b.build = {file:'lp/manchester-plan.html', owner:'Omar', host:'crowdtolive.bayuti.com (WordPress). Blank template page, paste the HTML, slug /manchester/plan. Generic copy at /plan.',
    config:[['city','manchester','Change per city'],['persona','needs_plan',''],['page','LP-P','The board ID'],['cta','guide',''],['guideUrl','crowdtolive.bayuti.com/manchester/guide','Where the guide lives (GUIDE-MCR)']],
    events:[['page_viewed','On load','city, persona, page, utm_*, first_utm_source'],['lp_cta_clicked','Any "Send me the free guide" button','cta, placement'],['guide_requested','Form sent','Customer.io identify first (email, first_name, city_slug, persona, first_utm_*)'],['guide_opened_now','"Open the guide now"','·'],['scroll_depth','25, 50, 75, 100%','depth'],['faq_opened','A question opens','question']],
    todo:[['DEV 2','Paste the Customer.io JS snippet with the real Site ID'],['DEV 6','Check guide_requested starts Flow 3 (GD-1 within 5 minutes)'],['Guide','Publish GUIDE-MCR at the guideUrl first']],
-   accept:['Every button scrolls to the form','The form checks name and email','guide_requested appears in Customer.io and GD-1 arrives within 5 minutes','"Open the guide now" opens the guide','Opens in under 2.5 seconds on 4G','No dashes; "home deposit" everywhere; footer exactly as approved','SJ approved, then Anouar approved, before Live']};
+   accept:['Every button scrolls to the form','The form checks name and email','guide_requested appears in Customer.io and GD-1 arrives within 5 minutes','"Open the guide now" opens the guide','Opens in under 2.5 seconds on 4G','No dashes; "home deposit" everywhere; footer exactly as approved','Anouar approved, then SJ approved, before Live']};
 })();
 
 /* the guide itself: its own box so SJ can review it */
 const GUIDE = B('GUIDE-MCR','doc','The free guide · From renting to owning (Manchester)',{owner:'Fofee', also:'SJ, Anouar, Omar (publishing)', guide:true, due:'2026-12-04',
-  checks:['Draft ready','SJ approved','Anouar approved','Published','Live'],
+  checks:['Draft ready','Anouar approved','SJ approved','Published','Live'],
   what:'Six short chapters as a web page that also prints to PDF: Manchester in numbers, three ways to own, how co owning works, where your money goes and the home deposit plan, the questions people ask, your next step.',
   url:'crowdtolive.bayuti.com/manchester/guide', urlG:'crowdtolive.bayuti.com/guide',
   build:{file:'lp/manchester-guide.html', owner:'Omar', host:'crowdtolive.bayuti.com/manchester/guide (WordPress, blank template). Linked from GD-1 and from the "Open the guide now" button on LP-P.',
    config:[['City numbers','Chapter 1 and 4','Change per city'],['Print','Built in','The toolbar prints or downloads a PDF']],
    events:[['guide_viewed','On load','city, page'],['guide_app_clicked','"Get your Bayuti Score"','city, page']],
    todo:[['SJ','Read every chapter, especially Chapter 2 (the comparison) and Chapter 4 (the illustration)'],['Copy','Confirm the ONS month and the 32% renting figure'],['Copy','"General information, not personal advice" line on the last page']],
-   accept:['SJ approved, then Anouar approved','Prints cleanly to six A4 pages','Every number has a source line','No dashes; "home deposit" everywhere; no investment or rate content']},
+   accept:['Anouar approved, then SJ approved','Prints cleanly to six A4 pages','Every number has a source line','No dashes; "home deposit" everywhere; no investment or rate content']},
   exp:[['Guide opened from GD-1',35,'%','They asked for it minutes ago.']]});
 HB.sections.app.push(GUIDE);
 (function(){ const L3 = JOURNEY.find(L=>L.lane==='cta3'); if(!L3) return; L3.stages[0].n = [['GD-1','Opened','GUIDE-MCR','Not opened','GD-2'],['GUIDE-MCR','Read the guide','GD-2','','']]; })();
 (function(){
   const b = fbk('LP-C'); if(b){
-  b.checks = ['Draft ready','SJ approved','Anouar approved','Built','Tracking live','Tested on phones','Live'];
+  b.checks = ['Draft ready','Anouar approved','SJ approved','Built','Tracking live','Tested on phones','Live'];
   b.build = {file:'lp/manchester-calculator-page.html', owner:'Omar', host:'crowdtolive.bayuti.com (WordPress). Blank template page, slug /manchester. Generic copy at the site root.',
    config:[['CALC_DEFAULTS.city','Manchester','Change per city'],['CALC_DEFAULTS.rent / price / dep','1380 / 241000 / 24100','The city averages the sliders start from'],['CALC_DEFAULTS.more / yrs','200 / 10','Starting monthly amount and years'],['CALC_DEFAULTS.shareUrl','crowdtolive.bayuti.com/manchester/calculator','Where "Copy my link" points']],
    events:[['page_viewed','On load','city, persona, page, utm_*'],['lp_cta_clicked','"Get the calculator"','placement'],['calculator_used','First move of each slider','field and all five values'],['calculator_results_requested','"Email me my numbers"','Customer.io identify first, with calc_* attributes for CALC-E1'],['calculator_downloaded','"Download as image"','·'],['calculator_printed','"Print or PDF"','·'],['calculator_link_copied','"Copy my link"','·']],
    todo:[['DEV 2','Paste the Customer.io JS snippet with the real Site ID'],['Product','Confirm how rent on the part they don\'t own is set; the calculator assumes it falls in line with their share'],['DEV','Check CALC-E1 reads calc_ten_year_rent, calc_share_end and calc_link']],
-   accept:['Sliders work by touch, mouse and keyboard','Numbers, house and chart update as you move','"Download as image" gives a 1080 by 1350 picture','"Copy my link" reopens the calculator with the same numbers','"Email me my numbers" adds the person to Customer.io and CALC-E1 arrives within 5 minutes','Illustration line visible next to the results','No dashes; "home deposit" everywhere','SJ approved, then Anouar approved, before Live']}; }
+   accept:['Sliders work by touch, mouse and keyboard','Numbers, house and chart update as you move','"Download as image" gives a 1080 by 1350 picture','"Copy my link" reopens the calculator with the same numbers','"Email me my numbers" adds the person to Customer.io and CALC-E1 arrives within 5 minutes','Illustration line visible next to the results','No dashes; "home deposit" everywhere','Anouar approved, then SJ approved, before Live']}; }
   const c = fbk('CALC-1'); if(c){
   c.t = 'The calculator (also works on its own)'; c.url = 'crowdtolive.bayuti.com/manchester/calculator'; c.urlG = 'crowdtolive.bayuti.com/calculator';
-  c.checks = ['Draft ready','SJ approved','Anouar approved','Built','Tracking live','Live'];
+  c.checks = ['Draft ready','Anouar approved','SJ approved','Built','Tracking live','Live'];
   c.build = {file:'lp/calculator.html', owner:'Omar', host:'Its own page at /manchester/calculator. Add ?embed=1 to drop it into any page or email landing without the header. People can add it to their phone home screen.',
    config:[['URL ?rent= &price= &dep= &more= &yrs=','optional','Opens with those numbers (this is what "Copy my link" makes)'],['?embed=1','optional','No header or footer, for embedding']],
    events:b?b.build.events.slice(2):[], todo:[['Product','Confirm how rent on the rest is set'],['SJ','Review the illustration line and every label']], accept:['Same as LP-C','Works as a page on its own and with ?embed=1 inside another page']};
@@ -3959,7 +3959,7 @@ function gates(F){
   const P = F.id.toUpperCase();
   return [
     B(P+'-GATE1','gate','Gate 1 · Everything built and tracked',{owner:'Ridhima', also:'Omar, Fofee', what:'Every block in the way in, data, emails, videos, webinars and machine sections has Built and Tracking or Tested ticked.', checks:['Checked','Signed off'], auto:'build'}),
-    B(P+'-GATE2','gate','Gate 2 · Every word approved',{owner:'SJ', also:F.reg?'Anouar':'', what: F.reg ? 'Every copy block has SJ approved, then Anouar. Dates of approval kept in the comments.' : 'Every copy block has SJ approved. Dates of approval kept in the comments.', checks:['Checked','Signed off'], auto:'sj'}),
+    B(P+'-GATE2','gate','Gate 2 · Every word approved',{owner:'SJ', also:F.reg?'Anouar':'', what: F.reg ? 'Every copy block has Anouar approved, then SJ. Dates of approval kept in the comments.' : 'Every copy block has SJ approved. Dates of approval kept in the comments.', checks:['Checked','Signed off'], auto:'sj'}),
     B(P+'-GATE3','gate','Gate 3 · End to end test',{owner:'Fofee', also:'Ridhima', what:'Three seed people (three cities, three bands) go through the whole flow. Every event shows in Customer.io and HubSpot within 15 minutes; every link has UTMs; unsubscribe, STOP, quiet hours and the 1 email a day cap all work'+(F.reg?'; the risk banner shows on every message and screen.':'.'), checks:['Checked','Signed off']}),
     B(P+'-GATE4','gate','Gate 4 · Measurement ready',{owner:'Fofee', also:'Naveed', what:'Every block\'s Expected number is on this board; the Actual column fills from Customer.io, GA4 and the weekly spend file; the 10% holdout is set.', checks:['Checked','Signed off']}),
     B(P+'-GATE5','gate','Gate 5 · Go live',{owner:'Anouar', what:'Gates 1 to 4 signed off. Go live date agreed. First review booked 14 days after go live.', checks:['Checked','Signed off']})
@@ -3967,7 +3967,7 @@ function gates(F){
 }
 const flowOf = id => FLOWS.find(f=>f.id===id);
 function blocksOf(F, withGates){ let all=[]; SECTIONS.forEach(([k])=>{ if(F.sections[k]) all = all.concat(F.sections[k].map(b=>Object.assign(b,{sec:k}))); }); if(withGates) all = all.concat(gates(F).map(b=>Object.assign(b,{sec:'criteria'}))); return all; }
-const checksOf = b => b.checks || ((b.id.startsWith('INV-') && TYPE[b.type].set==='copy') || b.type==='email' ? ['Built','Tracking live','SJ approved','Anouar approved','Live'] : CHECKSETS[TYPE[b.type].set]);
+const checksOf = b => b.checks || ((b.id.startsWith('INV-') && TYPE[b.type].set==='copy') || b.type==='email' ? ['Built','Tracking live','Anouar approved','SJ approved','Live'] : CHECKSETS[TYPE[b.type].set]);
 const isDone = (b,c) => !!(ST.checks[b.id] && ST.checks[b.id][c] && ST.checks[b.id][c].v);
 const doneCount = b => checksOf(b).filter(c=>isDone(b,c)).length;
 const notesFor = id => ST.notes.filter(n=>n.block===id).sort((a,b)=>a.at<b.at?-1:1);
@@ -4032,8 +4032,8 @@ const TODAY = () => new Date().toISOString().slice(0,10);
 const dueOf = b => (ST.due[b.id] && ST.due[b.id].date) || b.due || (typeof defaultDue==='function' ? defaultDue(b.id) : null);
 const isComplete = b => checksOf(b).every(c=>isDone(b,c));
 function stateOf(b){ if(isComplete(b)) return 'done'; const d = dueOf(b); if(!d) return 'open'; const days = (new Date(d) - new Date(TODAY()))/864e5; if(days < 0) return 'overdue'; if(days <= 3) return 'soon'; return 'open'; }
-const waitingSJ = b => checksOf(b).includes('SJ approved') && (isDone(b,'Built') || isDone(b,'Draft ready')) && !isDone(b,'SJ approved');
-const waitingAn = b => checksOf(b).includes('Anouar approved') && isDone(b,'SJ approved') && !isDone(b,'Anouar approved');
+const waitingAn = b => checksOf(b).includes('Anouar approved') && (isDone(b,'Built') || isDone(b,'Draft ready')) && !isDone(b,'Anouar approved');
+const waitingSJ = b => checksOf(b).includes('SJ approved') && (isDone(b,'Built') || isDone(b,'Draft ready')) && !isDone(b,'SJ approved') && (!checksOf(b).includes('Anouar approved') || isDone(b,'Anouar approved'));
 function fmtDate(d){ if(!d) return 'no date'; return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
 async function setDue(b, date){
   const cur = {date, by: ST.me||'local', at: new Date().toISOString(), block: b.id};
@@ -4263,11 +4263,11 @@ function panelHome(F){
    <div class="bb-acount"><button type="button" data-view="alerts" class="a-over"><b>${tot('overdue')}</b>overdue</button><button type="button" data-view="alerts" class="a-soon"><b>${tot('soon')}</b>due in 3 days</button><button type="button" data-view="alerts" class="a-sj"><b>${tot('sj')}</b>waiting on SJ</button><button type="button" data-view="alerts" class="a-ping"><b>${tot('ping')}</b>reminders queued</button><button type="button" data-view="alerts" class="a-an"><b>${tot('an')}</b>waiting on Anouar</button></div>
    <p class="bb-hint">Every weekday at 08:45, each owner with something overdue, due soon or reminded gets a HubSpot task, and Fofee gets the full summary.</p>
    ${ph?`<h5>Build plan</h5><ul class="bb-phases">${ph}</ul>`:''}
-   <h5>How to use the board</h5><ol class="bb-list"><li>Click any card or step. Its ticks, due date, comments and the email itself open here.</li><li>Tick your boxes as you go. SJ ticks "SJ approved"${F.reg?', Anouar ticks "Anouar approved"':''}.</li><li>Use 🔔 Remind to nudge an owner; it becomes a HubSpot task at the next run.</li><li>Filter by your name at the top to see only your steps.</li></ol></div>`;
+   <h5>How to use the board</h5><ol class="bb-list"><li>Click any card or step. Its ticks, due date, comments and the email itself open here.</li><li>Tick your boxes as you go. ${F.reg?'Anouar ticks "Anouar approved" first, then ':''}SJ ticks "SJ approved".</li><li>Use 🔔 Remind to nudge an owner; it becomes a HubSpot task at the next run.</li><li>Filter by your name at the top to see only your steps.</li></ol></div>`;
 }
 function viewAlerts(F){
   const by = alertsFor(F); const names = Object.keys(by).sort();
-  const row = (b, k) => `<li class="k-${k}"><button type="button" class="lnk" data-open="${b.id}">${b.id}</button> ${esc(b.t)} <span>${k==='overdue'?'overdue since '+fmtDate(dueOf(b)):k==='soon'?'due '+fmtDate(dueOf(b)):k==='sj'?'ready, waiting for SJ':k==='an'?'SJ approved, waiting for Anouar':'reminder queued'}</span></li>`;
+  const row = (b, k) => `<li class="k-${k}"><button type="button" class="lnk" data-open="${b.id}">${b.id}</button> ${esc(b.t)} <span>${k==='overdue'?'overdue since '+fmtDate(dueOf(b)):k==='soon'?'due '+fmtDate(dueOf(b)):k==='sj'?(checksOf(b).includes('Anouar approved')?'Anouar approved, waiting for SJ':'ready, waiting for SJ'):k==='an'?'ready, waiting for Anouar':'reminder queued'}</span></li>`;
   return `<section class="bb-sec"><div class="bb-sh"><h3>Alerts by person</h3><p>Overdue, due in the next 3 days, waiting on SJ, and reminders queued. This is what the 08:45 reminder run sends as HubSpot tasks.</p></div>
    <div class="bb-people">${names.filter(o=>!ST.owner||o.startsWith(ST.owner)).map(o=>{ const v = by[o]; return `<div class="bb-person"><div class="bb-ph"><i>${initials(o)}</i><div><b>${esc(o)}</b><span>${esc(PEOPLE[o]?PEOPLE[o].role:'')}${OWNER_HS&&OWNER_HS[o]?' · HubSpot task':' · in Fofee\'s summary'}</span></div></div><ul class="bb-al">${v.overdue.map(b=>row(b,'overdue')).join('')}${v.ping.map(b=>row(b,'ping')).join('')}${v.soon.map(b=>row(b,'soon')).join('')}${v.sj.map(b=>row(b,'sj')).join('')}${v.an.map(b=>row(b,'an')).join('')}</ul></div>`; }).join('') || '<p class="bb-empty">No alerts. Lovely.</p>'}</div></section>`;
 }
@@ -4351,7 +4351,7 @@ function viewMcr(F){
   return `<section class="jr-hero mcr"><button type="button" class="hero-fold" data-hero="1" aria-label="Fold this header">Fold ▴</button><div><p class="jr-k">Phase 0 · Manchester launch · ready for review</p><h2>Manchester, you've already bought a house.<br><span>It just isn't yours.</span></h2>
    <p class="jr-goal">Every way in for one city: the creative, the link, the tracking, the Customer.io segment and the approvals. Click any box to see the ad, tick it, comment on it.</p>
    <div class="jr-stats"><div><b>£1,380</b><span>rent a month</span></div><div><b>£165,600</b><span>ten years of rent</span></div><div><b>£241,000</b><span>first home</span></div><div><b>£24,100</b><span>10% home deposit</span></div><div><b>1,440</b><span>contacts we can email</span></div></div>
-   <div class="jr-stats" style="margin-top:8px"><div><b>${bl.length}</b><span>pieces</span></div><div><b>${cnt('Draft ready')}</b><span>drafts ready</span></div><div><b>${cnt('SJ approved')}</b><span>SJ approved</span></div><div><b>${cnt('Anouar approved')}</b><span>Anouar approved</span></div><div><b>${cnt('Live')}</b><span>live</span></div></div></div>
+   <div class="jr-stats" style="margin-top:8px"><div><b>${bl.length}</b><span>pieces</span></div><div><b>${cnt('Draft ready')}</b><span>drafts ready</span></div><div><b>${cnt('Anouar approved')}</b><span>Anouar approved</span></div><div><b>${cnt('SJ approved')}</b><span>SJ approved</span></div><div><b>${cnt('Live')}</b><span>live</span></div></div></div>
    <div class="jr-ring" style="--p:${pct}"><b>${pct}%</b><span>to launch</span><small>${done} of ${tot} ticks</small></div></section>
    ${viewJourney(F, MCR_J, typeof ENGOFFS!=='undefined'?ENGOFFS:{mcr:0})}`;
 }
@@ -4426,7 +4426,7 @@ async function saveEdit(bid, k, v){
 async function saveReview(bid, i, who_, s, note){
   const cur = JSON.parse(JSON.stringify(ST.reviews[bid] || {block:bid}));
   const k = 'i'+i; cur[k] = cur[k] || {}; cur[k][who_] = {s, by: ST.me||'local', at: new Date().toISOString()};
-  if(who_==='sj' && s!=='approved') delete cur[k].an;
+  if(who_==='an' && s!=='approved') delete cur[k].sj;
   ST.reviews[bid] = cur; render();
   if(note) await addNote({id:bid}, note);
   if(ST.db){ await ST.db.doc('reviews/'+bid).set(cur).catch(()=>{}); } else localSave();
@@ -4455,9 +4455,9 @@ function glText(s){
 function plainStatus(b){
   const cs = checksOf(b);
   if(cs.every(c=>isDone(b,c))) return ['live','Live'];
-  if(cs.includes('Anouar approved') && isDone(b,'SJ approved') && !isDone(b,'Anouar approved')) return ['an','Waiting for Anouar'];
+  if(waitingAn(b)) return ['an','Waiting for Anouar'];
   if(waitingSJ(b)) return ['sj','Waiting for SJ'];
-  if(isDone(b,'Anouar approved') || (isDone(b,'SJ approved') && !cs.includes('Anouar approved'))) return ['ok','Approved, not live yet'];
+  if(isDone(b,'SJ approved')) return ['ok','Approved, not live yet'];
   if(doneCount(b)) return ['wip','Being built'];
   return ['todo','Not started'];
 }
@@ -4477,10 +4477,11 @@ function ef(bid, k, label, type, def, extra){
 }
 function reviewBar(bid, i, label){
   const r = revOf(bid, i), sj = r.sj && r.sj.s, an = r.an && r.an.s, dis = ST.canWrite ? '' : 'disabled';
+  const bb = findBlock(bid), needAn = !bb || checksOf(bb).includes('Anouar approved');
   const pill = (x, who_) => x ? `<span class="az-rv r-${x.s}">${x.s==='approved'?'✓ Approved':'✕ Changes needed'} · ${esc(who(x.by))} · ${ago(x.at)}</span>` : `<span class="az-rv r-none">Not reviewed</span>`;
   return `<div class="az-review" data-rk="${bid}|${i}">
-   <div class="az-rrow"><b>SJ</b>${pill(r.sj)}<button type="button" class="az-ok" data-rev="${bid}|${i}|sj|approved|${esc(label)}" ${dis}>Approve</button><button type="button" class="az-no" data-rev="${bid}|${i}|sj|rejected|${esc(label)}" ${dis}>Needs changes</button></div>
-   <div class="az-rrow"><b>Anouar</b>${pill(r.an)}<button type="button" class="az-ok" data-rev="${bid}|${i}|an|approved|${esc(label)}" ${sj==='approved'&&ST.canWrite?'':'disabled'} title="${sj==='approved'?'':'SJ approves first'}">Approve</button><button type="button" class="az-no" data-rev="${bid}|${i}|an|rejected|${esc(label)}" ${sj==='approved'&&ST.canWrite?'':'disabled'}>Needs changes</button></div>
+   <div class="az-rrow"><b>Anouar</b>${pill(r.an)}<button type="button" class="az-ok" data-rev="${bid}|${i}|an|approved|${esc(label)}" ${dis}>Approve</button><button type="button" class="az-no" data-rev="${bid}|${i}|an|rejected|${esc(label)}" ${sj==='approved'&&ST.canWrite?'':'disabled'}>Needs changes</button></div>
+   <div class="az-rrow"><b>SJ</b>${pill(r.sj)}<button type="button" class="az-ok" data-rev="${bid}|${i}|sj|approved|${esc(label)}" ${(!needAn || an==='approved')&&ST.canWrite?'':'disabled'} title="${!needAn || an==='approved'?'':'Anouar approves first'}">Approve</button><button type="button" class="az-no" data-rev="${bid}|${i}|sj|rejected|${esc(label)}" ${dis}>Needs changes</button></div>
    <form class="az-cf" data-inote="${bid}|${esc(label)}"><label class="sr" for="c-${bid}-${i}">Comment on ${esc(label)}</label><input id="c-${bid}-${i}" type="text" placeholder="Comment or reason (shows to everyone)" ${dis}><button class="btn" type="submit" ${dis}>Add</button></form>
    ${notesFor(bid).filter(n=>n.text.startsWith('['+label+']')).slice(-3).map(n=>`<p class="az-note"><b>${esc(who(n.by))}</b> ${esc(n.text.slice(label.length+3))} <span>${ago(n.at)}</span></p>`).join('')}
   </div>`;
@@ -4586,15 +4587,15 @@ function viewAZ(F){
 /* ---------- approvals ---------- */
 function viewApprove(F){
   const rows = [];
-  AZ.sources.forEach(([bid, label])=>{ const b = findBlock(bid); if(!b) return; wayItems(b).forEach(([name],i)=>{ const r = revOf(bid,i); const st = !r.sj ? 'sj' : r.sj.s==='rejected' ? 'fix' : !r.an ? 'an' : r.an.s==='rejected' ? 'fix' : 'done'; if(st!=='done') rows.push({bid, i, name, label, st}); }); });
+  AZ.sources.forEach(([bid, label])=>{ const b = findBlock(bid); if(!b) return; wayItems(b).forEach(([name],i)=>{ const r = revOf(bid,i); const st = !r.an ? 'an' : r.an.s==='rejected' ? 'fix' : !r.sj ? 'sj' : r.sj.s==='rejected' ? 'fix' : 'done'; if(st!=='done') rows.push({bid, i, name, label, st}); }); });
   const blocks = blocksOf(F,true).filter(visible);
   const wsj = blocks.filter(waitingSJ), wan = blocks.filter(waitingAn);
   const grp = (t, list, html) => `<section class="bb-sec"><div class="bb-sh"><h3>${t} <span class="az-cnt">${list.length}</span></h3></div>${list.length?html:'<p class="bb-empty">Nothing here.</p>'}</section>`;
   const itemRow = x => `<li><span class="az-st s-${x.st==='fix'?'bad':x.st}">${x.st==='sj'?'SJ to review':x.st==='an'?'Anouar to review':'Needs changes'}</span> <b>${esc(x.label)}</b> · ${esc(x.name)} <button type="button" class="lnk" data-goway="${x.bid}">Open and review →</button></li>`;
-  return `<section class="az-hero sm"><div><p class="az-k">Approvals</p><h2>What is waiting for a yes.</h2><p class="az-sub">SJ approves first, then Anouar. "Needs changes" sends it back to the owner with your comment.</p></div></section>
+  return `<section class="az-hero sm"><div><p class="az-k">Approvals</p><h2>What is waiting for a yes.</h2><p class="az-sub">Anouar approves first, then SJ. "Needs changes" sends it back to the owner with your comment.</p></div></section>
    ${grp('Ads and posts, piece by piece', rows, `<ul class="az-alist">${rows.map(itemRow).join('')}</ul>`)}
-   ${grp('Waiting for SJ', wsj, `<div class="az-pcs">${wsj.map(piece).join('')}</div>`)}
-   ${grp('Waiting for Anouar', wan, `<div class="az-pcs">${wan.map(piece).join('')}</div>`)}`;
+   ${grp('Waiting for Anouar', wan, `<div class="az-pcs">${wan.map(piece).join('')}</div>`)}
+   ${grp('Waiting for SJ', wsj, `<div class="az-pcs">${wsj.map(piece).join('')}</div>`)}`;
 }
 
 /* ---------- numbers ---------- */
@@ -4676,7 +4677,7 @@ function qPanel(b){
    <h5>The screens (from the Figma file)</h5>${(b.screens||[]).length?`<div class="q-scr">${b.screens.map(s=>`<a href="${FIG(s)}" target="_blank" rel="noopener"><img src="fig/${s}.png" alt="${esc(SCR[s]||s)}" loading="lazy"><span>${esc(SCR[s]||s)} ↗</span></a>`).join('')}</div>`:`<p class="az-why">No screen for this box in the Figma file yet. <a href="${FIG('0-1')}" target="_blank" rel="noopener">Open the file ↗</a></p>`}</div>`;
 }
 function nudgePanel(b){
-  return `<h5>The message · edit right here</h5><p class="az-why">${esc(b.ch)} · ${esc(b.when)}${b.reg?' · <b>Regulated</b>: risk banner first, SJ then Anouar':''}</p>
+  return `<h5>The message · edit right here</h5><p class="az-why">${esc(b.ch)} · ${esc(b.when)}${b.reg?' · <b>Regulated</b>: risk banner first, Anouar then SJ':''}</p>
    ${b.ladder||b.nudgeMsg?`<ol class="lad">${LADDER.map(([t,c])=>`<li><b>${t}</b>${c}</li>`).join('')}</ol>`:''}
    <div class="az-fields">${ef(b.id,'subject','Title or subject','line')}${ef(b.id,'body','Message','area')}${ef(b.id,'cta','Button (the goal)','line')}</div>${reviewBar(b.id,0,'Message')}`;
 }
@@ -4730,7 +4731,7 @@ function viewJourneyFull(F){
    <div class="jr-ring" style="--p:${pct}"><b>${pct}%</b><span>built</span><small>${done} of ${tot} ticks</small></div></section>
    ${viewJourney(F, JOURNEY, ENGOFFS)}
    <section class="bb-sec eng-copy"><div class="bb-sh"><h3>Copy this engine to the next city</h3><p>Build it once in ${CITYN}. Every other city is the same map with five changes.</p></div>
-    <ol class="eng-steps"><li><b>City row.</b> Add the city to the cities collection in Customer.io: rent, ten years of rent, home price, home deposit.</li><li><b>Ads.</b> Copy the ${CITYN} ads, swap the numbers and the neighbourhoods, new utm_campaign (hb_city_launch).</li><li><b>Landing pages.</b> Same four pages, the city in the headline. Each page also keeps a generic version with no city.</li><li><b>Segments.</b> Duplicate the segments with city_slug = the new city. Every nudge already reads the city from the person.</li><li><b>Approvals.</b> SJ then Anouar on the new ads and pages only; the app nudges are already approved.</li></ol>
+    <ol class="eng-steps"><li><b>City row.</b> Add the city to the cities collection in Customer.io: rent, ten years of rent, home price, home deposit.</li><li><b>Ads.</b> Copy the ${CITYN} ads, swap the numbers and the neighbourhoods, new utm_campaign (hb_city_launch).</li><li><b>Landing pages.</b> Same four pages, the city in the headline. Each page also keeps a generic version with no city.</li><li><b>Segments.</b> Duplicate the segments with city_slug = the new city. Every nudge already reads the city from the person.</li><li><b>Approvals.</b> Anouar then SJ on the new ads and pages only; the app nudges are already approved.</li></ol>
     <p class="az-why">Next: Birmingham, Bradford, Coventry, then London in three regions.</p></section>`;
 }
 
@@ -4934,22 +4935,22 @@ function clFlags(r){
 }
 function clState(r){
   const d = (ST.copyrev||{})[r.rid] || {}, sj = d.sj, an = d.an;
-  if(sj && sj.s==='approved' && sj.txt!==r.v) return ['changed','Changed since SJ approved'];
-  if(sj && sj.s==='rejected') return ['changes','SJ asked for changes'];
+  if(an && an.s==='approved' && an.txt!==r.v) return ['changed','Changed since Anouar approved'];
   if(an && an.s==='rejected') return ['changes','Anouar asked for changes'];
-  if(sj && sj.s==='approved' && an && an.s==='approved' && an.txt===r.v) return ['ready','Approved by SJ and Anouar'];
-  if(sj && sj.s==='approved') return ['sj','SJ approved'];
-  return ['wait','Waiting for SJ'];
+  if(sj && sj.s==='rejected') return ['changes','SJ asked for changes'];
+  if(an && an.s==='approved' && sj && sj.s==='approved' && sj.txt===r.v) return ['ready','Approved by Anouar and SJ'];
+  if(an && an.s==='approved') return ['an','Anouar approved, waiting for SJ'];
+  return ['wait','Waiting for Anouar'];
 }
 async function saveCopyRev(rid, who_, s, txt){
   const cur = JSON.parse(JSON.stringify((ST.copyrev||{})[rid] || {}));
   cur[who_] = {s, by: ST.me||'local', at: new Date().toISOString(), txt};
-  if(who_==='sj' && s!=='approved') delete cur.an;
+  if(who_==='an' && s!=='approved') delete cur.sj;
   ST.copyrev = ST.copyrev || {}; ST.copyrev[rid] = cur; render();
   if(ST.db){ await ST.db.doc('copyrev/'+rid).set(cur).catch(()=>alertBox('That approval could not be shared. Try again.')); } else localSave();
 }
 function clExport(kind){
-  const rows = libRows().filter(r=>{ const k = clState(r)[0]; return k==='ready' || k==='sj'; });
+  const rows = libRows().filter(r=>clState(r)[0]==='ready');
   if(kind==='json'){ const o = {}; rows.forEach(r=>{ o[r.id.replace(/[^A-Za-z0-9_]/g,'_')] = r.v; }); return JSON.stringify(o, null, 2); }
   const q = s => '"'+String(s).replace(/"/g,'""')+'"';
   return ['id,channel,where,text,status'].concat(libRows().map(r=>[r.id, r.ch, r.where, r.v, clState(r)[1]].map(q).join(','))).join('\n');
@@ -4958,9 +4959,9 @@ function viewCopy(F){
   const all = libRows(), q = (ST.q||'').toLowerCase();
   const fs = ST.clF || 'all', gs = ST.clG || '';
   const st = r => clState(r)[0];
-  const cnt = {all:all.length, wait:0, changes:0, changed:0, sj:0, ready:0, flag:0};
+  const cnt = {all:all.length, wait:0, changes:0, changed:0, an:0, ready:0, flag:0};
   all.forEach(r=>{ cnt[st(r)]++; if(clFlags(r).length) cnt.flag++; });
-  const pass = r => (fs==='all' || (fs==='flag' ? clFlags(r).length>0 : fs==='ok' ? ['sj','ready'].includes(st(r)) : st(r)===fs)) && (!gs || r.group===gs) && (!q || (r.id+' '+r.v+' '+r.where+' '+r.label).toLowerCase().includes(q)) && (!ST.owner || (findBlock(r.owner)||{}).owner===ST.owner);
+  const pass = r => (fs==='all' || (fs==='flag' ? clFlags(r).length>0 : fs==='ok' ? st(r)==='ready' : fs==='an' ? st(r)==='an' : st(r)===fs)) && (!gs || r.group===gs) && (!q || (r.id+' '+r.v+' '+r.where+' '+r.label).toLowerCase().includes(q)) && (!ST.owner || (findBlock(r.owner)||{}).owner===ST.owner);
   const rows = all.filter(pass), N = ST.clN || 80, shown = rows.slice(0, N);
   const chip = (k, lab, n) => `<button type="button" class="ot-chip${fs===k?' on':''}" data-clf="${k}" aria-pressed="${fs===k}">${lab} <b>${n}</b></button>`;
   const grpN = g => all.filter(r=>r.group===g).length;
@@ -4975,15 +4976,15 @@ function viewCopy(F){
        <textarea id="cl-${r.rid}" rows="${rowsN}" data-edit="${esc(r.bid)}|${esc(r.path)}|txt" data-lim="${r.lim||0}" ${dis}>${esc(r.v)}</textarea>
        <div class="cl-meta"><span class="cl-n${r.lim&&n>r.lim?' over':''}" data-n>${n}${r.lim?' of '+r.lim:''} characters</span>${fl.map(x=>`<span class="cl-flag">⚠ ${esc(x)}</span>`).join('')}</div></td>
      <td class="cl-rev"><span class="cl-st st-${k}">${esc(lab)}</span>
-       <div class="cl-btns"><span>SJ</span><button type="button" class="btn sm ok${d.sj&&d.sj.s==='approved'&&k!=='changed'?' on':''}" data-cl="${r.rid}|sj|approved" ${dis}>Approve</button><button type="button" class="btn sm no${d.sj&&d.sj.s==='rejected'?' on':''}" data-cl="${r.rid}|sj|rejected" ${dis}>Changes</button>${by(d.sj)}</div>
-       <div class="cl-btns"><span>Anouar</span><button type="button" class="btn sm ok${d.an&&d.an.s==='approved'&&d.an.txt===r.v?' on':''}" data-cl="${r.rid}|an|approved" ${d.sj&&d.sj.s==='approved'&&k!=='changed'?dis:'disabled'}>Approve</button><button type="button" class="btn sm no${d.an&&d.an.s==='rejected'?' on':''}" data-cl="${r.rid}|an|rejected" ${dis}>Changes</button>${by(d.an)}</div>
+       <div class="cl-btns"><span>Anouar</span><button type="button" class="btn sm ok${d.an&&d.an.s==='approved'&&k!=='changed'?' on':''}" data-cl="${r.rid}|an|approved" ${dis}>Approve</button><button type="button" class="btn sm no${d.an&&d.an.s==='rejected'?' on':''}" data-cl="${r.rid}|an|rejected" ${dis}>Changes</button>${by(d.an)}</div>
+       <div class="cl-btns"><span>SJ</span><button type="button" class="btn sm ok${d.sj&&d.sj.s==='approved'&&d.sj.txt===r.v?' on':''}" data-cl="${r.rid}|sj|approved" ${d.an&&d.an.s==='approved'&&k!=='changed'?dis:'disabled'}>Approve</button><button type="button" class="btn sm no${d.sj&&d.sj.s==='rejected'?' on':''}" data-cl="${r.rid}|sj|rejected" ${dis}>Changes</button>${by(d.sj)}</div>
        ${k==='changes'||ST.clNote===r.rid?`<form class="cl-note" data-clnote="${r.rid}|${esc(r.owner)}"><label class="sr" for="cn-${r.rid}">What should change in ${esc(r.id)}</label><input id="cn-${r.rid}" placeholder="What should change?" maxlength="300"><button type="submit" class="btn sm">Send</button></form>`:''}
        ${notesFor(r.owner).filter(x=>(x.text||'').startsWith('['+r.id+']')).slice(-2).map(x=>`<p class="cl-c">💬 ${esc(x.text.slice(r.id.length+3))} <small>${esc(who(x.by))} · ${ago(x.at)}</small></p>`).join('')}
      </td></tr>`; };
   return `<section class="bb-sec cl"><div class="ot-head"><h2>Copy library</h2>
-    <p>Every sentence we send or show, one row each, with an ID (for example <code>HB-E1.subject</code>). Edit a line here and it changes everywhere on the board. SJ approves each line, then Anouar. If a line changes after approval, it goes back to SJ.</p></div>
+    <p>Every sentence we send or show, one row each, with an ID (for example <code>HB-E1.subject</code>). Edit a line here and it changes everywhere on the board. Anouar approves each line first, then SJ. If a line changes after approval, it goes back to Anouar.</p></div>
     <div class="ot-share"><button type="button" class="btn" data-clexport="json">Copy approved lines for Customer.io</button><button type="button" class="btn" data-clexport="csv">Copy everything as a spreadsheet</button></div>
-    <div class="ot-chips">${chip('all','All lines',cnt.all)}${chip('wait','Waiting for SJ',cnt.wait)}${chip('changes','Changes asked',cnt.changes)}${chip('changed','Changed since approval',cnt.changed)}${chip('ok','Approved',cnt.sj+cnt.ready)}${chip('flag','Needs a fix',cnt.flag)}</div>
+    <div class="ot-chips">${chip('all','All lines',cnt.all)}${chip('wait','Waiting for Anouar',cnt.wait)}${chip('an','Waiting for SJ',cnt.an)}${chip('changes','Changes asked',cnt.changes)}${chip('changed','Changed since approval',cnt.changed)}${chip('ok','Approved',cnt.ready)}${chip('flag','Needs a fix',cnt.flag)}</div>
     <div class="cl-groups"><button type="button" class="cl-g${!gs?' on':''}" data-clg="">Everything</button>${CL_GROUPS.filter(grpN).map(g=>`<button type="button" class="cl-g${gs===g?' on':''}" data-clg="${g}">${g} <b>${grpN(g)}</b></button>`).join('')}</div>
     <p class="cl-count">${rows.length} ${rows.length===1?'line':'lines'}${rows.length>N?`, showing the first ${N}`:''}. Use the search box at the top to find any word.</p>
     <div class="cl-wrap"><table class="cl-t stack"><thead><tr><th>ID and where</th><th>The words</th><th>Approval</th></tr></thead><tbody>${shown.map(row).join('')||`<tr><td colspan="3">Nothing matches. Try another filter.</td></tr>`}</tbody></table></div>
