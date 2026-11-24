@@ -716,6 +716,16 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .ot-wait{display:inline-block;margin-top:4px;font-size:12px;font-weight:800;color:#7A4E00;background:#FFF1D6;border-radius:6px;padding:2px 7px}
 .ot-stage td{background:#EEF0FF!important;color:#000F96;font-size:14px;padding:8px 12px!important}.ot-stage b{background:#000F96;color:#fff;border-radius:6px;padding:2px 8px;margin-right:6px}
 .ot-dep i{font-style:normal;font-size:11px;opacity:.75}
+.ap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}@media(max-width:900px){.ap-grid{grid-template-columns:minmax(0,1fr)}}
+.ap-col{background:#fff;border:1px solid #D5DAF0;border-radius:16px;padding:16px;color:#1A1A2E}
+.ap-head{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;border-radius:12px;padding:14px 16px;margin-bottom:6px}
+.ap-an .ap-head{background:#000F96;color:#fff}.ap-sj .ap-head{background:#00704A;color:#fff}
+.ap-head h3{margin:0;font-size:24px;color:#fff}.ap-head p{margin:0;font-size:14px;grid-column:1;color:#fff;opacity:.92}
+.ap-big{grid-row:1/3;grid-column:2;font-size:38px;line-height:1;text-align:center}.ap-head>span{grid-column:2;text-align:center;font-size:12px;font-weight:700}
+.ap-col h4{margin:16px 0 6px;font-size:15px;color:#000F96}
+.ap-list{list-style:none;margin:0;padding:0}.ap-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #E3E6F5;padding:9px 0}
+.ap-row>div{min-width:0;flex:1}.ap-row .lnk{text-align:left;color:#1A1A2E;font-size:14.5px}.ap-row .lnk b{color:#000F96}.ap-row small{display:block;color:#3D4060;font-size:12.5px;margin-top:2px}
+.ap-btns{display:flex;gap:6px}.ap-lines{font-size:14px;color:#1A1A2E;margin:0}.ap-list.done .lnk{color:#00704A}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -4326,7 +4336,7 @@ function render(){
   const sc = {m: mainEl?mainEl.scrollTop:0, s: sideEl?sideEl.scrollTop:0, j: jw?jw.scrollLeft:0, open: ST._lastOpen};
   const status = ST.live ? (ST.stale ? 'Shared ticks can\'t be reached yet; showing what we have.' : (ST.canWrite ? 'Everything you tick, type or approve is shared with everyone on this link, with your name.' : 'You can look; ask Fofee for edit access to tick or approve.')) : 'Ticks are kept on this device only (sign in to share them).';
   const allOwners = [...new Set(FLOWS.flatMap(f=>blocksOf(f,true).map(b=>b.owner)))];
-  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['mix','Channel mix']]);
+  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['approve','Approvals'],['mix','Channel mix']]);
   const ac = alertCount(F) + changesAsked().length;
   const body = ST.view==='copy'?viewCopy(F):ST.view==='dev'?viewDev(F):ST.view==='az'?viewAZ(F):ST.view==='approve'?viewApprove(F):ST.view==='numbers'?viewNumbers():ST.view==='words'?viewWords():ST.view==='mcr'?viewMcr(F):ST.view==='journey'?viewJourneyFull(F):ST.view==='build'?viewBuild(F):ST.view==='analytics'?viewAnalytics(F):ST.view==='alerts'?viewAlerts(F):ST.view==='open'?viewOpen(F):viewMix();
   const soloTop = ST.solo ? `<div class="solo-top"><h2>CrowdtoLive open tasks<span>Live: every date, tick and approval changes here and on the full board at the same moment.</span></h2><div class="sp"></div><button type="button" class="btn" data-solo="0">Open the full board</button></div>` : '';
@@ -4592,16 +4602,30 @@ function viewAZ(F){
 
 /* ---------- approvals ---------- */
 function viewApprove(F){
-  const rows = [];
-  AZ.sources.forEach(([bid, label])=>{ const b = findBlock(bid); if(!b) return; wayItems(b).forEach(([name],i)=>{ const r = revOf(bid,i); const st = !r.an ? 'an' : r.an.s==='rejected' ? 'fix' : !r.sj ? 'sj' : r.sj.s==='rejected' ? 'fix' : 'done'; if(st!=='done') rows.push({bid, i, name, label, st}); }); });
-  const blocks = blocksOf(F,true).filter(visible);
-  const wsj = blocks.filter(waitingSJ), wan = blocks.filter(waitingAn);
-  const grp = (t, list, html) => `<section class="bb-sec"><div class="bb-sh"><h3>${t} <span class="az-cnt">${list.length}</span></h3></div>${list.length?html:'<p class="bb-empty">Nothing here.</p>'}</section>`;
-  const itemRow = x => `<li><span class="az-st s-${x.st==='fix'?'bad':x.st}">${x.st==='sj'?'SJ to review':x.st==='an'?'Anouar to review':'Needs changes'}</span> <b>${esc(x.label)}</b> · ${esc(x.name)} <button type="button" class="lnk" data-goway="${x.bid}">Open and review →</button></li>`;
-  return `<section class="az-hero sm"><div><p class="az-k">Approvals</p><h2>What is waiting for a yes.</h2><p class="az-sub">Anouar approves first, then SJ. "Needs changes" sends it back to the owner with your comment.</p></div></section>
-   ${grp('Ads and posts, piece by piece', rows, `<ul class="az-alist">${rows.map(itemRow).join('')}</ul>`)}
-   ${grp('Waiting for Anouar', wan, `<div class="az-pcs">${wan.map(piece).join('')}</div>`)}
-   ${grp('Waiting for SJ', wsj, `<div class="az-pcs">${wsj.map(piece).join('')}</div>`)}`;
+  const blocks = blocksOf(F,true);
+  const pieces = []; (AZ.sources||[]).forEach(([bid, label])=>{ const b = findBlock(bid); if(!b) return; wayItems(b).forEach(([name],i)=>pieces.push({bid, i, name, label, r:revOf(bid,i)})); });
+  const lines = (F.id==='hb' && typeof libRows==='function') ? libRows() : [];
+  const lst = lines.map(r=>clState(r)[0]);
+  const ago2 = x => x ? `${esc(who(x.by))} · ${ago(x.at)}` : '';
+  const col = (who_, name, chk) => {
+    const boxW = blocks.filter(who_==='an' ? waitingAn : waitingSJ);
+    const pcW = pieces.filter(p=> who_==='an' ? !p.r.an : (p.r.an&&p.r.an.s==='approved'&&!p.r.sj));
+    const fixes = pieces.filter(p=> p.r[who_] && p.r[who_].s==='rejected');
+    const lnW = who_==='an' ? lst.filter(k=>k==='wait'||k==='changed').length : lst.filter(k=>k==='an').length;
+    const done = blocks.filter(b=>isDone(b,chk)).map(b=>({b, x:ST.checks[b.id][chk]})).sort((a,c)=>a.x.at<c.x.at?1:-1);
+    const total = boxW.length + pcW.length + lnW;
+    const boxRow = b => `<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b> ${esc(b.t)}</button><small>${esc(b.owner)}${dueOf(b)?' · due '+fmtDate(dueOf(b)):''}${who_==='sj'&&isDone(b,'Anouar approved')?' · Anouar approved '+ago(ST.checks[b.id]['Anouar approved'].at):''}</small></div><span class="ap-btns"><button type="button" class="btn sm" data-open="${b.id}">Review</button><button type="button" class="btn sm ok" data-ck="${b.id}" data-c="${chk}" ${ST.canWrite?'':'disabled'}>✓ Approve</button></span></li>`;
+    const pcRow = p => `<li class="ap-row"><div><button type="button" class="lnk" data-goway="${p.bid}"><b>${esc(p.label)}</b> · ${esc(p.name)}</button>${who_==='sj'&&p.r.an?`<small>Anouar approved · ${ago2(p.r.an)}</small>`:''}</div><span class="ap-btns"><button type="button" class="btn sm" data-goway="${p.bid}">Open and review</button></span></li>`;
+    return `<section class="ap-col ap-${who_}"><div class="ap-head"><h3>${name}</h3><p>${who_==='an'?'Approves first. Everything below is ready for you.':'Approves after Anouar. Only things Anouar has approved show here.'}</p><b class="ap-big">${total}</b><span>waiting</span></div>
+     <h4>Boxes to approve <span class="az-cnt">${boxW.length}</span></h4>${boxW.length?`<ul class="ap-list">${boxW.map(boxRow).join('')}</ul>`:'<p class="bb-empty">Nothing waiting.</p>'}
+     <h4>Ads and posts, piece by piece <span class="az-cnt">${pcW.length}</span></h4>${pcW.length?`<ul class="ap-list">${pcW.slice(0,40).map(pcRow).join('')}</ul>${pcW.length>40?`<p class="ot-n">+${pcW.length-40} more</p>`:''}`:'<p class="bb-empty">Nothing waiting.</p>'}
+     ${F.id==='hb'?`<h4>Copy library lines <span class="az-cnt">${lnW}</span></h4><p class="ap-lines">${lnW?`${lnW} lines are waiting for ${name}. `:'No lines waiting. '}<button type="button" class="btn sm" data-clgo="${who_==='an'?'wait':'an'}">Open them in the Copy library</button></p>`:''}
+     <h4>Sent back for changes <span class="az-cnt">${fixes.length}</span></h4>${fixes.length?`<ul class="ap-list">${fixes.map(p=>`<li class="ap-row"><div><button type="button" class="lnk" data-goway="${p.bid}"><b>${esc(p.label)}</b> · ${esc(p.name)}</button><small>${ago2(p.r[who_])}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">None.</p>'}
+     <h4>Approved so far <span class="az-cnt">${done.length}</span></h4>${done.length?`<ul class="ap-list done">${done.slice(0,15).map(({b,x})=>`<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}">✓ <b>${b.id}</b> ${esc(b.t)}</button><small>${ago2(x)}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">Nothing approved yet.</p>'}
+    </section>`;
+  };
+  return `<section class="bb-sec"><div class="bb-sh"><h3>Approvals</h3><p>Anouar approves first, then SJ. Each side lists only what is waiting for that person: whole boxes (tick Approve right here, or open to review), ad and post pieces, and Copy library lines. "Needs changes" sends a piece back to its owner with a comment.</p></div>
+   <div class="ap-grid">${col('an','Anouar','Anouar approved')}${col('sj','SJ','SJ approved')}</div></section>`;
 }
 
 /* ---------- numbers ---------- */
@@ -5021,6 +5045,7 @@ function onClick(e){
   if(t.dataset.flow){ ST.flow = t.dataset.flow; ST.open=null; location.hash = ST.flow==='hb'?'build':'build-inv'; return; }
   if(t.dataset.view){ if(ST.solo && t.dataset.view!=='open'){ location.hash='build'; return; } ST.view = t.dataset.view; render(); const m=$('#bb-main'); if(m) m.scrollTop=0; if(t.dataset.gotoafter){ const s=document.getElementById(t.dataset.gotoafter); if(s) s.scrollIntoView({block:'start'}); } return; }
   if(t.dataset.ck){ e.stopPropagation(); const b = blocksOf(F,true).find(x=>x.id===t.dataset.ck) || (/^AZ-/.test(t.dataset.ck) ? {id:t.dataset.ck, checks:AZC} : null); if(b) toggleCheck(b, t.dataset.c); return; }
+  if(t.dataset.clgo){ ST.view = 'copy'; ST.clF = t.dataset.clgo; ST.clN = 80; render(); return; }
   if(t.dataset.osort){ ST.openSort = t.dataset.osort; render(); return; }
   if(t.dataset.maptheme){ ST.mapDark = !ST.mapDark; try{ localStorage.setItem('ctl-mapdark', ST.mapDark?'1':'0'); }catch(e){} render(); return; }
   if(t.dataset.zoom){ const v = t.dataset.zoom; let z = ST.zoom||1;
