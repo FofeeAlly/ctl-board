@@ -745,6 +745,14 @@ button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
 .tm-emails{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin:0 0 12px;padding:10px;background:#F6F7FF;border-radius:10px}.tm-emails p{grid-column:1/-1;margin:0;font-size:13px}
 .tm-emails label{display:flex;flex-direction:column;font-weight:700;font-size:13px;gap:3px}.tm-emails input{min-height:40px;border-radius:8px;border:1.5px solid #C9CDF0;padding:0 8px;font-size:16px;color:#1A1A2E}.tm-emails .btn{align-self:end}
 .teams-r{display:inline-flex;align-items:center;gap:6px}
+.ads-img.real{padding:0;background:#000F96;overflow:hidden}.ads-img.real img{width:100%;height:100%;object-fit:cover;display:block}
+.ads-final{position:absolute;top:8px;right:8px;z-index:2;background:#00A569;color:#fff;font-weight:800;font-size:11px;border-radius:999px;padding:3px 8px}
+.bb-final{background:#00A569;color:#fff;font-weight:800;font-size:12px;border-radius:999px;padding:2px 9px}
+.bb-finalnote{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 12px;margin:8px 0;font-size:14px}
+.fin{display:grid;gap:10px}.fin-main{width:100%;max-width:360px;border-radius:14px;box-shadow:0 10px 30px rgba(0,15,150,.2)}
+.fin-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.fin-row.cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+.fin-row figure{margin:0;display:grid;gap:4px}.fin-row img{width:100%;border-radius:8px;border:1px solid #D5DAF0}
+.fin-row figcaption{font-size:12px;font-weight:800;color:#1A1A2E;display:grid;gap:3px}.fin-row figcaption small{color:#3D4060;font-weight:600}.fin-h{margin:4px 0 0;font-weight:800;font-size:13px;color:#000F96}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -3990,6 +3998,22 @@ const REASSIGN = {
 const TESTER = 'Ridhima';
 const TRACK_TO_OMAR = ['MCR-QS','APP-S1','APP-G1','APP-H1','RTI','HB-D1','HB-D2','HB-D5','HB-E8','HB-E9','HB-E21','HB-G9','INV-W3','HB-W6','APP-EV'];
 
+/* ================= MCR-META: the final four ads (24 Nov 2026) ================= */
+(function(){
+  const meta = fbk('MCR-META'); if(!meta) return;
+  const files = ['A_pencil-marks','B_receipt','C_mum','D_grew-up-here'];
+  meta.final = {date:'2026-11-24', note:'These four are the final Meta ads for Manchester. Any change to the words or pictures goes back through Anouar, then SJ.'};
+  meta.ad.variants.forEach((v,i)=>{
+    const f = 'fig/ads/MCR_META_'+files[i];
+    v.img = {sq:f+'_1x1.png', feed:f+'_4x5.png', story:f+'_9x16.png'};
+    if(i===3) v.img.cards = [1,2,3,4].map(n=>f+'_card'+n+'.png');
+    const d = v.lp && LPDEF[v.lp];
+    if(d){ const content = (v.link||'').split('utm_content=')[1] || ('meta_'+files[i].split('_')[1]); v.link = 'https://crowdtolive.bayuti.com'+d.path+'?utm_source=meta&utm_medium=paid_social&utm_campaign=hb_mcr_launch&utm_content='+content; }
+  });
+  meta.links = meta.ad.variants.map(v=>[v.name, v.link]);
+  meta.link = meta.links[0][1];
+})();
+
 </script>
 <script>
 
@@ -4297,7 +4321,8 @@ function drawer(id){
   const yn = (lab, to, kind) => { if(!lab && !to) return ''; const t = to && findBlock(to); return `<div class="bb-yn ${kind}"><span>${kind==='y'?'If they do it':'If they don\'t'}</span><b>${esc(lab||'')}</b>${t?`<button type="button" class="lnk" data-open="${t.id}">→ ${t.id} · ${esc(titleOf(t))}</button>`:`<em>${kind==='y'?'Next stage':'Stops here (Flow 6 after 21 quiet days)'}</em>`}</div>`; };
   const reg = (F.reg && TYPE[b.type].set==='copy') || (E && E.reg);
   return `<div class="bb-panel" aria-label="${esc(b.t)}">
-   <div class="bb-dr-head"><div><button type="button" class="bb-id bb-idbtn" data-copylink="${b.id}" title="Copy a link straight to ${b.id}">${b.id} 🔗</button> <span class="bb-type">${TYPE[b.type].n}</span>${reg?' <span class="bb-reg">Regulated</span>':''}${jn?` <span class="bb-type">${esc(jn.L.name)} · ${esc(jn.S.t)}</span>`:''}<h3>${esc(b.t)}</h3>${E?`<p class="bb-subj">“${esc(sampleOf(E.subject))}”</p>`:''}</div><div class="bb-headbtns">${teamsBtn(b)}<button type="button" class="bb-x" data-close aria-label="Close and show alerts">✕</button></div></div>
+   <div class="bb-dr-head"><div><button type="button" class="bb-id bb-idbtn" data-copylink="${b.id}" title="Copy a link straight to ${b.id}">${b.id} 🔗</button> <span class="bb-type">${TYPE[b.type].n}</span>${b.final?' <span class="bb-final">✓ Final ads</span>':''}${reg?' <span class="bb-reg">Regulated</span>':''}${jn?` <span class="bb-type">${esc(jn.L.name)} · ${esc(jn.S.t)}</span>`:''}<h3>${esc(b.t)}</h3>${E?`<p class="bb-subj">“${esc(sampleOf(E.subject))}”</p>`:''}</div><div class="bb-headbtns">${teamsBtn(b)}<button type="button" class="bb-x" data-close aria-label="Close and show alerts">✕</button></div></div>
+   ${b.final?`<p class="bb-finalnote">✓ ${esc(b.final.note)}</p>`:''}
    <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled title="Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can approve"':''} ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?`aria-disabled="true" data-wait="1" title="Waits for: ${esc(tickLabel(b,tickBlocked(b,c)))}"`:''}><i class="ck-n">${cs.indexOf(c)+1}</i> ${esc(tickLabel(b,c))}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
    <div class="bb-duerow st-${st}"><label for="due-${b.id}">Due</label><input type="date" id="due-${b.id}" data-due="${b.id}" value="${dueOf(b)||''}" ${ST.canWrite?'':'disabled'}><span class="bb-state">${st==='done'?'Done':st==='overdue'?'Overdue':st==='soon'?'Due soon':'On track'}</span>${typeof phaseOf==='function'&&phaseOf(b.id)?`<span class="bb-phase">${esc(phaseOf(b.id))}</span>`:''}
     ${(()=>{ const n = nextStep(b); return n ? `<button type="button" class="btn" data-ping="${b.id}" ${ST.canWrite?'':'disabled'}>🔔 Remind ${esc(n.who)}</button><button type="button" class="btn teams-r" data-teamsr="${b.id}" title="Opens Teams with a message to ${esc(n.who)}">${TEAMS_ICON} Remind in Teams</button>` : ''; })()}</div>
@@ -4574,9 +4599,17 @@ function adNums(bid, base, plat){
    <div class="az-ng">${ef(bid, base+'~n~spend', 'Spent (£)', 'num', '')}${ef(bid, base+'~n~views', gl('Impressions','Views'), 'num', '')}${ef(bid, base+'~n~clicks', 'Clicks', 'num', '')}</div>
    <dl class="az-calc"><div><dt>Real click rate</dt><dd>${actr==null?'·':actr.toFixed(2)+'%'} ${inOut(g('ctr'), actr)}</dd></div><div><dt>Real cost a click</dt><dd>${acpc==null?'·':money(acpc)} ${inOut(cpc, acpc, true)}</dd></div></dl></div>`;
 }
+function finalFiles(v){
+  const dl = (u, l) => `<a class="btn sm" href="${u}" download>${l}</a>`;
+  const fileName = u => u.split('/').pop();
+  return `<div class="fin"><img class="fin-main" src="${v.img.feed}" alt="${esc(v.name)}, feed size">
+    <div class="fin-row">${[['sq','Square 1:1','1080 × 1080'],['feed','Feed 4:5','1080 × 1350'],['story','Stories and Reels 9:16','1080 × 1920']].map(([k,l,d])=>`<figure><img src="${v.img[k]}" alt="${l}"><figcaption>${l}<small>${d}</small>${dl(v.img[k],'⬇ Download')}</figcaption></figure>`).join('')}</div>
+    ${v.img.cards?`<p class="fin-h">Carousel cards (1080 × 1080, in this order)</p><div class="fin-row cards">${v.img.cards.map((c,n)=>`<figure><img src="${c}" alt="Card ${n+1}"><figcaption>Card ${n+1}${dl(c,'⬇')}</figcaption></figure>`).join('')}</div>`:''}
+    <button type="button" class="btn sm" data-copytxt="${esc(['Primary text:\n'+v.primary,'Headline: '+v.headline,'Description: '+v.desc,'Call to action: '+v.cta,'Website URL: '+v.link].join('\n\n'))}">Copy everything for Ads Manager</button></div>`;
+}
 function wayItems(b){
   const a = b.ad || {}, bid = b.id, items = [];
-  if(b.platform==='meta') (a.variants||[]).forEach((v,i)=>items.push([v.name, `<div class="az-mock"><div class="ad-img"><b>${esc(v.bigline)}</b><span>${esc(v.smallline)}</span><i>CrowdtoLive by Bayuti</i></div><p class="ad-vis">Picture: ${esc(v.visual)}</p></div>
+  if(b.platform==='meta') (a.variants||[]).forEach((v,i)=>items.push([v.name, `<div class="az-mock">${v.img?finalFiles(v):`<div class="ad-img"><b>${esc(v.bigline)}</b><span>${esc(v.smallline)}</span><i>CrowdtoLive by Bayuti</i></div>`}<p class="ad-vis">Picture: ${esc(v.visual)}</p></div>
      <div class="az-fields">${ef(bid,`ad~variants~${i}~primary`,'Main text','area')}${ef(bid,`ad~variants~${i}~headline`,'Headline','line')}${ef(bid,`ad~variants~${i}~desc`,'Line under the headline','line')}${ef(bid,`ad~variants~${i}~cta`,'Button text (the goal)','line')}
      <p class="az-utm">${gl('UTM')}: <code>${esc((v.link||'').split('utm_content=')[1]||'')}</code> <button type="button" class="lnk" data-copytxt="${esc(v.link||'')}">Copy link</button></p></div>${adNums(bid, `ad~variants~${i}`, 'meta')}`]));
   else if(b.platform==='tiktok') (a.videos||[]).forEach((v,i)=>items.push([v.name, `<div class="az-mock"><div class="ad-tt"><div class="ad-ttv"><b>${esc(v.bigline)}</b><span>${esc(v.smallline)}</span></div></div><p class="ad-vis">${esc(v.length)}</p></div>
@@ -4791,7 +4824,7 @@ function adStrip(b){
   if(sb.lp) h = cell(0, lpMock(sb), 'full lpc');
   else if(sb.guide) h = cell(0, `<span class="gdm"><small>Free guide · Manchester</small><b>From renting to <i>owning.</i></b><span>6 chapters · prints to PDF</span></span>`, 'full gdc');
   else if(sb.type==='video' && sb.nudgevid) h = cell(0, `<span class="ads-vid"><b>▶</b><span><strong>${esc(sb.t)}</strong><small>${esc(sb.length)} · sent when they still haven't acted</small></span></span>`, 'full');
-  else if(sb.platform==='meta' || (sb.platform==='meta' && a.variants)) h = (a.variants||[]).map((v,i)=>cell(i, `${v.persona?`<span class="ads-p">${esc(v.persona)}</span>`:''}<span class="ads-img"><b>${esc(v.bigline)}</b><small>${esc(v.smallline)}</small></span><span class="ads-h">${esc(v.headline)}</span><span class="ads-n">${esc(v.name)}${v.lp?` → ${esc(v.lp)}`:''}</span>`)).join('');
+  else if(sb.platform==='meta' || (sb.platform==='meta' && a.variants)) h = (a.variants||[]).map((v,i)=>cell(i, `${v.persona?`<span class="ads-p">${esc(v.persona)}</span>`:''}${sb.final?'<span class="ads-final">✓ Final</span>':''}${v.img?`<span class="ads-img real"><img src="${v.img.sq}" alt="${esc(v.name)}" loading="lazy"></span>`:`<span class="ads-img"><b>${esc(v.bigline)}</b><small>${esc(v.smallline)}</small>`}${v.img?'<span hidden>':''}</span><span class="ads-h">${esc(v.headline)}</span><span class="ads-n">${esc(v.name)}${v.lp?` → ${esc(v.lp)}`:''}</span>`)).join('');
   else if(sb.platform==='tiktok') h = (a.videos||[]).map((v,i)=>cell(i, `${v.persona?`<span class="ads-p">${esc(v.persona)}</span>`:''}<span class="ads-img tt"><b>${esc(v.bigline)}</b><small>${esc(v.smallline)}</small></span><span class="ads-n">${esc(v.name)}</span>`, 'tt')).join('');
   else if(sb.platform==='google') h = cell(0, `<span class="ads-g"><small>Sponsored · bayuti.com</small><b>${esc((a.headlines||[]).slice(0,2).join(' | '))}</b><span>${esc((a.descriptions||[])[0]||'')}</span></span>`, 'full');
   else if(sb.platform==='linkedin12') h = (a.posts||[]).map((p,i)=>cell(i, `<span class="ads-t"><i>${p.n}</i>${esc(p.hook)}</span>`, 'chip')).join('');
