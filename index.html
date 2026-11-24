@@ -726,6 +726,17 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .ap-list{list-style:none;margin:0;padding:0}.ap-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid #E3E6F5;padding:9px 0}
 .ap-row>div{min-width:0;flex:1}.ap-row .lnk{text-align:left;color:#1A1A2E;font-size:14.5px}.ap-row .lnk b{color:#000F96}.ap-row small{display:block;color:#3D4060;font-size:12.5px;margin-top:2px}
 .ap-btns{display:flex;gap:6px}.ap-lines{font-size:14px;color:#1A1A2E;margin:0}.ap-list.done .lnk{color:#00704A}
+.bb-search{position:relative;display:flex;gap:6px;align-items:center;flex:1 1 340px;max-width:520px}
+.bb-search input{flex:1;min-height:44px;border-radius:12px;border:2px solid #000F96;padding:0 12px;font-size:16px;color:#1A1A2E;background:#fff}
+.bb-search input:focus-visible{outline:3px solid #6B7CFF;outline-offset:1px}.bb-search .btn{min-height:44px;white-space:nowrap}
+#bb-qres{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:50;background:#fff;border:1px solid #CDD3EE;border-radius:14px;box-shadow:0 16px 40px rgba(0,15,150,.18);padding:6px;max-height:60vh;overflow:auto}
+.qr-item{display:block;width:100%;text-align:left;border:0;background:none;border-radius:10px;padding:9px 10px;font:15px/1.35 inherit;color:#1A1A2E;cursor:pointer}
+.qr-item:hover,.qr-item:focus-visible{background:#EEF0FF;outline:none}.qr-item b{color:#000F96;margin-right:6px}.qr-item small{display:block;color:#3D4060;font-size:12.5px}
+.qr-copy{color:#00704A;font-weight:700}.qr-all{border-top:1px solid #E3E6F5;border-radius:0 0 10px 10px;font-weight:700;color:#000F96}.qr-none{margin:8px 10px;color:#3D4060}
+.idlink{border:0;background:#EEF0FF;color:#000F96;font:700 0.92em/1.2 inherit;border-radius:6px;padding:1px 6px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.idlink:hover{background:#000F96;color:#fff}
+.bb-idbtn{cursor:pointer;border:0}.bb-idbtn:hover{background:#000F96;color:#fff}
+button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -735,7 +746,9 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .ctl-who-card button{min-height:44px;border-radius:12px;border:1.5px solid #C9CDF0;background:#F4F5FF;color:#000F96;font:700 16px system-ui,sans-serif;cursor:pointer}
 .ctl-who-card button:hover{background:#000F96;color:#fff}.ctl-who-card form{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .ctl-who-card label{width:100%;font-weight:700;font-size:14px}.ctl-who-card input{flex:1;min-height:44px;border-radius:12px;border:1.5px solid #C9CDF0;padding:0 12px;font-size:16px}
-.ctl-who-card form button{padding:0 18px}</style><script>window.CTL_STORE_URL='https://script.google.com/macros/s/AKfycbwp6Wj4OUJUKb7ujMp9NoaxSN4EpbG3rJcUoOoFMO3HmbmlRGQqlToFV0IIbyo3E9m7pg/exec';window.CTL_SEED={"checks": {"APP-Q2": {"Built": {"at": "2026-11-20T09:33:52.237Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": true}, "Live": {"at": "2026-11-20T09:33:56.838Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": true}, "Tested": {"at": "2026-11-20T09:33:55.425Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": true}, "Tracking live": {"at": "2026-11-20T09:33:53.704Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": true}, "block": "APP-Q2"}, "HB-W1": {"Built": {"at": "2026-11-18T17:37:43.884Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Live": {"at": "2026-11-18T17:37:47.901Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "SJ approved": {"at": "2026-11-18T17:37:46.184Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Tracking live": {"at": "2026-11-18T17:37:42.018Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "HB-W1"}, "MCR-EVT": {"Draft ready": {"at": "2026-11-20T09:33:31.171Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "MCR-EVT"}, "MCR-META": {"Anouar approved": {"at": "2026-11-20T12:57:10.584Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Draft ready": {"at": "2026-11-20T12:57:10.000Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Live": {"at": "2026-11-20T12:57:11.100Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "SJ approved": {"at": "2026-11-20T12:57:09.433Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Tracking live": {"at": "2026-11-20T12:57:08.434Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "MCR-META"}, "MCR-TIK": {"Draft ready": {"at": "2026-11-20T09:59:49.497Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "MCR-TIK"}, "MCR-WEB": {"Draft ready": {"at": "2026-11-20T09:33:33.338Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "MCR-WEB"}, "MCR-EM": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-EM"}, "MCR-GOO": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-GOO"}, "MCR-LI": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-LI"}, "MCR-PR": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-PR"}, "MCR-RT": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-RT"}, "MCR-RED": {"Draft ready": {"at": "2026-11-19T08:30:00Z", "by": "claude", "v": true}, "block": "MCR-RED"}, "MCR-TRADE": {"Draft ready": {"at": "2026-11-19T08:30:00Z", "by": "claude", "v": true}, "block": "MCR-TRADE"}, "MCR-UTM": {"Draft ready": {"at": "2026-11-19T08:30:00Z", "by": "claude", "v": true}, "block": "MCR-UTM"}}, "notes": {"s1r9x5wv3v2u9zg4our5": {"at": "2026-11-20T12:58:33.637Z", "block": "HB-W1T", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "text": "Dacry check the CTR ( fofee)"}}};</script><script>/* Runs only outside claude.ai: shared storage through the Google Sheet web app. */
+.ctl-who-card form button{padding:0 18px}
+.ctl-err{color:#9B1C10;font-weight:700;margin:6px 0;width:100%}.ctl-skip{background:#fff!important;color:#3D4060!important}
+.ctl-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:10000;background:#9B1C10;color:#fff;font:700 15px/1.4 system-ui,sans-serif;padding:12px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:90vw}</style><script>window.CTL_STORE_URL='https://script.google.com/macros/s/AKfycbwp6Wj4OUJUKb7ujMp9NoaxSN4EpbG3rJcUoOoFMO3HmbmlRGQqlToFV0IIbyo3E9m7pg/exec';window.CTL_SEED={"checks": {"APP-Q2": {"Built": {"at": "2026-11-20T09:33:52.237Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": true}, "Live": {"at": "2026-11-20T09:33:56.838Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": true}, "Tested": {"at": "2026-11-20T09:33:55.425Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": true}, "Tracking live": {"at": "2026-11-20T09:33:53.704Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": true}, "block": "APP-Q2"}, "HB-W1": {"Built": {"at": "2026-11-18T17:37:43.884Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Live": {"at": "2026-11-18T17:37:47.901Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "SJ approved": {"at": "2026-11-18T17:37:46.184Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Tracking live": {"at": "2026-11-18T17:37:42.018Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "HB-W1"}, "MCR-EVT": {"Draft ready": {"at": "2026-11-20T09:33:31.171Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "MCR-EVT"}, "MCR-META": {"Anouar approved": {"at": "2026-11-20T12:57:10.584Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Draft ready": {"at": "2026-11-20T12:57:10.000Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Live": {"at": "2026-11-20T12:57:11.100Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "SJ approved": {"at": "2026-11-20T12:57:09.433Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "Tracking live": {"at": "2026-11-20T12:57:08.434Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "MCR-META"}, "MCR-TIK": {"Draft ready": {"at": "2026-11-20T09:59:49.497Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "MCR-TIK"}, "MCR-WEB": {"Draft ready": {"at": "2026-11-20T09:33:33.338Z", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "v": false}, "block": "MCR-WEB"}, "MCR-EM": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-EM"}, "MCR-GOO": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-GOO"}, "MCR-LI": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-LI"}, "MCR-PR": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-PR"}, "MCR-RT": {"Draft ready": {"at": "2026-11-19T08:20:00Z", "by": "claude", "v": true}, "block": "MCR-RT"}, "MCR-RED": {"Draft ready": {"at": "2026-11-19T08:30:00Z", "by": "claude", "v": true}, "block": "MCR-RED"}, "MCR-TRADE": {"Draft ready": {"at": "2026-11-19T08:30:00Z", "by": "claude", "v": true}, "block": "MCR-TRADE"}, "MCR-UTM": {"Draft ready": {"at": "2026-11-19T08:30:00Z", "by": "claude", "v": true}, "block": "MCR-UTM"}}, "notes": {"s1r9x5wv3v2u9zg4our5": {"at": "2026-11-20T12:58:33.637Z", "block": "HB-W1T", "by": "u_YwwPJjEO6atWMwbXJNd8Uw", "text": "Dacry check the CTR ( fofee)"}}};</script><script>/* Runs only outside claude.ai: shared storage through the Google Sheet web app. */
 (function(){
   if(window.claude && window.claude.use) return;
   var STORE = window.CTL_STORE_URL || '';
@@ -752,10 +765,13 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
     if(s.lim) docs = docs.slice(-s.lim);
     try{ s.cb({docs:docs}); }catch(e){ console.error(e); }
   }
+  function key(){ try{ return localStorage.getItem('ctl-key')||''; }catch(e){ return ''; } }
+  function toast(m){ var d=document.createElement('div'); d.className='ctl-toast'; d.setAttribute('role','alert'); d.textContent=m; document.body.appendChild(d); setTimeout(function(){ d.remove(); }, 6000); }
   function post(body){
     if(!STORE) return Promise.reject(new Error('Shared storage is not set up yet'));
+    body.me = me(); body.key = key();
     return fetch(STORE, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(body)})
-      .then(function(r){ return r.json(); }).then(function(j){ if(!j.ok) throw new Error(j.error||'save failed'); setTimeout(pull, 300); return j; });
+      .then(function(r){ return r.json(); }).then(function(j){ if(!j.ok){ if(j.error==='not allowed'){ toast(j.message||'Only the approver can do that.'); cache=null; pull(); } throw new Error(j.error||'save failed'); } setTimeout(pull, 300); return j; });
   }
   function local(col, id, data){ cache = cache||{}; (cache[col]=cache[col]||{})[id] = data; subs.forEach(function(s){ if(s.col===col) fire(s); }); }
   function q(col, ob, lim){ return {
@@ -786,9 +802,17 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
     var w = document.createElement('div'); w.id='ctl-who';
     w.innerHTML = '<div class="ctl-who-card" role="dialog" aria-modal="true" aria-labelledby="ctl-who-h"><h2 id="ctl-who-h">Who are you?</h2><p>So everyone can see who ticked, approved or changed something. Asked once on this device.</p><div class="ctl-who-g">'+people.map(function(p){ return '<button type="button" data-n="'+p+'">'+p+'</button>'; }).join('')+'</div><form><label for="ctl-who-o">Someone else</label><input id="ctl-who-o" placeholder="Your first name" maxlength="30"><button type="submit">Go</button></form></div>';
     document.body.appendChild(w);
-    function pick(n){ n=(n||'').trim(); if(!n) return; try{ localStorage.setItem(LSN, n); }catch(e){} w.remove(); location.reload(); }
+    function save(n,k){ try{ localStorage.setItem(LSN, n); if(k) localStorage.setItem('ctl-key', k); else localStorage.removeItem('ctl-key'); }catch(e){} w.remove(); location.reload(); }
+    function pick(n){ n=(n||'').trim(); if(!n) return;
+      if(n!=='Anouar' && n!=='SJ'){ save(n); return; }
+      var c=w.querySelector('.ctl-who-card'); c.innerHTML='<h2 id="ctl-who-h">Hi '+n+'</h2><p>Approvals in your name need your approval key. Fofee sends it to you privately. You only enter it once on this device.</p><form class="ctl-key"><label for="ctl-k">Your approval key</label><input id="ctl-k" autocomplete="off" required><p class="ctl-err" role="alert"></p><button type="submit">Check and continue</button><button type="button" class="ctl-skip">Continue without approving</button></form>';
+      c.querySelector('.ctl-skip').addEventListener('click', function(){ save(n); });
+      c.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var k=c.querySelector('#ctl-k').value.trim(), er=c.querySelector('.ctl-err'); er.textContent='Checking…';
+        fetch(STORE+'?check=1&who='+encodeURIComponent(n)+'&key='+encodeURIComponent(k)).then(function(r){ return r.json(); }).then(function(j){ if(j.ok&&j.valid) save(n,k); else er.textContent='That key is not right. Check it with Fofee.'; }).catch(function(){ er.textContent='Could not check the key. Try again.'; }); });
+      c.querySelector('#ctl-k').focus();
+    }
     w.addEventListener('click', function(e){ var b=e.target.closest('[data-n]'); if(b) pick(b.dataset.n); });
-    w.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); pick(w.querySelector('input').value); });
+    w.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var v=w.querySelector('input').value.trim(); if(/^(anouar|sj)$/i.test(v)) v = v.toLowerCase()==='sj'?'SJ':'Anouar'; pick(v); });
   };
   document.addEventListener('DOMContentLoaded', function(){ if(STORE) window.CTL_ASK_NAME(); });
 })();
@@ -3983,9 +4007,17 @@ function gates(F){
 }
 const flowOf = id => FLOWS.find(f=>f.id===id);
 function blocksOf(F, withGates){ let all=[]; SECTIONS.forEach(([k])=>{ if(F.sections[k]) all = all.concat(F.sections[k].map(b=>Object.assign(b,{sec:k}))); }); if(withGates) all = all.concat(gates(F).map(b=>Object.assign(b,{sec:'criteria'}))); return all; }
-const checksOf = b => b.checks || ((b.id.startsWith('INV-') && TYPE[b.type].set==='copy') || b.type==='email' ? ['Built','Tracking live','Anouar approved','SJ approved','Live'] : CHECKSETS[TYPE[b.type].set]);
+const withAn = cs => { if(!cs || cs.includes('Anouar approved')) return cs; const k = WITHAN.get(cs); if(k) return k; const o = cs.slice(), i = o.indexOf('SJ approved'), j = o.indexOf('Live'); o.splice(i>=0?i:(j>=0?j:o.length), 0, 'Anouar approved'); WITHAN.set(cs, o); return o; };
+const WITHAN = new Map();
+const checksOf = b => withAn(checksOf0(b));
+const checksOf0 = b => b.checks || ((b.id.startsWith('INV-') && TYPE[b.type].set==='copy') || b.type==='email' ? ['Built','Tracking live','Anouar approved','SJ approved','Live'] : CHECKSETS[TYPE[b.type].set]);
 const isDone = (b,c) => !!(ST.checks[b.id] && ST.checks[b.id][c] && ST.checks[b.id][c].v);
 const doneCount = b => checksOf(b).filter(c=>isDone(b,c)).length;
+const HOSTED = !!window.CTL_STORE_URL;
+const meName = () => { try{ return localStorage.getItem('ctl-me')||''; }catch(e){ return ''; } };
+const hasKey = () => { try{ return !!localStorage.getItem('ctl-key'); }catch(e){ return false; } };
+const canApprove = w => !HOSTED || (hasKey() && meName()===(w==='an'||w==='Anouar approved'?'Anouar':'SJ'));
+const apprLock = w => canApprove(w) ? '' : `disabled title="Only ${w==='an'||w==='Anouar approved'?'Anouar':'SJ'} can approve (with their approval key)"`;
 const notesFor = id => ST.notes.filter(n=>n.block===id).sort((a,b)=>a.at<b.at?-1:1);
 const initials = n => (n||'?').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
 function who(id){ return id==='local' ? 'You (this device)' : id==='claude' ? 'Claude' : (ST.names[id] || 'Someone'); }
@@ -3998,6 +4030,9 @@ function applyReassign(){
 }
 async function connect(){
   applyReassign();
+  try{ const bx = new URLSearchParams(location.search).get('box'); if(bx){ ST.open = bx; const f = FLOWS.find(F=>blocksOf(F,true).some(b=>b.id===bx)); if(f) ST.flow = f.id; if(!['journey','mcr','build','open','copy','approve'].includes(ST.view)) ST.view = 'build'; if(!location.hash) location.hash = 'build'; } }catch(e){}
+  document.addEventListener('click', e=>{ const r = document.getElementById('bb-qres'); if(r && !e.target.closest('.bb-search')) r.hidden = true; });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ const r = document.getElementById('bb-qres'); if(r) r.hidden = true; } });
   localLoad();
   try{
     const [db, user] = await Promise.all([claude.use('db'), claude.use('user')]);
@@ -4026,6 +4061,7 @@ async function resolveNames(){
 const writing = {};
 async function toggleCheck(b, c){
   if(!ST.canWrite) return;
+  if((c==='Anouar approved'||c==='SJ approved') && !canApprove(c)){ alertBox('Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can tick this, using their approval key.'); return; }
   const cur = Object.assign({}, ST.checks[b.id]||{});
   cur[c] = {v: !isDone(b,c), by: ST.me||'local', at: new Date().toISOString()};
   cur.block = b.id;
@@ -4148,7 +4184,7 @@ function card(b, F){
     ${(b.exp||[]).length?`<dl class="bb-exp">${b.exp.slice(0,3).map(e=>`<div><dt>${esc(e[0])}</dt><dd>${fmtV(e[1],e[2])}</dd></div>`).join('')}</dl>`:''}
    </button>
    <div class="bb-foot"><span class="bb-owner" title="${esc(PEOPLE[b.owner]?PEOPLE[b.owner].role:'')}"><i>${initials(b.owner)}</i>${esc(b.owner)}</span>
-    <span class="bb-checks">${cs.map(c=>`<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" title="${esc(c)}${isDone(b,c)?' · '+esc(who(ST.checks[b.id][c].by))+' · '+ago(ST.checks[b.id][c].at):''}" ${ST.canWrite?'':'disabled'}>${esc(c)}</button>`).join('')}</span>
+    <span class="bb-checks">${cs.map(c=>`<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled':''} title="${esc(c)}${isDone(b,c)?' · '+esc(who(ST.checks[b.id][c].by))+' · '+ago(ST.checks[b.id][c].at):''}" ${ST.canWrite?'':'disabled'}>${esc(c)}</button>`).join('')}</span>
     <button type="button" class="bb-cm" data-open="${b.id}" aria-label="${n} comments">💬 ${n}</button></div>
   </article>`;
 }
@@ -4242,8 +4278,8 @@ function drawer(id){
   const yn = (lab, to, kind) => { if(!lab && !to) return ''; const t = to && findBlock(to); return `<div class="bb-yn ${kind}"><span>${kind==='y'?'If they do it':'If they don\'t'}</span><b>${esc(lab||'')}</b>${t?`<button type="button" class="lnk" data-open="${t.id}">→ ${t.id} · ${esc(titleOf(t))}</button>`:`<em>${kind==='y'?'Next stage':'Stops here (Flow 6 after 21 quiet days)'}</em>`}</div>`; };
   const reg = (F.reg && TYPE[b.type].set==='copy') || (E && E.reg);
   return `<div class="bb-panel" aria-label="${esc(b.t)}">
-   <div class="bb-dr-head"><div><span class="bb-id">${b.id}</span> <span class="bb-type">${TYPE[b.type].n}</span>${reg?' <span class="bb-reg">Regulated</span>':''}${jn?` <span class="bb-type">${esc(jn.L.name)} · ${esc(jn.S.t)}</span>`:''}<h3>${esc(b.t)}</h3>${E?`<p class="bb-subj">“${esc(sampleOf(E.subject))}”</p>`:''}</div><div class="bb-headbtns">${teamsBtn(b)}<button type="button" class="bb-x" data-close aria-label="Close and show alerts">✕</button></div></div>
-   <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${ST.canWrite?'':'disabled'}>${esc(c)}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
+   <div class="bb-dr-head"><div><button type="button" class="bb-id bb-idbtn" data-copylink="${b.id}" title="Copy a link straight to ${b.id}">${b.id} 🔗</button> <span class="bb-type">${TYPE[b.type].n}</span>${reg?' <span class="bb-reg">Regulated</span>':''}${jn?` <span class="bb-type">${esc(jn.L.name)} · ${esc(jn.S.t)}</span>`:''}<h3>${esc(b.t)}</h3>${E?`<p class="bb-subj">“${esc(sampleOf(E.subject))}”</p>`:''}</div><div class="bb-headbtns">${teamsBtn(b)}<button type="button" class="bb-x" data-close aria-label="Close and show alerts">✕</button></div></div>
+   <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled title="Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can approve"':''} ${ST.canWrite?'':'disabled'}>${esc(c)}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
    <div class="bb-duerow st-${st}"><label for="due-${b.id}">Due</label><input type="date" id="due-${b.id}" data-due="${b.id}" value="${dueOf(b)||''}" ${ST.canWrite?'':'disabled'}><span class="bb-state">${st==='done'?'Done':st==='overdue'?'Overdue':st==='soon'?'Due soon':'On track'}</span>${typeof phaseOf==='function'&&phaseOf(b.id)?`<span class="bb-phase">${esc(phaseOf(b.id))}</span>`:''}
     <button type="button" class="btn" data-ping="${b.id}" ${ST.canWrite&&!isComplete(b)?'':'disabled'}>🔔 Remind ${esc(b.owner)}</button></div>
    ${pend.length?`<p class="bb-pend">${pend.length} reminder${pend.length>1?'s':''} queued for the next 08:45 run.</p>`:''}
@@ -4345,10 +4381,10 @@ function render(){
     <div class="bb-seg" role="tablist" aria-label="View" ${ST.solo?'hidden':''}>${views.map(([v,l])=>`<button type="button" role="tab" aria-selected="${v===ST.view}" data-view="${v}">${l}</button>`).join('')}</div>
     ${ST.solo?'':`<button type="button" class="bb-bell${ac?' on':''}" data-view="alerts" aria-label="${ac} alerts">🔔 <b>${ac}</b></button>`}
     <label class="sr" for="bb-owner">Filter by owner</label><select id="bb-owner" class="jump"><option value="">Everyone</option>${allOwners.map(o=>`<option ${o===ST.owner?'selected':''}>${esc(o)}</option>`).join('')}</select>
-    <label class="sr" for="bb-q">Search blocks</label><input id="bb-q" type="search" placeholder="Search" value="${esc(ST.q)}">
+    <form class="bb-search" role="search" id="bb-sform"><label class="sr" for="bb-q">Search the whole board</label><input id="bb-q" type="search" placeholder="Search: a code like LP-P, a word, a name" value="${esc(ST.q)}" autocomplete="off" aria-controls="bb-qres"><button type="submit" class="btn" aria-label="Search">🔍 Search</button>${ST.q?'<button type="button" class="btn" data-qclear="1">Clear</button>':''}<div id="bb-qres" role="listbox" hidden></div></form>
     <button type="button" class="btn" id="bb-report">Daily report</button>
     ${ST.view==='build'?`<nav class="bb-jump" aria-label="Sections">${SECTIONS.map(([k,t])=>`<a href="#" data-goto="sec-${F.id}-${k}">${esc(t)}</a>`).join('')}</nav>`:''}
-    <p class="bb-status">${esc(status)}</p></div>
+    <p class="bb-status">${esc(status)}${HOSTED&&meName()?` · You are <b>${esc(meName())}</b>${(meName()==='Anouar'||meName()==='SJ')?(hasKey()?' (approver)':' (no approval key yet)'):''} <button type="button" class="lnk" data-whoreset="1">Change</button>`:''}</p></div>
    <div class="bb-layout${!ST.open&&ST.fold?' folded':''}"><div id="bb-main">${body}
    <p class="bb-src">Benchmarks: our HubSpot sends (Jul 2026: 20 to 23.5% open, 0.9 to 1.5% click); Omnisend 2025 (automations 4.66% click vs campaigns 0.74%; welcome emails 35.5% open); GetResponse 2024 (welcome emails 83.6% open, inflated by Apple Mail Privacy); WordStream/LocalIQ 2025 (Meta traffic CTR 1.71%); Superads (Meta finance cost per lead about $39). Opens are inflated by Apple Mail Privacy, so clicks and goal events decide In or Out.</p></div>
    <aside id="bb-side" class="${ST.open?'has':''}${!ST.open&&ST.fold?' fold':''}" aria-label="Ticks, comments and details">${ST.open?drawer(ST.open):ST.fold?`<button type="button" class="bb-unfold" data-fold="0" aria-label="Show alerts and build plan"><span>🔔</span><b>${ac}</b><i>Alerts and plan</i></button>`:panelHome(F)}</aside></div>
@@ -4359,6 +4395,7 @@ function render(){
   if(keep){ const k = document.getElementById(keep); if(k){ k.focus({preventScroll:true}); if(k.setSelectionRange && k.type==='search'){ const L=k.value.length; k.setSelectionRange(L,L); } } }
   if(ST.view==='journey'||ST.view==='mcr') requestAnimationFrame(drawLinks);
   requestAnimationFrame(fillCode);
+  requestAnimationFrame(()=>{ linkify(document.getElementById('bb-side')); document.querySelectorAll('#bb-main .bb-explain, #bb-main .ot-head p, #bb-main .bb-sh p').forEach(linkify); });
 }
 function viewMcr(F){
   const bl = F.sections.mcr || []; const tot = bl.reduce((a,b)=>a+checksOf(b).length,0), done = bl.reduce((a,b)=>a+doneCount(b),0), pct = tot?Math.round(done/tot*100):0;
@@ -4496,8 +4533,8 @@ function reviewBar(bid, i, label){
   const bb = findBlock(bid), needAn = !bb || checksOf(bb).includes('Anouar approved');
   const pill = (x, who_) => x ? `<span class="az-rv r-${x.s}">${x.s==='approved'?'✓ Approved':'✕ Changes needed'} · ${esc(who(x.by))} · ${ago(x.at)}</span>` : `<span class="az-rv r-none">Not reviewed</span>`;
   return `<div class="az-review" data-rk="${bid}|${i}">
-   <div class="az-rrow"><b>Anouar</b>${pill(r.an)}<button type="button" class="az-ok" data-rev="${bid}|${i}|an|approved|${esc(label)}" ${dis}>Approve</button><button type="button" class="az-no" data-rev="${bid}|${i}|an|rejected|${esc(label)}" ${sj==='approved'&&ST.canWrite?'':'disabled'}>Needs changes</button></div>
-   <div class="az-rrow"><b>SJ</b>${pill(r.sj)}<button type="button" class="az-ok" data-rev="${bid}|${i}|sj|approved|${esc(label)}" ${(!needAn || an==='approved')&&ST.canWrite?'':'disabled'} title="${!needAn || an==='approved'?'':'Anouar approves first'}">Approve</button><button type="button" class="az-no" data-rev="${bid}|${i}|sj|rejected|${esc(label)}" ${dis}>Needs changes</button></div>
+   <div class="az-rrow"><b>Anouar</b>${pill(r.an)}<button type="button" class="az-ok" data-rev="${bid}|${i}|an|approved|${esc(label)}" ${apprLock('an')} ${dis}>Approve</button><button type="button" class="az-no" data-rev="${bid}|${i}|an|rejected|${esc(label)}" ${apprLock('an')} ${sj==='approved'&&ST.canWrite?'':'disabled'}>Needs changes</button></div>
+   <div class="az-rrow"><b>SJ</b>${pill(r.sj)}<button type="button" class="az-ok" data-rev="${bid}|${i}|sj|approved|${esc(label)}" ${apprLock('sj')} ${(!needAn || an==='approved')&&ST.canWrite?'':'disabled'} title="${!needAn || an==='approved'?'':'Anouar approves first'}">Approve</button><button type="button" class="az-no" data-rev="${bid}|${i}|sj|rejected|${esc(label)}" ${apprLock('sj')} ${dis}>Needs changes</button></div>
    <form class="az-cf" data-inote="${bid}|${esc(label)}"><label class="sr" for="c-${bid}-${i}">Comment on ${esc(label)}</label><input id="c-${bid}-${i}" type="text" placeholder="Comment or reason (shows to everyone)" ${dis}><button class="btn" type="submit" ${dis}>Add</button></form>
    ${notesFor(bid).filter(n=>n.text.startsWith('['+label+']')).slice(-3).map(n=>`<p class="az-note"><b>${esc(who(n.by))}</b> ${esc(n.text.slice(label.length+3))} <span>${ago(n.at)}</span></p>`).join('')}
   </div>`;
@@ -4614,7 +4651,7 @@ function viewApprove(F){
     const lnW = who_==='an' ? lst.filter(k=>k==='wait'||k==='changed').length : lst.filter(k=>k==='an').length;
     const done = blocks.filter(b=>isDone(b,chk)).map(b=>({b, x:ST.checks[b.id][chk]})).sort((a,c)=>a.x.at<c.x.at?1:-1);
     const total = boxW.length + pcW.length + lnW;
-    const boxRow = b => `<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b> ${esc(b.t)}</button><small>${esc(b.owner)}${dueOf(b)?' · due '+fmtDate(dueOf(b)):''}${who_==='sj'&&isDone(b,'Anouar approved')?' · Anouar approved '+ago(ST.checks[b.id]['Anouar approved'].at):''}</small></div><span class="ap-btns"><button type="button" class="btn sm" data-open="${b.id}">Review</button><button type="button" class="btn sm ok" data-ck="${b.id}" data-c="${chk}" ${ST.canWrite?'':'disabled'}>✓ Approve</button></span></li>`;
+    const boxRow = b => `<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b> ${esc(b.t)}</button><small>${esc(b.owner)}${dueOf(b)?' · due '+fmtDate(dueOf(b)):''}${who_==='sj'&&isDone(b,'Anouar approved')?' · Anouar approved '+ago(ST.checks[b.id]['Anouar approved'].at):''}</small></div><span class="ap-btns"><button type="button" class="btn sm" data-open="${b.id}">Review</button><button type="button" class="btn sm ok" data-ck="${b.id}" data-c="${chk}" ${ST.canWrite?'':'disabled'} ${apprLock(chk)}>✓ Approve</button></span></li>`;
     const pcRow = p => `<li class="ap-row"><div><button type="button" class="lnk" data-goway="${p.bid}"><b>${esc(p.label)}</b> · ${esc(p.name)}</button>${who_==='sj'&&p.r.an?`<small>Anouar approved · ${ago2(p.r.an)}</small>`:''}</div><span class="ap-btns"><button type="button" class="btn sm" data-goway="${p.bid}">Open and review</button></span></li>`;
     return `<section class="ap-col ap-${who_}"><div class="ap-head"><h3>${name}</h3><p>${who_==='an'?'Approves first. Everything below is ready for you.':'Approves after Anouar. Only things Anouar has approved show here.'}</p><b class="ap-big">${total}</b><span>waiting</span></div>
      <h4>Boxes to approve <span class="az-cnt">${boxW.length}</span></h4>${boxW.length?`<ul class="ap-list">${boxW.map(boxRow).join('')}</ul>`:'<p class="bb-empty">Nothing waiting.</p>'}
@@ -4782,7 +4819,7 @@ function lpMock(b){
 }
 
 /* share any box to Microsoft Teams with Teams' own share link: no connector, no login on our side */
-const BOARD_URL = location.href.split('#')[0];
+const BOARD_URL = location.origin + location.pathname;
 function teamsMsg(b){
   const [k, lab] = plainStatus(b); const ch = changesAsked().filter(x=>x.bid===srcOf(b));
   return 'CrowdtoLive board · '+b.id+' · '+b.t+'\nStatus: '+lab+(ch.length?'\n⚠ '+ch.length+' change'+(ch.length>1?'s':'')+' asked by '+ch[0].who+(ch[0].note?': "'+ch[0].note+'"':''):'')+'\nOwner: '+b.owner+(dueOf(b)?' · due '+dueOf(b):'')+'\nOpen the board and search '+b.id+'.';
@@ -5022,8 +5059,8 @@ function viewCopy(F){
        <textarea id="cl-${r.rid}" rows="${rowsN}" data-edit="${esc(r.bid)}|${esc(r.path)}|txt" data-lim="${r.lim||0}" ${dis}>${esc(r.v)}</textarea>
        <div class="cl-meta"><span class="cl-n${r.lim&&n>r.lim?' over':''}" data-n>${n}${r.lim?' of '+r.lim:''} characters</span>${fl.map(x=>`<span class="cl-flag">⚠ ${esc(x)}</span>`).join('')}</div></td>
      <td class="cl-rev"><span class="cl-st st-${k}">${esc(lab)}</span>
-       <div class="cl-btns"><span>Anouar</span><button type="button" class="btn sm ok${d.an&&d.an.s==='approved'&&k!=='changed'?' on':''}" data-cl="${r.rid}|an|approved" ${dis}>Approve</button><button type="button" class="btn sm no${d.an&&d.an.s==='rejected'?' on':''}" data-cl="${r.rid}|an|rejected" ${dis}>Changes</button>${by(d.an)}</div>
-       <div class="cl-btns"><span>SJ</span><button type="button" class="btn sm ok${d.sj&&d.sj.s==='approved'&&d.sj.txt===r.v?' on':''}" data-cl="${r.rid}|sj|approved" ${d.an&&d.an.s==='approved'&&k!=='changed'?dis:'disabled'}>Approve</button><button type="button" class="btn sm no${d.sj&&d.sj.s==='rejected'?' on':''}" data-cl="${r.rid}|sj|rejected" ${dis}>Changes</button>${by(d.sj)}</div>
+       <div class="cl-btns"><span>Anouar</span><button type="button" class="btn sm ok${d.an&&d.an.s==='approved'&&k!=='changed'?' on':''}" data-cl="${r.rid}|an|approved" ${apprLock('an')} ${dis}>Approve</button><button type="button" class="btn sm no${d.an&&d.an.s==='rejected'?' on':''}" data-cl="${r.rid}|an|rejected" ${apprLock('an')} ${dis}>Changes</button>${by(d.an)}</div>
+       <div class="cl-btns"><span>SJ</span><button type="button" class="btn sm ok${d.sj&&d.sj.s==='approved'&&d.sj.txt===r.v?' on':''}" data-cl="${r.rid}|sj|approved" ${apprLock('sj')} ${d.an&&d.an.s==='approved'&&k!=='changed'?dis:'disabled'}>Approve</button><button type="button" class="btn sm no${d.sj&&d.sj.s==='rejected'?' on':''}" data-cl="${r.rid}|sj|rejected" ${apprLock('sj')} ${dis}>Changes</button>${by(d.sj)}</div>
        ${k==='changes'||ST.clNote===r.rid?`<form class="cl-note" data-clnote="${r.rid}|${esc(r.owner)}"><label class="sr" for="cn-${r.rid}">What should change in ${esc(r.id)}</label><input id="cn-${r.rid}" placeholder="What should change?" maxlength="300"><button type="submit" class="btn sm">Send</button></form>`:''}
        ${notesFor(r.owner).filter(x=>(x.text||'').startsWith('['+r.id+']')).slice(-2).map(x=>`<p class="cl-c">💬 ${esc(x.text.slice(r.id.length+3))} <small>${esc(who(x.by))} · ${ago(x.at)}</small></p>`).join('')}
      </td></tr>`; };
@@ -5039,8 +5076,43 @@ function viewCopy(F){
 }
 
 function setZoom(z){ ST.zoom = Math.round(z*100)/100; try{ localStorage.setItem('ctl-zoom', ST.zoom); }catch(e){} const jr = document.getElementById('jr'); if(jr){ jr.style.zoom = ST.zoom; const lab = document.querySelector('[data-zoom="1"]'); if(lab) lab.textContent = Math.round(ST.zoom*100)+'%'; requestAnimationFrame(drawLinks); } else render(); }
+/* ---------- search the whole board ---------- */
+function searchHits(q){
+  q = (q||'').toLowerCase().trim(); if(q.length<2) return [];
+  const out = [], seen = new Set();
+  FLOWS.forEach(F=>blocksOf(F,true).forEach(b=>{ if(seen.has(b.id)) return; const id = b.id.toLowerCase(), t = (b.t||'').toLowerCase();
+    const hay = [id, t, (b.owner||'').toLowerCase(), (b.what||'').toLowerCase(), (b.when||'').toLowerCase(), (b.also||'').toLowerCase()].join(' ');
+    if(!hay.includes(q)) return; seen.add(b.id);
+    const score = id===q ? 0 : id.startsWith(q) ? 1 : t.includes(q) ? 2 : 3;
+    out.push({score, kind:'box', id:b.id, flow:F.id, t:b.t, sub:b.owner+(dueOf(b)?' · due '+fmtDate(dueOf(b)):'')}); }));
+  out.sort((a,c)=>a.score-c.score || (a.id<c.id?-1:1));
+  let lines = [];
+  if(typeof libRows==='function'){ lines = libRows().filter(r=>(r.id+' '+r.v).toLowerCase().includes(q)); }
+  return out.slice(0,10).concat(lines.length?[{kind:'copy', n:lines.length, q}]:[]);
+}
+function searchDrop(v){
+  const box = document.getElementById('bb-qres'); if(!box) return;
+  const hits = searchHits(v);
+  if(!hits.length){ box.hidden = !((v||'').trim().length>=2); box.innerHTML = (v||'').trim().length>=2 ? '<p class="qr-none">Nothing found. Try a code like HB-E1, or one word.</p>' : ''; return; }
+  box.innerHTML = hits.map((h,i)=> h.kind==='box' ? `<button type="button" role="option" class="qr-item" data-sres="${esc(h.id)}" data-sflow="${h.flow}"><b>${esc(h.id)}</b> ${esc(h.t)}<small>${esc(h.sub)}</small></button>` : `<button type="button" role="option" class="qr-item qr-copy" data-scopy="${esc(h.q)}">📝 ${h.n} line${h.n===1?'':'s'} in the Copy library mention "${esc(h.q)}"</button>`).join('') + `<button type="button" class="qr-item qr-all" data-sall="1">Show everything matching "${esc(v.trim())}" on this tab ↵</button>`;
+  box.hidden = false;
+}
+function linkify(root){
+  if(!root) return;
+  if(!linkify.re){ const ids = [...new Set(FLOWS.flatMap(F=>blocksOf(F,true).map(b=>b.id)))].sort((a,c)=>c.length-a.length); linkify.ids = new Set(ids); linkify.re = new RegExp('\\b('+ids.map(x=>x.replace(/[-]/g,'\\-')).join('|')+')\\b','g'); }
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {acceptNode:n=> n.parentElement.closest('button,a,input,textarea,select,option,label,.bb-id,script,style,svg,pre') ? NodeFilter.FILTER_REJECT : (linkify.re.lastIndex=0, linkify.re.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT)});
+  const nodes = []; while(w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(n=>{ const html = esc(n.nodeValue).replace(linkify.re, m=>`<button type="button" class="idlink" data-open="${m}">${m}</button>`); const span = document.createElement('span'); span.innerHTML = html; n.replaceWith(...span.childNodes); });
+}
+function boxLink(id){ return location.origin + location.pathname + '?box=' + encodeURIComponent(id); }
 function onClick(e){
   const t = e.target.closest('button, a, [data-close]'); if(!t || !document.getElementById('buildwrap').contains(t)) return;
+  if(t.dataset.qclear){ ST.q = ''; render(); return; }
+  if(t.dataset.whoreset){ try{ localStorage.removeItem('ctl-me'); localStorage.removeItem('ctl-key'); }catch(x){} location.reload(); return; }
+  if(t.dataset.copylink){ copyText(boxLink(t.dataset.copylink), 'Link to '+t.dataset.copylink+' copied. Anyone who opens it lands on this box.'); return; }
+  if(t.dataset.sres){ const r = document.getElementById('bb-qres'); if(r) r.hidden = true; ST.flow = t.dataset.sflow || ST.flow; if(['journey','mcr','dev','copy','approve','open','alerts','analytics','mix'].includes(ST.view)===false) ST.view = 'build'; ST.open = t.dataset.sres; render(); return; }
+  if(t.dataset.scopy){ ST.view = 'copy'; ST.clF = 'all'; ST.clG = ''; ST.q = t.dataset.scopy.toLowerCase(); render(); return; }
+  if(t.dataset.sall){ const q = document.getElementById('bb-q'); ST.q = (q&&q.value||'').toLowerCase().trim(); render(); return; }
   const F = flowOf(ST.flow);
   if(t.dataset.flow){ ST.flow = t.dataset.flow; ST.open=null; location.hash = ST.flow==='hb'?'build':'build-inv'; return; }
   if(t.dataset.view){ if(ST.solo && t.dataset.view!=='open'){ location.hash='build'; return; } ST.view = t.dataset.view; render(); const m=$('#bb-main'); if(m) m.scrollTop=0; if(t.dataset.gotoafter){ const s=document.getElementById(t.dataset.gotoafter); if(s) s.scrollIntoView({block:'start'}); } return; }
@@ -5091,7 +5163,7 @@ function copyText(txt, ok, showAlways){
 function onInput(e){
   const t = e.target;
   if(t.dataset.lim!=null && t.closest('.cl-row')){ const m = t.closest('td').querySelector('[data-n]'), L = +t.dataset.lim, n = clLen(t.value); if(m){ m.textContent = n+(L?' of '+L:'')+' characters'; m.classList.toggle('over', !!L && n>L); } }
-  if(t.id==='bb-q'){ ST.q = t.value.toLowerCase().trim(); clearTimeout(onInput.tm); onInput.tm = setTimeout(render, 250); }
+  if(t.id==='bb-q'){ searchDrop(t.value); }
 }
 function onChange(e){
   const t = e.target; const F = flowOf(ST.flow);
@@ -5104,6 +5176,7 @@ function onChange(e){
   if(t.dataset.due){ const b = blocksOf(F,true).find(x=>x.id===t.dataset.due); if(b && t.value) setDue(b, t.value); }
 }
 function onSubmit(e){
+  if(e.target.id==='bb-sform'){ e.preventDefault(); const q = document.getElementById('bb-q'); const hits = searchHits(q&&q.value); const first = hits.find(h=>h.kind==='box'); const v = (q&&q.value||'').trim(); if(first && v.length>=2 && first.id.toLowerCase()===v.toLowerCase()){ ST.flow = first.flow; ST.open = first.id; } else ST.q = v.toLowerCase(); render(); return; }
   const fc = e.target.closest('form[data-clnote]'); if(fc){ e.preventDefault(); const inp = fc.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [rid, bid] = fc.dataset.clnote.split('|'); const r = libRows().find(x=>x.rid===rid); inp.value=''; ST.clNote = null; addNote({id:bid}, '['+(r?r.id:rid)+'] '+v); return; }
   const fi = e.target.closest('form[data-inote]'); if(fi){ e.preventDefault(); const inp = fi.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [bid, label] = fi.dataset.inote.split('|'); inp.value=''; addNote({id:bid}, '['+label+'] '+v); return; }
   const f = e.target.closest('form[data-note]'); if(!f) return; e.preventDefault();
