@@ -738,6 +738,13 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .bb-idbtn{cursor:pointer;border:0}.bb-idbtn:hover{background:#000F96;color:#fff}
 button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
 .bb-ck[data-wait]{opacity:.5;border-style:dashed}.ck-n{font-style:normal;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#EEF0FF;color:#000F96;font-size:11px;font-weight:800;margin-right:2px}.bb-ck.on .ck-n{background:#00A569;color:#fff}
+.tm-box{background:#fff;border:1px solid #CDD3EE;border-radius:14px;padding:14px 16px;margin:0 0 14px;color:#1A1A2E}.tm-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tm-h h4{margin:0;display:flex;gap:8px;align-items:center;color:#000F96;font-size:16px}.tm-box>p{margin:6px 0 10px;font-size:14px;color:#3D4060}
+.tm-row{display:flex;flex-wrap:wrap;gap:8px}.tm-p{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:44px;border:1.5px solid #C9CDF0;background:#F6F7FF;border-radius:12px;padding:8px 12px;cursor:pointer;color:#1A1A2E;font:14px/1.3 inherit;text-align:left}
+.tm-p:hover{border-color:#5059C9;background:#EEF0FF}.tm-p b{color:#5059C9;font-size:15px}.tm-p span{font-size:12.5px;color:#3D4060}.tm-p i.late{font-style:normal;color:#9B1C10;font-weight:800}.tm-p.noemail{opacity:.75;border-style:dashed}
+.tm-emails{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin:0 0 12px;padding:10px;background:#F6F7FF;border-radius:10px}.tm-emails p{grid-column:1/-1;margin:0;font-size:13px}
+.tm-emails label{display:flex;flex-direction:column;font-weight:700;font-size:13px;gap:3px}.tm-emails input{min-height:40px;border-radius:8px;border:1.5px solid #C9CDF0;padding:0 8px;font-size:16px;color:#1A1A2E}.tm-emails .btn{align-self:end}
+.teams-r{display:inline-flex;align-items:center;gap:6px}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -4057,6 +4064,7 @@ async function connect(){
     db.collection('pings').orderBy('at').limit(500).onSnapshot(s=>{ ST.pings = s.docs.map(d=>Object.assign({id:d.id}, d.data())); render(); }, ()=>{});
     db.collection('edits').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.edits=o; applyEdits(); render(); }, ()=>{});
     db.collection('reviews').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.reviews=o; noticeReviews(o); render(); }, ()=>{});
+    db.collection('people').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.people=o; render(); }, ()=>{});
     db.collection('copyrev').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.copyrev=o; resolveNames(); render(); }, ()=>{});
     db.collection('counts').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.counts=o; render(); }, ()=>{});
     db.collection('notes').orderBy('at').limit(1000).onSnapshot(s=>{ ST.notes = s.docs.map(d=>Object.assign({id:d.id}, d.data())); resolveNames(); render(); }, ()=>{});
@@ -4292,7 +4300,7 @@ function drawer(id){
    <div class="bb-dr-head"><div><button type="button" class="bb-id bb-idbtn" data-copylink="${b.id}" title="Copy a link straight to ${b.id}">${b.id} 🔗</button> <span class="bb-type">${TYPE[b.type].n}</span>${reg?' <span class="bb-reg">Regulated</span>':''}${jn?` <span class="bb-type">${esc(jn.L.name)} · ${esc(jn.S.t)}</span>`:''}<h3>${esc(b.t)}</h3>${E?`<p class="bb-subj">“${esc(sampleOf(E.subject))}”</p>`:''}</div><div class="bb-headbtns">${teamsBtn(b)}<button type="button" class="bb-x" data-close aria-label="Close and show alerts">✕</button></div></div>
    <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled title="Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can approve"':''} ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?`aria-disabled="true" data-wait="1" title="Waits for: ${esc(tickLabel(b,tickBlocked(b,c)))}"`:''}><i class="ck-n">${cs.indexOf(c)+1}</i> ${esc(tickLabel(b,c))}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
    <div class="bb-duerow st-${st}"><label for="due-${b.id}">Due</label><input type="date" id="due-${b.id}" data-due="${b.id}" value="${dueOf(b)||''}" ${ST.canWrite?'':'disabled'}><span class="bb-state">${st==='done'?'Done':st==='overdue'?'Overdue':st==='soon'?'Due soon':'On track'}</span>${typeof phaseOf==='function'&&phaseOf(b.id)?`<span class="bb-phase">${esc(phaseOf(b.id))}</span>`:''}
-    <button type="button" class="btn" data-ping="${b.id}" ${ST.canWrite&&!isComplete(b)?'':'disabled'}>🔔 Remind ${esc(b.owner)}</button></div>
+    ${(()=>{ const n = nextStep(b); return n ? `<button type="button" class="btn" data-ping="${b.id}" ${ST.canWrite?'':'disabled'}>🔔 Remind ${esc(n.who)}</button><button type="button" class="btn teams-r" data-teamsr="${b.id}" title="Opens Teams with a message to ${esc(n.who)}">${TEAMS_ICON} Remind in Teams</button>` : ''; })()}</div>
    ${pend.length?`<p class="bb-pend">${pend.length} reminder${pend.length>1?'s':''} queued for the next 08:45 run.</p>`:''}
    ${jn&&!b.q?`<h5>${esc(jn.S.q)}</h5><div class="bb-yns">${yn(jn.n[1],jn.n[2],'y')}${yn(jn.n[3],jn.n[4],'n')}</div>`:''}
    ${b.q?qPanel(b):''}${b.lp?lpPanel(b):''}${b.guide?guidePanel(b):''}${b.id==='CALC-1'&&b.build?buildPanel(b).replace('The page is built · ready for Omar','The calculator · try it here')+reviewBar(b.id,0,'The calculator'):''}${b.nudgeMsg?nudgePanel(b):''}${b.today&&!b.q?`<div class="q-today"><div><b>${b.today[0]}</b><span>${esc(b.today[2])}</span></div></div>`:''}${adsPanel(b) || adPreview(b)}${trackBox(b)}
@@ -4952,6 +4960,13 @@ function viewOpen(F){
   return `<section class="bb-sec"><div class="bb-sh"><h3>Open tasks</h3><p>Everything not finished, in the order it has to happen: each task has a step number, and a task can only start when the tasks it waits on are done. Stage 1 can start now; stage 2 starts when its stage 1 tasks are done, and so on. ⛓ waits on something unfinished. ⚠ waits on something due after it, so the date can't hold.</p></div>
    <div class="ot-share"><button type="button" class="btn" data-copytxt="${BOARD_URL}">Copy the board link</button><a class="bb-teams" href="https://teams.microsoft.com/share?href=${encodeURIComponent(BOARD_URL)}&msgText=${encodeURIComponent('CrowdtoLive open tasks: due dates, what waits on what, and testing. Open the link in Chrome or Edge, then click Open tasks at the top.\n'+cnt.risk+' dates clash, '+cnt.overdue+' overdue.')}&preview=true" target="_blank" rel="noopener">Share in Teams</a><button type="button" class="btn" data-digest="1">Copy a summary for Teams</button>${ST.solo?'':`<button type="button" class="btn" data-solo="1">Open tasks full screen</button>`}</div>
    <div class="ot-chips">${chip('all','All open')}${chip('overdue','Overdue')}${chip('week','Due in 7 days')}${chip('blocked','Waiting on something')}${chip('risk','Dates clash')}${chip('test','Testing pending (Ridhima)')}</div>
+   ${(()=>{ const names = [...new Set(blocksOf(F,true).map(b=>{ const n = nextStep(b); return n && n.who; }).filter(Boolean))].sort();
+      const ppl = names.map(n=>({n, r:personReminder(n)})).filter(x=>x.r.count);
+      const all = [...new Set(Object.keys(PEOPLE).filter(n=>n!=='Mudassar').concat(names))].sort();
+      return `<div class="tm-box"><div class="tm-h"><h4>${TEAMS_ICON} Send reminders in Teams</h4><button type="button" class="lnk" data-showemails="1">${ST.showEmails?'Hide':'Teams emails'}</button></div>
+       <p>Each button opens Teams with a message to that person listing what is waiting on them (overdue first, then the next 7 days). Check it, then press send in Teams.</p>
+       ${ST.showEmails?`<form id="tm-emails" class="tm-emails"><p>Work email for each person, used only to open their Teams chat.</p>${all.map(n=>`<label>${esc(n)}<input type="email" data-em="${esc(n)}" value="${esc(teamsEmail(n))}" placeholder="name@bayuti.com"></label>`).join('')}<button type="submit" class="btn">Keep these emails</button></form>`:''}
+       <div class="tm-row">${ppl.map(x=>`<button type="button" class="tm-p${teamsEmail(x.n)?'':' noemail'}" data-teamsp="${esc(x.n)}"><b>${esc(x.n)}</b><span>${x.r.late?`<i class="late">${x.r.late} overdue</i> `:''}${x.r.soon} due this week · ${x.r.count} waiting</span></button>`).join('')||'<p class="bb-empty">Nobody has anything waiting.</p>'}</div></div>`; })()}
    <h4 class="ot-h">Calendar</h4>${cal}
    <h4 class="ot-h">The list</h4>
    <div class="ot-sort" role="group" aria-label="Sort the list"><button type="button" class="ot-chip${byOrder?' on':''}" data-osort="order" aria-pressed="${byOrder}">In order: what to do first</button><button type="button" class="ot-chip${byOrder?'':' on'}" data-osort="due" aria-pressed="${!byOrder}">By due date</button><span>${ORD.stages} stages, ${allOpen.length} steps</span></div>
@@ -5115,9 +5130,27 @@ function linkify(root){
   const nodes = []; while(w.nextNode()) nodes.push(w.currentNode);
   nodes.forEach(n=>{ const html = esc(n.nodeValue).replace(linkify.re, m=>`<button type="button" class="idlink" data-open="${m}">${m}</button>`); const span = document.createElement('span'); span.innerHTML = html; n.replaceWith(...span.childNodes); });
 }
+/* ---------- Teams reminders ---------- */
+const TEAMS_ICON = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><rect x="2" y="5" width="13" height="14" rx="2" fill="#5059C9"/><path d="M5 9h7M8.5 9v7" stroke="#fff" stroke-width="2"/><circle cx="18.5" cy="7.5" r="2.5" fill="#7B83EB"/><rect x="15" y="11" width="7" height="7" rx="3" fill="#7B83EB"/></svg>';
+function nextStep(b){ if(isComplete(b)) return null; const c = checksOf(b).find(x=>!isDone(b,x)); return c ? {c, who: tickWho(b,c)} : null; }
+function teamsEmail(name){ const p = (ST.people||{}).emails || {}; return (p[name]||'').trim(); }
+function teamsChat(name, msg){ const e = teamsEmail(name); if(!e){ ST.view = 'open'; ST.showEmails = true; render(); alertBox('Add '+name+"'s work email under \"Teams emails\" first, then try again."); return; } window.open('https://teams.microsoft.com/l/chat/0/0?users='+encodeURIComponent(e)+'&message='+encodeURIComponent(msg.slice(0,1500)), '_blank', 'noopener'); }
+function boxReminder(b){ const n = nextStep(b); if(!n) return ''; const d = dueOf(b);
+  return `Hi ${n.who}, a reminder from the CrowdtoLive board: ${b.id} ${b.t} needs "${tickLabel(b,n.c)}"${d?' by '+fmtDate(d):''}. ${stateOf(b)==='overdue'?'It is overdue. ':''}Open it here: ${boxLink(b.id)}`; }
+function personReminder(name){
+  const F = flowOf(ST.flow), today = TODAY();
+  const mine = blocksOf(F,true).filter(b=>{ const n = nextStep(b); return n && n.who===name && !tickBlocked(b,n.c); }).map(b=>({b, d:dueOf(b), n:nextStep(b)})).sort((a,c)=>(a.d||'9')<(c.d||'9')?-1:1);
+  const late = mine.filter(x=>x.d && x.d<today), soon = mine.filter(x=>x.d && x.d>=today && (new Date(x.d)-new Date(today))/864e5<=7);
+  const pick = late.concat(soon).slice(0,8);
+  return {count: mine.length, late: late.length, soon: soon.length, msg: `Hi ${name}, your CrowdtoLive tasks: ${late.length} overdue, ${soon.length} due in the next 7 days.\n`+pick.map(x=>`• ${x.b.id} ${x.b.t}: ${tickLabel(x.b,x.n.c)}${x.d?' (due '+fmtDate(x.d)+')':''}`).join('\n')+(mine.length>pick.length?`\n…and ${mine.length-pick.length} more.`:'')+`\nYour list: ${location.origin+location.pathname}#build (pick your name in Everyone, then Open tasks)`};
+}
+async function saveEmails(map){ ST.people = ST.people||{}; ST.people.emails = map; render(); if(ST.db){ await ST.db.doc('people/emails').set(map).catch(()=>alertBox('Could not save the emails. Try again.')); } }
 function boxLink(id){ return location.origin + location.pathname + '?box=' + encodeURIComponent(id); }
 function onClick(e){
   const t = e.target.closest('button, a, [data-close]'); if(!t || !document.getElementById('buildwrap').contains(t)) return;
+  if(t.dataset.teamsr){ const b = findBlock(t.dataset.teamsr); const n = b && nextStep(b); if(n) teamsChat(n.who, boxReminder(b)); return; }
+  if(t.dataset.teamsp){ teamsChat(t.dataset.teamsp, personReminder(t.dataset.teamsp).msg); return; }
+  if(t.dataset.showemails){ ST.showEmails = !ST.showEmails; render(); return; }
   if(t.dataset.qclear){ ST.q = ''; render(); return; }
   if(t.dataset.whoreset){ try{ localStorage.removeItem('ctl-me'); localStorage.removeItem('ctl-key'); }catch(x){} location.reload(); return; }
   if(t.dataset.copylink){ copyText(boxLink(t.dataset.copylink), 'Link to '+t.dataset.copylink+' copied. Anyone who opens it lands on this box.'); return; }
@@ -5187,6 +5220,7 @@ function onChange(e){
   if(t.dataset.due){ const b = blocksOf(F,true).find(x=>x.id===t.dataset.due); if(b && t.value) setDue(b, t.value); }
 }
 function onSubmit(e){
+  if(e.target.id==='tm-emails'){ e.preventDefault(); const map = {}; e.target.querySelectorAll('input[data-em]').forEach(i=>{ const v = i.value.trim(); if(v) map[i.dataset.em] = v; }); ST.showEmails = false; saveEmails(map); return; }
   if(e.target.id==='bb-sform'){ e.preventDefault(); const q = document.getElementById('bb-q'); const hits = searchHits(q&&q.value); const first = hits.find(h=>h.kind==='box'); const v = (q&&q.value||'').trim(); if(first && v.length>=2 && first.id.toLowerCase()===v.toLowerCase()){ ST.flow = first.flow; ST.open = first.id; } else ST.q = v.toLowerCase(); render(); return; }
   const fc = e.target.closest('form[data-clnote]'); if(fc){ e.preventDefault(); const inp = fc.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [rid, bid] = fc.dataset.clnote.split('|'); const r = libRows().find(x=>x.rid===rid); inp.value=''; ST.clNote = null; addNote({id:bid}, '['+(r?r.id:rid)+'] '+v); return; }
   const fi = e.target.closest('form[data-inote]'); if(fi){ e.preventDefault(); const inp = fi.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [bid, label] = fi.dataset.inote.split('|'); inp.value=''; addNote({id:bid}, '['+label+'] '+v); return; }
