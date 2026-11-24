@@ -756,6 +756,17 @@ button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
 .ap-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}.ap-tools>span{font-weight:800;color:#3D4060}.ap-grid.one{grid-template-columns:minmax(0,1fr)}
 #sj-toast{position:fixed;right:18px;bottom:18px;z-index:9000;max-width:380px;background:#fff;color:#1A1A2E;border:2px solid #00A569;border-radius:16px;box-shadow:0 20px 50px rgba(0,15,150,.25);padding:14px 16px;display:grid;gap:6px;font-size:14px}
 #sj-toast[hidden]{display:none}#sj-toast b{color:#00704A;font-size:15px}.sjt-b{display:flex;gap:8px;flex-wrap:wrap}
+.ts-t{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden}.ts-t th{background:#000F96;color:#fff;text-align:left;font-size:13px;padding:10px 12px}
+.ts-t td{border-top:1px solid #E3E6F5;padding:11px 12px;vertical-align:top;color:#1A1A2E;font-size:14px}.ts-t td small{display:block;color:#3D4060;font-size:12.5px;margin-top:2px}
+.ts-st{font-weight:800}.ts-ready .ts-st{color:#000F96}.ts-done .ts-st{color:#00704A}.ts-fail .ts-st{color:#9B1C10}.ts-wait .ts-st{color:#7A4E00}.ts-fail td{background:#FFF8F7}.ts-done td{background:#F6FCF9}
+.ts-last b{color:#1A1A2E}.ts-t details summary{cursor:pointer;font-weight:700;color:#000F96}.ts-t details ol{margin:6px 0 0;padding-left:18px;font-size:13px}
+.ts-act{display:grid;gap:6px;min-width:220px}.ts-act input{min-height:38px;border-radius:8px;border:1.5px solid #C9CDF0;padding:0 8px;font-size:16px;color:#1A1A2E}.ts-act span{display:flex;gap:6px}
+.rp-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}.rp-bar input{min-height:36px;border-radius:8px;border:1.5px solid #C9CDF0;padding:0 8px;font-size:16px;color:#1A1A2E}.rp-sp{flex:1}
+.rp-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:0 0 14px}@media(max-width:800px){.rp-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rp-kpis div{background:#fff;border:1px solid #D5DAF0;border-radius:14px;padding:12px 14px;color:#1A1A2E}.rp-kpis b{display:block;font-size:30px;color:#000F96;line-height:1}.rp-kpis span{font-size:13px;color:#3D4060;font-weight:700}.rp-kpis i{color:#9B1C10;font-style:normal}
+.rp-people{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}.rp-p{background:#fff;border:1px solid #D5DAF0;border-radius:14px;padding:12px 14px;color:#1A1A2E}
+.rp-p h5{margin:0 0 6px;font-size:15px;color:#000F96}.rp-p ul{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:13.5px}.rp-t{font-variant-numeric:tabular-nums;color:#3D4060;font-weight:700}
+button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!important;flex:none}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -4026,8 +4037,8 @@ const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':
 const $ = (sel, el=document) => el.querySelector(sel);
 const ST = {mapDark:(function(){ try{ return localStorage.getItem('ctl-mapdark')==='1'; }catch(e){ return false; } })(), flow:'hb', zoom:(function(){ try{ return +localStorage.getItem('ctl-zoom')||1; }catch(e){ return 1; } })(), heroFold:(function(){ try{ return localStorage.getItem('ctl-hero')!=='0'; }catch(e){ return true; } })(), fold:(function(){ try{ return localStorage.getItem('ctl-fold')!=='0'; }catch(e){ return true; } })(), view:(function(){ try{ return localStorage.getItem('ctl-view')||'journey'; }catch(e){ return 'journey'; } })(), edits:{}, reviews:{}, counts:{}, wopen:null, due:{}, pings:[], owner:'', q:'', checks:{}, actuals:{}, notes:[], db:null, user:null, me:null, names:{}, canWrite:true, live:false, open:null};
 const LS = 'ctl-build-local';
-function localLoad(){ try{ const x = JSON.parse(localStorage.getItem(LS)||'{}'); ST.checks = x.checks||{}; ST.actuals = x.actuals||{}; ST.notes = x.notes||[]; ST.due = x.due||{}; ST.pings = x.pings||[]; ST.edits = x.edits||{}; ST.reviews = x.reviews||{}; ST.counts = x.counts||{}; ST.copyrev = x.copyrev||{}; applyEdits(); }catch(e){} }
-function localSave(){ try{ localStorage.setItem(LS, JSON.stringify({checks:ST.checks, actuals:ST.actuals, notes:ST.notes, due:ST.due, pings:ST.pings, edits:ST.edits, reviews:ST.reviews, counts:ST.counts, copyrev:ST.copyrev})); }catch(e){} }
+function localLoad(){ try{ const x = JSON.parse(localStorage.getItem(LS)||'{}'); ST.checks = x.checks||{}; ST.actuals = x.actuals||{}; ST.notes = x.notes||[]; ST.due = x.due||{}; ST.pings = x.pings||[]; ST.edits = x.edits||{}; ST.reviews = x.reviews||{}; ST.counts = x.counts||{}; ST.copyrev = x.copyrev||{}; ST.tests = x.tests||{}; applyEdits(); }catch(e){} }
+function localSave(){ try{ localStorage.setItem(LS, JSON.stringify({checks:ST.checks, actuals:ST.actuals, notes:ST.notes, due:ST.due, pings:ST.pings, edits:ST.edits, reviews:ST.reviews, counts:ST.counts, copyrev:ST.copyrev, tests:ST.tests})); }catch(e){} }
 
 /* ---------- gates, blocks, helpers ---------- */
 function gates(F){
@@ -4097,6 +4108,7 @@ async function connect(){
     db.collection('pings').orderBy('at').limit(500).onSnapshot(s=>{ ST.pings = s.docs.map(d=>Object.assign({id:d.id}, d.data())); render(); }, ()=>{});
     db.collection('edits').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.edits=o; applyEdits(); render(); }, ()=>{});
     db.collection('reviews').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.reviews=o; noticeReviews(o); render(); }, ()=>{});
+    db.collection('tests').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.tests=o; render(); }, ()=>{});
     db.collection('people').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.people=o; render(); }, ()=>{});
     db.collection('copyrev').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.copyrev=o; resolveNames(); render(); }, ()=>{});
     db.collection('counts').onSnapshot(s=>{ const o={}; s.docs.forEach(d=>{ o[d.id]=d.data(); }); ST.counts=o; render(); }, ()=>{});
@@ -4427,9 +4439,9 @@ function render(){
   const sc = {m: mainEl?mainEl.scrollTop:0, s: sideEl?sideEl.scrollTop:0, j: jw?jw.scrollLeft:0, open: ST._lastOpen};
   const status = ST.live ? (ST.stale ? 'Shared ticks can\'t be reached yet; showing what we have.' : (ST.canWrite ? 'Everything you tick, type or approve is shared with everyone on this link, with your name.' : 'You can look; ask Fofee for edit access to tick or approve.')) : 'Ticks are kept on this device only (sign in to share them).';
   const allOwners = [...new Set(FLOWS.flatMap(f=>blocksOf(f,true).map(b=>b.owner)))];
-  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['approve','Approvals'+((meName()==='SJ'||meName()==='Anouar'||meName()==='Fofee')&&hasKey()?' · '+apCount(meName()==='SJ'?'sj':meName()==='Fofee'?'fo':'an'):'')],['mix','Channel mix']]);
+  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['tests','Testing'],['report','Daily report'],['approve','Approvals'+((meName()==='SJ'||meName()==='Anouar'||meName()==='Fofee')&&hasKey()?' · '+apCount(meName()==='SJ'?'sj':meName()==='Fofee'?'fo':'an'):'')],['mix','Channel mix']]);
   const ac = alertCount(F) + changesAsked().length;
-  const body = ST.view==='copy'?viewCopy(F):ST.view==='dev'?viewDev(F):ST.view==='az'?viewAZ(F):ST.view==='approve'?viewApprove(F):ST.view==='numbers'?viewNumbers():ST.view==='words'?viewWords():ST.view==='mcr'?viewMcr(F):ST.view==='journey'?viewJourneyFull(F):ST.view==='build'?viewBuild(F):ST.view==='analytics'?viewAnalytics(F):ST.view==='alerts'?viewAlerts(F):ST.view==='open'?viewOpen(F):viewMix();
+  const body = ST.view==='report'?viewReport(F):ST.view==='tests'?viewTests(F):ST.view==='copy'?viewCopy(F):ST.view==='dev'?viewDev(F):ST.view==='az'?viewAZ(F):ST.view==='approve'?viewApprove(F):ST.view==='numbers'?viewNumbers():ST.view==='words'?viewWords():ST.view==='mcr'?viewMcr(F):ST.view==='journey'?viewJourneyFull(F):ST.view==='build'?viewBuild(F):ST.view==='analytics'?viewAnalytics(F):ST.view==='alerts'?viewAlerts(F):ST.view==='open'?viewOpen(F):viewMix();
   const soloTop = ST.solo ? `<div class="solo-top"><h2>CrowdtoLive open tasks<span>Live: every date, tick and approval changes here and on the full board at the same moment.</span></h2><div class="sp"></div><button type="button" class="btn" data-solo="0">Open the full board</button></div>` : '';
   wrap.innerHTML = soloTop + `<div class="bb-bar">
     <div class="bb-seg" role="tablist" aria-label="Flow">${FLOWS.map(f=>`<button type="button" role="tab" aria-selected="${f.id===ST.flow}" data-flow="${f.id}">${esc(f.name)}</button>`).join('')}</div>
@@ -5031,6 +5043,86 @@ function viewOpen(F){
    </tbody></table></div>${rows.length?'':'<p class="bb-empty">Nothing here.</p>'}</section>`;
 }
 
+/* ================= TESTING: everything Ridhima tests ================= */
+function testSteps(b){ const X = (typeof HBD_EXPLAIN!=='undefined'&&HBD_EXPLAIN[b.id]) || (typeof CIO_EXPLAIN!=='undefined'&&CIO_EXPLAIN[b.id]) || (typeof cioGuide==='function'&&cioGuide(b)); return X && X.test ? X.test : []; }
+function testState(b){
+  const cs = checksOf(b), tt = cs.filter(c=>TEST_TICKS.includes(c)); if(!tt.length) return null;
+  const r = (ST.tests||{})[b.id], done = tt.every(c=>isDone(b,c));
+  if(done) return ['done','Tested', tt.map(c=>ST.checks[b.id][c]).sort((a,c)=>a.at<c.at?1:-1)[0]];
+  if(r && r.s==='fail') return ['fail','Failed, back with '+b.owner, r];
+  const need = tickBlocked(b, tt[0]);
+  return need ? ['wait','Waiting for: '+tickLabel(b,need)] : ['ready','Ready to test'];
+}
+async function saveTest(bid, res, note){
+  const b = findBlock(bid); if(!b) return;
+  if(res==='fail' && !note){ alertBox('Write what failed, so '+b.owner+' knows what to fix.'); const i = document.getElementById('tn-'+bid); if(i) i.focus(); return; }
+  const prev = (ST.tests||{})[bid] || {}; const entry = {s:res, note, by:ST.me||'local', at:new Date().toISOString()};
+  const cur = {block:bid, s:res, note, by:entry.by, at:entry.at, log:(prev.log||[]).concat([entry]).slice(-20)};
+  ST.tests = ST.tests||{}; ST.tests[bid] = cur; render();
+  if(ST.db){ await ST.db.doc('tests/'+bid).set(cur).catch(()=>alertBox('Could not save the test result. Try again.')); } else localSave();
+  if(res==='pass'){ const tt = checksOf(b).filter(c=>TEST_TICKS.includes(c)&&!isDone(b,c)); for(const c of tt) await toggleCheck(b,c); alertBox(b.id+' passed and is ticked Tested. It now goes to the next approver.'); }
+  else { await addNote({id:bid}, '[Test failed] '+note); await addPing(b, 'Test failed: '+note); }
+}
+function viewTests(F){
+  const rows = blocksOf(F,true).map(b=>({b, st:testState(b)})).filter(r=>r.st);
+  const tf = ST.testF || 'ready';
+  const cnt = {all:rows.length, ready:0, wait:0, done:0, fail:0}; rows.forEach(r=>cnt[r.st[0]]++);
+  const show = rows.filter(r=>tf==='all'||r.st[0]===tf).sort((a,c)=>(dueOf(a.b)||'9')<(dueOf(c.b)||'9')?-1:1);
+  const chip = (k,l) => `<button type="button" class="ot-chip${tf===k?' on':''}" data-tf="${k}" aria-pressed="${tf===k}">${l} <b>${cnt[k]}</b></button>`;
+  const fmt = x => x ? `${esc(who(x.by))} · ${ago(x.at)}` : '';
+  const row = ({b, st}) => { const r = (ST.tests||{})[b.id], steps = testSteps(b), canT = ST.canWrite && (st[0]==='ready'||st[0]==='fail');
+    return `<tr class="ts-${st[0]}"><td><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b></button><small>${esc(b.t)}</small></td>
+     <td>${esc(b.owner)}<small>${dueOf(b)?'due '+fmtDate(dueOf(b)):''}</small></td>
+     <td><span class="ts-st">${st[0]==='done'?'✓ ':st[0]==='fail'?'✗ ':st[0]==='ready'?'▶ ':'⏳ '}${esc(st[1])}</span>${st[2]&&st[0]==='done'?`<small>${fmt(st[2])}</small>`:''}${r?`<small class="ts-last">Last result: <b>${r.s==='pass'?'Pass':'Fail'}</b>${r.note?' · '+esc(r.note):''} · ${fmt(r)}</small>`:''}</td>
+     <td>${steps.length?`<details><summary>${steps.length} test${steps.length>1?'s':''}</summary><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></details>`:'<small>See the box</small>'}</td>
+     <td>${canT?`<div class="ts-act"><label class="sr" for="tn-${b.id}">Notes on the test of ${b.id}</label><input id="tn-${b.id}" placeholder="What you checked, or what failed" maxlength="300"><span><button type="button" class="btn sm ok" data-tres="${b.id}|pass">✓ Pass</button><button type="button" class="btn sm no" data-tres="${b.id}|fail">✗ Fail</button></span></div>`:st[0]==='done'?'<small>Done</small>':'<small>Not ready yet</small>'}</td></tr>`; };
+  return `<section class="bb-sec"><div class="bb-sh"><h3>Testing</h3><p>Everything Ridhima tests, in one place. A task is <b>ready to test</b> once its owner has built it. <b>Pass</b> ticks it Tested and sends it on to the next approver. <b>Fail</b> sends it back to the owner with your note, as a comment and a reminder.</p></div>
+   <div class="ot-chips">${chip('ready','Ready to test')}${chip('fail','Failed, being fixed')}${chip('wait','Waiting for the build')}${chip('done','Tested')}${chip('all','All')}</div>
+   <div class="cl-wrap"><table class="ts-t stack"><thead><tr><th>Task</th><th>Built by</th><th>Testing</th><th>What to test</th><th>Result</th></tr></thead><tbody>${show.map(row).join('')||`<tr><td colspan="5">Nothing here.</td></tr>`}</tbody></table></div></section>`;
+}
+
+/* ================= DAILY REPORT: what got done ================= */
+function dayKey(iso){ const d = new Date(iso); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function hm(iso){ const d = new Date(iso); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function reportData(F, day){
+  const ev = [], blocks = blocksOf(F,true);
+  blocks.forEach(b=>{ const c = ST.checks[b.id]||{}; checksOf(b).forEach(k=>{ const x = c[k]; if(x && x.v && x.at && dayKey(x.at)===day) ev.push({kind: APPROVERS[k]?'approval':TEST_TICKS.includes(k)?'test':'tick', b, what:k, by:x.by, at:x.at}); }); });
+  Object.values(ST.tests||{}).forEach(t=>(t.log||[]).forEach(e=>{ if(e.at && dayKey(e.at)===day){ const b = findBlock(t.block); if(b) ev.push({kind:'result', b, what:e.s==='pass'?'Test passed':'Test failed', note:e.note, by:e.by, at:e.at}); } }));
+  Object.entries(ST.reviews||{}).forEach(([bid,r])=>{ const b = findBlock(bid); if(!b) return; Object.entries(r).forEach(([k,v])=>{ if(!v||typeof v!=='object') return; ['an','sj'].forEach(w=>{ const x = v[w]; if(x && x.at && dayKey(x.at)===day) ev.push({kind:'piece', b, what:(w==='an'?'Anouar ':'SJ ')+(x.s==='approved'?'approved':'asked for changes')+' · '+((itemNames(b)[+k.slice(1)])||k), by:x.by, at:x.at}); }); }); });
+  let lines = {an:0, sj:0, ch:0};
+  Object.values(ST.copyrev||{}).forEach(d=>['an','sj'].forEach(w=>{ const x = d[w]; if(x && x.at && dayKey(x.at)===day){ if(x.s==='approved') lines[w]++; else lines.ch++; } }));
+  const done = blocks.filter(b=>isComplete(b)).filter(b=>{ const c = ST.checks[b.id]||{}; const last = checksOf(b).map(k=>c[k]&&c[k].at).filter(Boolean).sort().pop(); return last && dayKey(last)===day; });
+  ev.sort((a,c)=>a.at<c.at?-1:1);
+  return {ev, done, lines};
+}
+function reportText(F, day){
+  const {ev, done, lines} = reportData(F, day), byP = {};
+  ev.forEach(e=>{ const n = who(e.by); (byP[n] = byP[n]||[]).push(e); });
+  const d = new Date(day+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long', day:'numeric', month:'long'});
+  let t = `CrowdtoLive daily report · ${d}\n${done.length} tasks completed · ${ev.filter(e=>e.kind==='tick').length} build steps · ${ev.filter(e=>e.kind==='result'&&e.what==='Test passed').length} tests passed, ${ev.filter(e=>e.kind==='result'&&e.what==='Test failed').length} failed · ${ev.filter(e=>e.kind==='approval').length} approvals`;
+  if(lines.an||lines.sj||lines.ch) t += ` · Copy library: ${lines.an} lines approved by Anouar, ${lines.sj} by SJ${lines.ch?', '+lines.ch+' sent back':''}`;
+  if(done.length) t += `\n\nCOMPLETED\n` + done.map(b=>`• ${b.id} ${b.t} (${b.owner})`).join('\n');
+  Object.keys(byP).sort().forEach(n=>{ t += `\n\n${n.toUpperCase()}\n` + byP[n].map(e=>`• ${hm(e.at)} ${e.b.id}: ${e.what}${e.note?' ('+e.note+')':''}`).join('\n'); });
+  if(!ev.length) t += `\n\nNothing was ticked on this day.`;
+  return t + `\n\nThe board: ${location.origin+location.pathname}#build`;
+}
+function viewReport(F){
+  const day = ST.repDay || dayKey(new Date().toISOString());
+  const {ev, done, lines} = reportData(F, day), byP = {};
+  ev.forEach(e=>{ const n = who(e.by); (byP[n] = byP[n]||[]).push(e); });
+  const shift = n => { const d = new Date(day+'T12:00:00'); d.setDate(d.getDate()+n); return dayKey(d.toISOString()); };
+  const today = dayKey(new Date().toISOString());
+  const nT = ev.filter(e=>e.kind==='tick').length, nP = ev.filter(e=>e.kind==='result'&&e.what==='Test passed').length, nF = ev.filter(e=>e.kind==='result'&&e.what==='Test failed').length, nA = ev.filter(e=>e.kind==='approval'||e.kind==='piece').length;
+  const icon = {tick:'🔨', test:'🧪', result:'🧪', approval:'✅', piece:'✅'};
+  return `<section class="bb-sec rp"><div class="bb-sh"><h3>Daily report</h3><p>Everything the team ticked, tested and approved on the day, by person. It updates live, so at the end of the day it is the full record.</p></div>
+   <div class="rp-bar"><button type="button" class="btn sm" data-rday="${shift(-1)}">← Day before</button><label class="sr" for="rp-day">Report date</label><input type="date" id="rp-day" data-rpick="1" value="${day}" max="${today}"><button type="button" class="btn sm" data-rday="${shift(1)}" ${day>=today?'disabled':''}>Next day →</button>${day!==today?`<button type="button" class="btn sm" data-rday="${today}">Today</button>`:''}
+     <span class="rp-sp"></span><button type="button" class="btn sm" data-copyrep="1">Copy the report</button><button type="button" class="btn sm teams-r" data-teamsrep="1">${TEAMS_ICON} Send to Fofee in Teams</button></div>
+   <div class="rp-kpis"><div><b>${done.length}</b><span>task${done.length===1?'':'s'} completed</span></div><div><b>${nT}</b><span>build steps done</span></div><div><b>${nP}</b><span>test${nP===1?'':'s'} passed${nF?`, <i>${nF} failed</i>`:''}</span></div><div><b>${nA}</b><span>approvals</span></div><div><b>${lines.an+lines.sj}</b><span>copy lines approved</span></div></div>
+   <h4 class="ot-h">Completed today</h4>${done.length?`<ul class="ap-list done">${done.map(b=>`<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}">✓ <b>${b.id}</b> ${esc(b.t)}</button><small>${esc(b.owner)}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">No task was fully finished on this day.</p>'}
+   <h4 class="ot-h">By person</h4>${Object.keys(byP).length?`<div class="rp-people">${Object.keys(byP).sort().map(n=>`<div class="rp-p"><h5>${esc(n)} <span class="az-cnt">${byP[n].length}</span></h5><ul>${byP[n].map(e=>`<li><span class="rp-t">${hm(e.at)}</span> ${icon[e.kind]} <button type="button" class="lnk" data-open="${e.b.id}"><b>${e.b.id}</b></button> ${esc(e.what)}${e.note?` <i>(${esc(e.note)})</i>`:''}</li>`).join('')}</ul></div>`).join('')}</div>`:'<p class="bb-empty">Nothing was ticked on this day.</p>'}
+  </section>`;
+}
+
 /* ================= COPY LIBRARY: one row per sentence ================= */
 const CL_GROUPS = ['Ads','Social and press','Landing pages','Emails','Push and SMS','In app','Video scripts'];
 function clRid(bid, path){ return (bid+'.'+path).replace(/[^A-Za-z0-9_-]/g,'_'); }
@@ -5228,6 +5320,11 @@ function onClick(e){
   if(t.dataset.sjteams){ teamsChat('SJ', sjMessage()); return; }
   if(t.dataset.sjclose){ const d = document.getElementById('sj-toast'); if(d) d.hidden = true; return; }
   if(t.dataset.sjonly!=null){ ST.apFor = t.dataset.sjonly; render(); return; }
+  if(t.dataset.rday){ ST.repDay = t.dataset.rday; render(); return; }
+  if(t.dataset.copyrep){ copyText(reportText(flowOf(ST.flow), ST.repDay||dayKey(new Date().toISOString())), 'Report copied.'); return; }
+  if(t.dataset.teamsrep){ teamsChat('Fofee', reportText(flowOf(ST.flow), ST.repDay||dayKey(new Date().toISOString()))); return; }
+  if(t.dataset.tf){ ST.testF = t.dataset.tf; render(); return; }
+  if(t.dataset.tres){ const [bid, r] = t.dataset.tres.split('|'); const inp = document.getElementById('tn-'+bid); saveTest(bid, r, inp ? inp.value.trim() : ''); return; }
   if(t.dataset.qclear){ ST.q = ''; render(); return; }
   if(t.dataset.whoreset){ try{ localStorage.removeItem('ctl-me'); localStorage.removeItem('ctl-key'); }catch(x){} location.reload(); return; }
   if(t.dataset.copylink){ copyText(boxLink(t.dataset.copylink), 'Link to '+t.dataset.copylink+' copied. Anyone who opens it lands on this box.'); return; }
@@ -5284,6 +5381,7 @@ function copyText(txt, ok, showAlways){
 function onInput(e){
   const t = e.target;
   if(t.dataset.lim!=null && t.closest('.cl-row')){ const m = t.closest('td').querySelector('[data-n]'), L = +t.dataset.lim, n = clLen(t.value); if(m){ m.textContent = n+(L?' of '+L:'')+' characters'; m.classList.toggle('over', !!L && n>L); } }
+  if(t.dataset.rpick && t.value){ ST.repDay = t.value; render(); return; }
   if(t.id==='bb-q'){ searchDrop(t.value); }
 }
 function onChange(e){
