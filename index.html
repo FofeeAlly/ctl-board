@@ -753,6 +753,9 @@ button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
 .fin-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.fin-row.cards{grid-template-columns:repeat(4,minmax(0,1fr))}
 .fin-row figure{margin:0;display:grid;gap:4px}.fin-row img{width:100%;border-radius:8px;border:1px solid #D5DAF0}
 .fin-row figcaption{font-size:12px;font-weight:800;color:#1A1A2E;display:grid;gap:3px}.fin-row figcaption small{color:#3D4060;font-weight:600}.fin-h{margin:4px 0 0;font-weight:800;font-size:13px;color:#000F96}
+.ap-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 12px}.ap-tools>span{font-weight:800;color:#3D4060}.ap-grid.one{grid-template-columns:minmax(0,1fr)}
+#sj-toast{position:fixed;right:18px;bottom:18px;z-index:9000;max-width:380px;background:#fff;color:#1A1A2E;border:2px solid #00A569;border-radius:16px;box-shadow:0 20px 50px rgba(0,15,150,.25);padding:14px 16px;display:grid;gap:6px;font-size:14px}
+#sj-toast[hidden]{display:none}#sj-toast b{color:#00704A;font-size:15px}.sjt-b{display:flex;gap:8px;flex-wrap:wrap}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -4061,7 +4064,7 @@ const canApprove = w => !HOSTED || (hasKey() && meName()===(w==='an'||w==='Anoua
 const apprLock = w => canApprove(w) ? '' : `disabled title="Only ${w==='an'||w==='Anouar approved'?'Anouar':'SJ'} can approve (with their approval key)"`;
 const notesFor = id => ST.notes.filter(n=>n.block===id).sort((a,b)=>a.at<b.at?-1:1);
 const initials = n => (n||'?').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
-function who(id){ return id==='local' ? 'You (this device)' : id==='claude' ? 'Claude' : (ST.names[id] || 'Someone'); }
+function who(id){ return id==='local' ? 'You (this device)' : id==='claude' ? 'Claude' : (ST.names[id] || (String(id).indexOf('n:')===0 ? String(id).slice(2) : 'Someone')); }
 function ago(t){ if(!t) return ''; const d=(Date.now()-new Date(t).getTime())/36e5; return d<1?'just now':d<24?Math.round(d)+'h ago':Math.round(d/24)+'d ago'; }
 
 /* ---------- storage ---------- */
@@ -4071,6 +4074,7 @@ function applyReassign(){
 }
 async function connect(){
   applyReassign();
+  try{ const fr = new URLSearchParams(location.search).get('for'); if(fr==='SJ'||fr==='Anouar'){ ST.view = 'approve'; ST.apFor = fr; if(!location.hash) location.hash = 'build'; } else if(HOSTED && (meName()==='SJ'||meName()==='Anouar') && !new URLSearchParams(location.search).get('box')){ ST.view = 'approve'; ST.apFor = meName(); } }catch(e){}
   try{ const bx = new URLSearchParams(location.search).get('box'); if(bx){ ST.open = bx; const f = FLOWS.find(F=>blocksOf(F,true).some(b=>b.id===bx)); if(f) ST.flow = f.id; if(!['journey','mcr','build','open','copy','approve'].includes(ST.view)) ST.view = 'build'; if(!location.hash) location.hash = 'build'; } }catch(e){}
   document.addEventListener('click', e=>{ const r = document.getElementById('bb-qres'); if(r && !e.target.closest('.bb-search')) r.hidden = true; });
   document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ const r = document.getElementById('bb-qres'); if(r) r.hidden = true; } });
@@ -4111,6 +4115,7 @@ async function toggleCheck(b, c){
   ST.checks[b.id] = cur; render();
   if(ST.db){ if(writing[b.id]) await writing[b.id]; writing[b.id] = ST.db.doc('checks/'+b.id).set(cur).catch(e=>{ if(e&&e.code==='invalid_argument'){ ST.canWrite=false; render(); } }); await writing[b.id]; writing[b.id]=null; }
   else localSave();
+  if(c==='Anouar approved' && isDone(b,c)) toSJ(b.id, b.id+' '+b.t);
 }
 async function setActual(b, i, v){
   const cur = Object.assign({}, ST.actuals[b.id]||{});
@@ -4416,7 +4421,7 @@ function render(){
   const sc = {m: mainEl?mainEl.scrollTop:0, s: sideEl?sideEl.scrollTop:0, j: jw?jw.scrollLeft:0, open: ST._lastOpen};
   const status = ST.live ? (ST.stale ? 'Shared ticks can\'t be reached yet; showing what we have.' : (ST.canWrite ? 'Everything you tick, type or approve is shared with everyone on this link, with your name.' : 'You can look; ask Fofee for edit access to tick or approve.')) : 'Ticks are kept on this device only (sign in to share them).';
   const allOwners = [...new Set(FLOWS.flatMap(f=>blocksOf(f,true).map(b=>b.owner)))];
-  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['approve','Approvals'],['mix','Channel mix']]);
+  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['approve','Approvals'+((meName()==='SJ'||meName()==='Anouar')?' · '+apCount(meName()==='SJ'?'sj':'an'):'')],['mix','Channel mix']]);
   const ac = alertCount(F) + changesAsked().length;
   const body = ST.view==='copy'?viewCopy(F):ST.view==='dev'?viewDev(F):ST.view==='az'?viewAZ(F):ST.view==='approve'?viewApprove(F):ST.view==='numbers'?viewNumbers():ST.view==='words'?viewWords():ST.view==='mcr'?viewMcr(F):ST.view==='journey'?viewJourneyFull(F):ST.view==='build'?viewBuild(F):ST.view==='analytics'?viewAnalytics(F):ST.view==='alerts'?viewAlerts(F):ST.view==='open'?viewOpen(F):viewMix();
   const soloTop = ST.solo ? `<div class="solo-top"><h2>CrowdtoLive open tasks<span>Live: every date, tick and approval changes here and on the full board at the same moment.</span></h2><div class="sp"></div><button type="button" class="btn" data-solo="0">Open the full board</button></div>` : '';
@@ -4527,7 +4532,8 @@ async function saveReview(bid, i, who_, s, note){
   ST.reviews[bid] = cur; render();
   if(note) await addNote({id:bid}, note);
   if(ST.db){ await ST.db.doc('reviews/'+bid).set(cur).catch(()=>{}); } else localSave();
-  if(s==='approved'){ const b = findBlock(bid); if(b){ const n = Math.max(1, itemNames(b).length); const all = [...Array(n).keys()].every(j=>{ const r = revOf(bid,j)[who_]; return r && r.s==='approved'; }); const c = who_==='sj'?'SJ approved':'Anouar approved'; if(all && checksOf(b).includes(c) && !isDone(b,c)){ await toggleCheck(b,c); alertBox('Every piece approved, so "'+c+'" is now ticked for the whole set.'); } } }
+  if(s==='approved'){ const b = findBlock(bid); if(b){ const n = Math.max(1, itemNames(b).length); const all = [...Array(n).keys()].every(j=>{ const r = revOf(bid,j)[who_]; return r && r.s==='approved'; }); const c = who_==='sj'?'SJ approved':'Anouar approved'; if(all && checksOf(b).includes(c) && !isDone(b,c)){ if(tickBlocked(b,c)) alertBox('Every piece approved. The box tick "'+c+'" follows once "'+tickLabel(b,tickBlocked(b,c))+'" is done.'); else { await toggleCheck(b,c); alertBox('Every piece approved, so "'+c+'" is now ticked for the whole set.'); } } } }
+  if(who_==='an' && s==='approved'){ const b = findBlock(bid); toSJ(bid, (b?b.id+' '+b.t:bid)+' · '+((b&&itemNames(b)[i])||'piece '+(i+1))); }
 }
 async function saveCount(id, v){
   const cur = {step:id}; if(v!=='') cur.actual = {v:Number(v), by: ST.me||'local', at: new Date().toISOString()};
@@ -4714,7 +4720,9 @@ function viewApprove(F){
     </section>`;
   };
   return `<section class="bb-sec"><div class="bb-sh"><h3>Approvals</h3><p>Anouar approves first, then SJ. Each side lists only what is waiting for that person: whole boxes (tick Approve right here, or open to review), ad and post pieces, and Copy library lines. "Needs changes" sends a piece back to its owner with a comment.</p></div>
-   <div class="ap-grid">${col('an','Anouar','Anouar approved')}${col('sj','SJ','SJ approved')}</div></section>`;
+   <div class="ap-tools"><span>Show:</span><button type="button" class="ot-chip${!ST.apFor?' on':''}" data-sjonly="">Both</button><button type="button" class="ot-chip${ST.apFor==='Anouar'?' on':''}" data-sjonly="Anouar">Anouar only</button><button type="button" class="ot-chip${ST.apFor==='SJ'?' on':''}" data-sjonly="SJ">SJ only</button>
+     <button type="button" class="btn sm" data-copytxt="${location.origin+location.pathname}?for=SJ#build">Copy SJ's approval link</button><button type="button" class="btn sm" data-sjteams="1">${TEAMS_ICON} Send SJ her list in Teams</button></div>
+   <div class="ap-grid${ST.apFor?' one':''}">${ST.apFor==='SJ'?'':col('an','Anouar','Anouar approved')}${ST.apFor==='Anouar'?'':col('sj','SJ','SJ approved')}</div></section>`;
 }
 
 /* ---------- numbers ---------- */
@@ -5090,6 +5098,7 @@ async function saveCopyRev(rid, who_, s, txt){
   if(who_==='an' && s!=='approved') delete cur.sj;
   ST.copyrev = ST.copyrev || {}; ST.copyrev[rid] = cur; render();
   if(ST.db){ await ST.db.doc('copyrev/'+rid).set(cur).catch(()=>alertBox('That approval could not be shared. Try again.')); } else localSave();
+  if(who_==='an' && s==='approved'){ const r = libRows().find(x=>x.rid===rid); toSJ(r?r.owner:'', 'Copy line '+(r?r.id:rid), true); }
 }
 function clExport(kind){
   const rows = libRows().filter(r=>clState(r)[0]==='ready');
@@ -5178,12 +5187,41 @@ function personReminder(name){
   return {count: mine.length, late: late.length, soon: soon.length, msg: `Hi ${name}, your CrowdtoLive tasks: ${late.length} overdue, ${soon.length} due in the next 7 days.\n`+pick.map(x=>`• ${x.b.id} ${x.b.t}: ${tickLabel(x.b,x.n.c)}${x.d?' (due '+fmtDate(x.d)+')':''}`).join('\n')+(mine.length>pick.length?`\n…and ${mine.length-pick.length} more.`:'')+`\nYour list: ${location.origin+location.pathname}#build (pick your name in Everyone, then Open tasks)`};
 }
 async function saveEmails(map){ ST.people = ST.people||{}; ST.people.emails = map; render(); if(ST.db){ await ST.db.doc('people/emails').set(map).catch(()=>alertBox('Could not save the emails. Try again.')); } }
+/* ---------- Anouar approved: hand it to SJ ---------- */
+const sjBoard = () => location.origin + location.pathname + '?for=SJ#build';
+async function toSJ(bid, what, quiet){
+  const b = findBlock(bid);
+  const p = {block: b ? b.id : bid, owner:'SJ', note:'Anouar approved '+what+'. Ready for your approval.', by:ST.me||'local', at:new Date().toISOString(), sent:false, kind:'sj'};
+  if(ST.db){ try{ await ST.db.collection('pings').add(p); }catch(e){} } else { ST.pings.push(Object.assign({id:'l'+Date.now()},p)); localSave(); }
+  toSJ.last = what;
+  if(!quiet || !toSJ.shown){ toSJ.shown = true; sjToast(what); }
+}
+function sjToast(what){
+  let d = document.getElementById('sj-toast'); if(!d){ d = document.createElement('div'); d.id = 'sj-toast'; d.setAttribute('role','status'); document.body.appendChild(d); }
+  d.innerHTML = `<b>✓ Sent to SJ's approvals</b><span>${esc(what)} is now on SJ's list.</span><span class="sjt-b"><button type="button" class="btn sm" data-sjteams="1">${TEAMS_ICON} Tell SJ in Teams</button><button type="button" class="btn sm" data-sjclose="1">OK</button></span>`;
+  d.hidden = false; clearTimeout(sjToast.t); sjToast.t = setTimeout(()=>{ d.hidden = true; }, 15000);
+}
+function sjMessage(){
+  const F = flowOf(ST.flow);
+  const boxes = blocksOf(F,true).filter(waitingSJ);
+  const pieces = []; (AZ.sources||[]).forEach(([bid,label])=>{ const b = findBlock(bid); if(!b) return; itemNames(b).forEach((n,i)=>{ const r = revOf(bid,i); if(r.an&&r.an.s==='approved'&&!r.sj) pieces.push(label+' · '+n); }); });
+  const lines = (typeof libRows==='function') ? libRows().filter(r=>clState(r)[0]==='an').length : 0;
+  const list = boxes.map(b=>'• '+b.id+' '+b.t).concat(pieces.map(x=>'• '+x)).slice(0,10);
+  return `Hi SJ, Anouar has approved these, so they are ready for your approval:\n${list.join('\n')}${lines?`\n• ${lines} Copy library lines`:''}\nYour list: ${sjBoard()}`;
+}
+function apCount(w){ const F = flowOf(ST.flow); let n = blocksOf(F,true).filter(w==='sj'?waitingSJ:waitingAn).length;
+  (AZ.sources||[]).forEach(([bid])=>{ const b = findBlock(bid); if(!b) return; itemNames(b).forEach((x,i)=>{ const r = revOf(bid,i); if(w==='an' ? !r.an : (r.an&&r.an.s==='approved'&&!r.sj)) n++; }); });
+  if(typeof libRows==='function') n += libRows().filter(r=>{ const k = clState(r)[0]; return w==='an' ? (k==='wait'||k==='changed') : k==='an'; }).length;
+  return n; }
 function boxLink(id){ return location.origin + location.pathname + '?box=' + encodeURIComponent(id); }
 function onClick(e){
   const t = e.target.closest('button, a, [data-close]'); if(!t || !document.getElementById('buildwrap').contains(t)) return;
   if(t.dataset.teamsr){ const b = findBlock(t.dataset.teamsr); const n = b && nextStep(b); if(n) teamsChat(n.who, boxReminder(b)); return; }
   if(t.dataset.teamsp){ teamsChat(t.dataset.teamsp, personReminder(t.dataset.teamsp).msg); return; }
   if(t.dataset.showemails){ ST.showEmails = !ST.showEmails; render(); return; }
+  if(t.dataset.sjteams){ teamsChat('SJ', sjMessage()); return; }
+  if(t.dataset.sjclose){ const d = document.getElementById('sj-toast'); if(d) d.hidden = true; return; }
+  if(t.dataset.sjonly!=null){ ST.apFor = t.dataset.sjonly; render(); return; }
   if(t.dataset.qclear){ ST.q = ''; render(); return; }
   if(t.dataset.whoreset){ try{ localStorage.removeItem('ctl-me'); localStorage.removeItem('ctl-key'); }catch(x){} location.reload(); return; }
   if(t.dataset.copylink){ copyText(boxLink(t.dataset.copylink), 'Link to '+t.dataset.copylink+' copied. Anyone who opens it lands on this box.'); return; }
