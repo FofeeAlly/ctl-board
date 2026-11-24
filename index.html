@@ -767,6 +767,13 @@ button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
 .rp-people{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}.rp-p{background:#fff;border:1px solid #D5DAF0;border-radius:14px;padding:12px 14px;color:#1A1A2E}
 .rp-p h5{margin:0 0 6px;font-size:15px;color:#000F96}.rp-p ul{list-style:none;margin:0;padding:0;display:grid;gap:5px;font-size:13.5px}.rp-t{font-variant-numeric:tabular-nums;color:#3D4060;font-weight:700}
 button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!important;flex:none}
+.tcl-b{border:1.5px solid #C9CDF0;background:#F6F7FF;color:#000F96;font:800 13px/1 inherit;border-radius:999px;padding:8px 12px;cursor:pointer;white-space:nowrap}.tcl-b.full{background:#E1F7EE;border-color:#7FD9B0;color:#00704A}
+.tcl-row td{background:#F6F7FF!important}.tcl{padding:4px 2px}.tcl-h{margin:0 0 10px;font-size:13px;color:#3D4060}.tcl-h b{color:#000F96}
+.tcl-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}.tcl-g h5{margin:0 0 6px;font-size:13px;color:#000F96}
+.tcl-i{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1px solid #D5DAF0;border-radius:10px;padding:8px 10px;margin:0 0 6px;font:13.5px/1.35 inherit;color:#1A1A2E;cursor:pointer}
+.tcl-i i{flex:none;display:grid;place-items:center;min-width:24px;height:24px;border-radius:6px;border:2px solid #C9CDF0;font-style:normal;font-size:11px;font-weight:800}
+.tcl-i.ok i{background:#00A569;border-color:#00A569;color:#fff}.tcl-i.na i{background:#EEF0FF;border-color:#C9CDF0;color:#3D4060}.tcl-i.na span{color:#3D4060;text-decoration:line-through}
+.tcl-i small{display:block;color:#3D4060;font-size:11.5px}.tcl-i{white-space:normal}.tcl-i span{flex:1;min-width:0;overflow-wrap:anywhere}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -5057,11 +5064,17 @@ async function saveTest(bid, res, note){
   const b = findBlock(bid); if(!b) return;
   if(res==='fail' && !note){ alertBox('Write what failed, so '+b.owner+' knows what to fix.'); const i = document.getElementById('tn-'+bid); if(i) i.focus(); return; }
   const prev = (ST.tests||{})[bid] || {}; const entry = {s:res, note, by:ST.me||'local', at:new Date().toISOString()};
-  const cur = {block:bid, s:res, note, by:entry.by, at:entry.at, log:(prev.log||[]).concat([entry]).slice(-20)};
+  if(res==='pass'){ const k = tclState(b); if(k.all && k.done<k.all){ alertBox('Tick every checklist item first ('+k.done+' of '+k.all+' done). Use N/A for anything that does not apply.'); ST.testOpen = bid; render(); return; } }
+  const cur = Object.assign({}, prev, {block:bid, s:res, note, by:entry.by, at:entry.at, log:(prev.log||[]).concat([entry]).slice(-20)});
   ST.tests = ST.tests||{}; ST.tests[bid] = cur; render();
   if(ST.db){ await ST.db.doc('tests/'+bid).set(cur).catch(()=>alertBox('Could not save the test result. Try again.')); } else localSave();
   if(res==='pass'){ const tt = checksOf(b).filter(c=>TEST_TICKS.includes(c)&&!isDone(b,c)); for(const c of tt) await toggleCheck(b,c); alertBox(b.id+' passed and is ticked Tested. It now goes to the next approver.'); }
   else { await addNote({id:bid}, '[Test failed] '+note); await addPing(b, 'Test failed: '+note); }
+}
+function clRow(b){
+  const k = tclState(b); let n = -1; const groups = {};
+  k.it.forEach(([g,t],i)=>{ (groups[g] = groups[g]||[]).push([t,i]); });
+  return `<tr class="tcl-row"><td colspan="6"><div class="tcl"><p class="tcl-h"><b>${esc(b.id)} testing checklist</b> · click once for ✓ done, twice for N/A, three times to clear. Pass unlocks when every line is ✓ or N/A.</p><div class="tcl-g">${Object.entries(groups).map(([g,items])=>`<div><h5>${esc(g)}</h5>${items.map(([t,i])=>{ const x = k.c[i]; return `<button type="button" class="tcl-i ${x?x.s:''}" data-tci="${b.id}|${i}" ${ST.canWrite?'':'disabled'}><i>${x?(x.s==='ok'?'✓':'N/A'):''}</i><span>${esc(t)}${x?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</span></button>`; }).join('')}</div>`).join('')}</div></div></td></tr>`;
 }
 function viewTests(F){
   const rows = blocksOf(F,true).map(b=>({b, st:testState(b)})).filter(r=>r.st);
@@ -5074,11 +5087,12 @@ function viewTests(F){
     return `<tr class="ts-${st[0]}"><td><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b></button><small>${esc(b.t)}</small></td>
      <td>${esc(b.owner)}<small>${dueOf(b)?'due '+fmtDate(dueOf(b)):''}</small></td>
      <td><span class="ts-st">${st[0]==='done'?'✓ ':st[0]==='fail'?'✗ ':st[0]==='ready'?'▶ ':'⏳ '}${esc(st[1])}</span>${st[2]&&st[0]==='done'?`<small>${fmt(st[2])}</small>`:''}${r?`<small class="ts-last">Last result: <b>${r.s==='pass'?'Pass':'Fail'}</b>${r.note?' · '+esc(r.note):''} · ${fmt(r)}</small>`:''}</td>
+     <td>${(()=>{ const k = tclState(b); return k.all ? `<button type="button" class="tcl-b${k.done===k.all?' full':''}" data-tcl="${b.id}" aria-expanded="${ST.testOpen===b.id}">☑ ${k.done} of ${k.all}</button>` : '<small>Not user facing</small>'; })()}</td>
      <td>${steps.length?`<details><summary>${steps.length} test${steps.length>1?'s':''}</summary><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></details>`:'<small>See the box</small>'}</td>
-     <td>${canT?`<div class="ts-act"><label class="sr" for="tn-${b.id}">Notes on the test of ${b.id}</label><input id="tn-${b.id}" placeholder="What you checked, or what failed" maxlength="300"><span><button type="button" class="btn sm ok" data-tres="${b.id}|pass">✓ Pass</button><button type="button" class="btn sm no" data-tres="${b.id}|fail">✗ Fail</button></span></div>`:st[0]==='done'?'<small>Done</small>':'<small>Not ready yet</small>'}</td></tr>`; };
-  return `<section class="bb-sec"><div class="bb-sh"><h3>Testing</h3><p>Everything Ridhima tests, in one place. A task is <b>ready to test</b> once its owner has built it. <b>Pass</b> ticks it Tested and sends it on to the next approver. <b>Fail</b> sends it back to the owner with your note, as a comment and a reminder.</p></div>
+     <td>${canT?`<div class="ts-act"><label class="sr" for="tn-${b.id}">Notes on the test of ${b.id}</label><input id="tn-${b.id}" placeholder="What you checked, or what failed" maxlength="300"><span><button type="button" class="btn sm ok" data-tres="${b.id}|pass">✓ Pass</button><button type="button" class="btn sm no" data-tres="${b.id}|fail">✗ Fail</button></span></div>`:st[0]==='done'?'<small>Done</small>':'<small>Not ready yet</small>'}</td></tr>${ST.testOpen===b.id?clRow(b):''}`; };
+  return `<section class="bb-sec"><div class="bb-sh"><h3>Testing</h3><p>Everything Ridhima tests, in one place. Every user facing task (pages, emails, push and SMS, ads, app screens, webinars, the guide) has a checklist: web, mobile, does it work, tracking, words and rules. A task is <b>ready to test</b> once its owner has built it. <b>Pass</b> ticks it Tested and sends it on to the next approver. <b>Fail</b> sends it back to the owner with your note, as a comment and a reminder.</p></div>
    <div class="ot-chips">${chip('ready','Ready to test')}${chip('fail','Failed, being fixed')}${chip('wait','Waiting for the build')}${chip('done','Tested')}${chip('all','All')}</div>
-   <div class="cl-wrap"><table class="ts-t stack"><thead><tr><th>Task</th><th>Built by</th><th>Testing</th><th>What to test</th><th>Result</th></tr></thead><tbody>${show.map(row).join('')||`<tr><td colspan="5">Nothing here.</td></tr>`}</tbody></table></div></section>`;
+   <div class="cl-wrap"><table class="ts-t stack"><thead><tr><th>Task</th><th>Built by</th><th>Testing</th><th>Checklist</th><th>What to test</th><th>Result</th></tr></thead><tbody>${show.map(row).join('')||`<tr><td colspan="6">Nothing here.</td></tr>`}</tbody></table></div></section>`;
 }
 
 /* ================= DAILY REPORT: what got done ================= */
@@ -5121,6 +5135,49 @@ function viewReport(F){
    <h4 class="ot-h">Completed today</h4>${done.length?`<ul class="ap-list done">${done.map(b=>`<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}">✓ <b>${b.id}</b> ${esc(b.t)}</button><small>${esc(b.owner)}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">No task was fully finished on this day.</p>'}
    <h4 class="ot-h">By person</h4>${Object.keys(byP).length?`<div class="rp-people">${Object.keys(byP).sort().map(n=>`<div class="rp-p"><h5>${esc(n)} <span class="az-cnt">${byP[n].length}</span></h5><ul>${byP[n].map(e=>`<li><span class="rp-t">${hm(e.at)}</span> ${icon[e.kind]} <button type="button" class="lnk" data-open="${e.b.id}"><b>${e.b.id}</b></button> ${esc(e.what)}${e.note?` <i>(${esc(e.note)})</i>`:''}</li>`).join('')}</ul></div>`).join('')}</div>`:'<p class="bb-empty">Nothing was ticked on this day.</p>'}
   </section>`;
+}
+
+/* ---------- testing checklists for user facing tasks ---------- */
+const TCL = {
+ web: [['Web (desktop)',['Chrome on Windows or Mac: layout right, nothing overlaps','Safari on Mac','Edge','Wide (1440px) and small laptop (1024px) widths']],
+       ['Mobile',['iPhone, Safari','Android, Chrome','Small phone (iPhone SE size): no sideways scrolling, nothing cut off','Sticky button never covers a form field','Every button and link is easy to tap']],
+       ['It works',['The main button goes to the right place','Form: wrong email shows a clear error','Form: submits and shows the thank you message','Downloads, copy link and print work (where the page has them)']],
+       ['Tracking',['page_viewed and the button event show in Customer.io for a test person','Contact lands in HubSpot with every field filled','UTMs from the ad link are kept on the contact','GTM and Meta pixel fire only on bayuti.com']],
+       ['Words and rules',['Words match the approved Copy library lines','No dashes, says "home deposit", never "save"','Company line, FCA number and footer links are there','Images have alt text; page reads well at 200% zoom','Loads in under 3 seconds on 4G']]],
+ email: [['Web (desktop)',['Gmail in the browser','Outlook','Apple Mail on Mac']],
+       ['Mobile',['Apple Mail on iPhone','Gmail app on Android','Dark mode on a phone: logo and buttons still clear']],
+       ['It works',['Subject and preview text are right','Sent to a test person: no {{ }} showing, every field has a default','Every link works and carries the UTMs','Unsubscribe link works and updates HubSpot','Push and SMS partner arrive (where the email has them)']],
+       ['Tracking and timing',['Arrives at the right time for the test person','Open, click and the goal event show in Customer.io','Does not send to someone who already did the step']],
+       ['Words and rules',['Words match the approved Copy library lines','Risk warning is there if it mentions investing','Company line and FCA number in the footer']]],
+ msg: [['Mobile',['iPhone: arrives, text fits, nothing cut off','Android: arrives, text fits, nothing cut off','Tapping it opens the right page or app screen']],
+       ['Rules',['Only goes to people who opted in (push opt in, sms_consent)','Nothing between 20:00 and 08:00 UK time','SMS: Reply STOP works and updates HubSpot']],
+       ['Tracking',['The click shows in Customer.io','Words match the approved Copy library lines']]],
+ ad: [['Web (desktop)',['Facebook feed preview looks right']],
+       ['Mobile',['Instagram feed preview','Stories and Reels preview: words clear of the top and bottom','TikTok preview (TikTok ads)']],
+       ['It works',['Every size uploaded (1:1, 4:5, 9:16)','Link goes to the right landing page','Link carries the right UTMs','Lead event fires in Meta Events Manager on the form']],
+       ['Words and rules',['Words match the approved Copy library lines','No rates, no dashes, says "home deposit"','Anouar and SJ approvals are on the box']]],
+ app: [['Mobile',['iPhone (latest iOS)','Android (latest)','Small phone: nothing cut off','Large text setting: still readable']],
+       ['It works',['The happy path works start to finish','Wrong input shows a clear message','No internet shows a clear message','Back button and closing the app keep their place']],
+       ['Tracking',['Each event shows once in Customer.io and HubSpot','app_installed comes from AppsFlyer only']],
+       ['Words',['Words match the approved Copy library lines']]],
+ webinar: [['Web and mobile',['Sign up works on desktop','Sign up works on iPhone and Android']],
+       ['It works',['Confirmation email arrives with the calendar file','Reminders arrive (1 day and 1 hour before)','Join link works','Recording email goes out after']],
+       ['Tracking',['webinar_registered shows in Customer.io and HubSpot']]],
+ doc: [['Web and mobile',['Opens and reads well on desktop','Opens and reads well on iPhone and Android','Prints or saves to PDF cleanly']],
+       ['It works',['Every link works and carries the UTMs']],
+       ['Words',['Words match the approved Copy library lines','Company line and FCA number are there']]]
+};
+function clKind(b){ if(b.msg && (b.type==='email'||b.type==='webinar')) return b.type==='webinar'?'webinar':'email';
+  return ({page:'web', component:'web', form:'web', email:'email', push:'msg', sms:'msg', ad:'ad', app:'app', webinar:'webinar', doc:'doc'})[b.type] || null; }
+function clItems(b){ const k = clKind(b); if(!k) return []; const out = []; TCL[k].forEach(([g,items])=>items.forEach(t=>out.push([g,t]))); return out; }
+function tclState(b){ const it = clItems(b), c = ((ST.tests||{})[b.id]||{}).cl || {}; const done = it.filter((x,i)=>c[i]&&(c[i].s==='ok'||c[i].s==='na')).length; return {it, c, done, all: it.length}; }
+async function clTick(bid, i){
+  const b = findBlock(bid); if(!b || !ST.canWrite) return;
+  const cur = JSON.parse(JSON.stringify((ST.tests||{})[bid] || {block:bid})); cur.cl = cur.cl || {};
+  const now = cur.cl[i] && cur.cl[i].s; const next = !now ? 'ok' : now==='ok' ? 'na' : null;
+  if(next) cur.cl[i] = {s:next, by:ST.me||'local', at:new Date().toISOString()}; else delete cur.cl[i];
+  ST.tests = ST.tests||{}; ST.tests[bid] = cur; render();
+  if(ST.db){ await ST.db.doc('tests/'+bid).set(cur).catch(()=>alertBox('Could not save that tick. Try again.')); } else localSave();
 }
 
 /* ================= COPY LIBRARY: one row per sentence ================= */
@@ -5323,6 +5380,8 @@ function onClick(e){
   if(t.dataset.rday){ ST.repDay = t.dataset.rday; render(); return; }
   if(t.dataset.copyrep){ copyText(reportText(flowOf(ST.flow), ST.repDay||dayKey(new Date().toISOString())), 'Report copied.'); return; }
   if(t.dataset.teamsrep){ teamsChat('Fofee', reportText(flowOf(ST.flow), ST.repDay||dayKey(new Date().toISOString()))); return; }
+  if(t.dataset.tcl){ ST.testOpen = ST.testOpen===t.dataset.tcl ? null : t.dataset.tcl; render(); return; }
+  if(t.dataset.tci){ const [bid, k] = t.dataset.tci.split('|'); clTick(bid, +k); return; }
   if(t.dataset.tf){ ST.testF = t.dataset.tf; render(); return; }
   if(t.dataset.tres){ const [bid, r] = t.dataset.tres.split('|'); const inp = document.getElementById('tn-'+bid); saveTest(bid, r, inp ? inp.value.trim() : ''); return; }
   if(t.dataset.qclear){ ST.q = ''; render(); return; }
