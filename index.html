@@ -737,6 +737,7 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .idlink:hover{background:#000F96;color:#fff}
 .bb-idbtn{cursor:pointer;border:0}.bb-idbtn:hover{background:#000F96;color:#fff}
 button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
+.bb-ck[data-wait]{opacity:.5;border-style:dashed}.ck-n{font-style:normal;display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#EEF0FF;color:#000F96;font-size:11px;font-weight:800;margin-right:2px}.bb-ck.on .ck-n{background:#00A569;color:#fff}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -4007,7 +4008,16 @@ function gates(F){
 }
 const flowOf = id => FLOWS.find(f=>f.id===id);
 function blocksOf(F, withGates){ let all=[]; SECTIONS.forEach(([k])=>{ if(F.sections[k]) all = all.concat(F.sections[k].map(b=>Object.assign(b,{sec:k}))); }); if(withGates) all = all.concat(gates(F).map(b=>Object.assign(b,{sec:'criteria'}))); return all; }
-const withAn = cs => { if(!cs || cs.includes('Anouar approved')) return cs; const k = WITHAN.get(cs); if(k) return k; const o = cs.slice(), i = o.indexOf('SJ approved'), j = o.indexOf('Live'); o.splice(i>=0?i:(j>=0?j:o.length), 0, 'Anouar approved'); WITHAN.set(cs, o); return o; };
+const TEST_TICKS = ['Tested','Tested on phones'];
+/* every task runs in one order: build (owner) -> test (Ridhima) -> Anouar -> SJ -> live */
+const withAn = cs => { if(!cs) return cs; const k = WITHAN.get(cs); if(k) return k;
+  const build = cs.filter(c=>!TEST_TICKS.includes(c) && !['Anouar approved','SJ approved','Live'].includes(c));
+  const tests = cs.filter(c=>TEST_TICKS.includes(c));
+  const o = build.concat(tests.length?tests:['Tested'], ['Anouar approved'], cs.includes('SJ approved')?['SJ approved']:[], cs.includes('Live')?['Live']:[]);
+  WITHAN.set(cs, o); return o; };
+const tickWho = (b,c) => TEST_TICKS.includes(c) ? (b.tester||'Ridhima') : c==='Anouar approved' ? 'Anouar' : c==='SJ approved' ? 'SJ' : b.owner;
+const tickLabel = (b,c) => c==='Anouar approved'||c==='SJ approved' ? c : `${c} · ${tickWho(b,c)}`;
+const tickBlocked = (b,c) => { const cs = checksOf(b), i = cs.indexOf(c); if(i<=0 || isDone(b,c)) return ''; const miss = cs.slice(0,i).filter(x=>!isDone(b,x)); return miss.length ? miss[0] : ''; };
 const WITHAN = new Map();
 const checksOf = b => withAn(checksOf0(b));
 const checksOf0 = b => b.checks || ((b.id.startsWith('INV-') && TYPE[b.type].set==='copy') || b.type==='email' ? ['Built','Tracking live','Anouar approved','SJ approved','Live'] : CHECKSETS[TYPE[b.type].set]);
@@ -4061,6 +4071,7 @@ async function resolveNames(){
 const writing = {};
 async function toggleCheck(b, c){
   if(!ST.canWrite) return;
+  { const need = tickBlocked(b,c); if(need){ alertBox(`First: "${tickLabel(b,need)}". The order is build, test, Anouar, SJ.`); return; } }
   if((c==='Anouar approved'||c==='SJ approved') && !canApprove(c)){ alertBox('Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can tick this, using their approval key.'); return; }
   const cur = Object.assign({}, ST.checks[b.id]||{});
   cur[c] = {v: !isDone(b,c), by: ST.me||'local', at: new Date().toISOString()};
@@ -4084,8 +4095,8 @@ const TODAY = () => new Date().toISOString().slice(0,10);
 const dueOf = b => (ST.due[b.id] && ST.due[b.id].date) || b.due || (typeof defaultDue==='function' ? defaultDue(b.id) : null);
 const isComplete = b => checksOf(b).every(c=>isDone(b,c));
 function stateOf(b){ if(isComplete(b)) return 'done'; const d = dueOf(b); if(!d) return 'open'; const days = (new Date(d) - new Date(TODAY()))/864e5; if(days < 0) return 'overdue'; if(days <= 3) return 'soon'; return 'open'; }
-const waitingAn = b => checksOf(b).includes('Anouar approved') && (isDone(b,'Built') || isDone(b,'Draft ready')) && !isDone(b,'Anouar approved');
-const waitingSJ = b => checksOf(b).includes('SJ approved') && (isDone(b,'Built') || isDone(b,'Draft ready')) && !isDone(b,'SJ approved') && (!checksOf(b).includes('Anouar approved') || isDone(b,'Anouar approved'));
+const waitingAn = b => checksOf(b).includes('Anouar approved') && !isDone(b,'Anouar approved') && !tickBlocked(b,'Anouar approved');
+const waitingSJ = b => checksOf(b).includes('SJ approved') && !isDone(b,'SJ approved') && !tickBlocked(b,'SJ approved');
 function fmtDate(d){ if(!d) return 'no date'; return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
 async function setDue(b, date){
   const cur = {date, by: ST.me||'local', at: new Date().toISOString(), block: b.id};
@@ -4184,7 +4195,7 @@ function card(b, F){
     ${(b.exp||[]).length?`<dl class="bb-exp">${b.exp.slice(0,3).map(e=>`<div><dt>${esc(e[0])}</dt><dd>${fmtV(e[1],e[2])}</dd></div>`).join('')}</dl>`:''}
    </button>
    <div class="bb-foot"><span class="bb-owner" title="${esc(PEOPLE[b.owner]?PEOPLE[b.owner].role:'')}"><i>${initials(b.owner)}</i>${esc(b.owner)}</span>
-    <span class="bb-checks">${cs.map(c=>`<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled':''} title="${esc(c)}${isDone(b,c)?' · '+esc(who(ST.checks[b.id][c].by))+' · '+ago(ST.checks[b.id][c].at):''}" ${ST.canWrite?'':'disabled'}>${esc(c)}</button>`).join('')}</span>
+    <span class="bb-checks">${cs.map(c=>`<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled':''} title="${esc(c)}${isDone(b,c)?' · '+esc(who(ST.checks[b.id][c].by))+' · '+ago(ST.checks[b.id][c].at):''}" ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?'data-wait="1"':''}>${esc(tickLabel(b,c))}</button>`).join('')}</span>
     <button type="button" class="bb-cm" data-open="${b.id}" aria-label="${n} comments">💬 ${n}</button></div>
   </article>`;
 }
@@ -4279,7 +4290,7 @@ function drawer(id){
   const reg = (F.reg && TYPE[b.type].set==='copy') || (E && E.reg);
   return `<div class="bb-panel" aria-label="${esc(b.t)}">
    <div class="bb-dr-head"><div><button type="button" class="bb-id bb-idbtn" data-copylink="${b.id}" title="Copy a link straight to ${b.id}">${b.id} 🔗</button> <span class="bb-type">${TYPE[b.type].n}</span>${reg?' <span class="bb-reg">Regulated</span>':''}${jn?` <span class="bb-type">${esc(jn.L.name)} · ${esc(jn.S.t)}</span>`:''}<h3>${esc(b.t)}</h3>${E?`<p class="bb-subj">“${esc(sampleOf(E.subject))}”</p>`:''}</div><div class="bb-headbtns">${teamsBtn(b)}<button type="button" class="bb-x" data-close aria-label="Close and show alerts">✕</button></div></div>
-   <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled title="Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can approve"':''} ${ST.canWrite?'':'disabled'}>${esc(c)}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
+   <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled title="Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can approve"':''} ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?`aria-disabled="true" data-wait="1" title="Waits for: ${esc(tickLabel(b,tickBlocked(b,c)))}"`:''}><i class="ck-n">${cs.indexOf(c)+1}</i> ${esc(tickLabel(b,c))}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
    <div class="bb-duerow st-${st}"><label for="due-${b.id}">Due</label><input type="date" id="due-${b.id}" data-due="${b.id}" value="${dueOf(b)||''}" ${ST.canWrite?'':'disabled'}><span class="bb-state">${st==='done'?'Done':st==='overdue'?'Overdue':st==='soon'?'Due soon':'On track'}</span>${typeof phaseOf==='function'&&phaseOf(b.id)?`<span class="bb-phase">${esc(phaseOf(b.id))}</span>`:''}
     <button type="button" class="btn" data-ping="${b.id}" ${ST.canWrite&&!isComplete(b)?'':'disabled'}>🔔 Remind ${esc(b.owner)}</button></div>
    ${pend.length?`<p class="bb-pend">${pend.length} reminder${pend.length>1?'s':''} queued for the next 08:45 run.</p>`:''}
