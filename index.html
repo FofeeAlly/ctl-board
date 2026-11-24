@@ -932,8 +932,8 @@ const DEFS = [
  d:{'Sources':'Answer engines citing our guides; trade press (mpamag, Mortgage Solutions, IFA Magazine, Financial Reporter); the 12 post LinkedIn series; open Reddit answers',
     'Why it matters':'0% share of voice on 48 tracked prompts today; 28 home buying prompts name no brand at all','Tracks':'Referrer and UTM on every link we place; weekly rerun of the 48 prompts'},
  c:[U('pg-guides')]},
-{id:'src-web', k:'source', t:'Webinar invites', s:'Ads, HubSpot list, Flow 1 Day 10',
- d:{'Who':'Cold ads in Tier 1 cities, the 904 home buyer leads already in HubSpot, people in Flow 1 at Day 10, Not ready people monthly',
+{id:'src-web', k:'source', t:'Webinar invites', s:'Ads, Customer.io segment, Flow 1 Day 10',
+ d:{'Who':'Cold ads in Tier 1 cities, the 904 home buyer leads (a Customer.io segment synced from HubSpot), people in Flow 1 at Day 10, Not ready people monthly',
     'Offer':'Live session plus "Bayuti: Your Guide to Homebuying", first edition, and priority with the sales team','Tracks':'UTM per source so attendance can be compared by where people came from'},
  c:[Q('Did they open the invite?', Y('Webinar page', [U('pg-web')]), N('One more invite 3 days before the session, then they wait for next month\'s'))]},
 {id:'src-retarget', k:'source', t:'Retargeting ads', s:'Flow 4 · people who left without an email', c:[U('f4')]},
@@ -1043,7 +1043,7 @@ Q('Did they start the score at least?', Y('quick_score_started, not finished', [
 
 /* ---------------- FLOW 2 ---------------- */
 {id:'f2', k:'flow', t:'Flow 2 · Webinar', s:'Invite, reminders, live, replay',
- d:{'Enters on':'webinar_registered from the webinar page, Flow 1 Day 10, Flow 5 or HubSpot reactivation','Only if':'Registered for a future session',
+ d:{'Enters on':'webinar_registered from the webinar page, Flow 1 Day 10, Flow 5 or a Customer.io reactivation','Only if':'Registered for a future session',
     'Leaves when':'Call booked, full score done, or no action after the replay','Goal':'Attend, then book a call','Note':'Reminders send even while another email flow is running'},
  c:[U('f2i')]},
 {id:'f2i', k:'msg', media:1, t:'You\'re in, plus a calendar invite', s:'Instant · Email + Push',
@@ -2079,9 +2079,9 @@ const HB = {
   B('HB-D7','fix','Fix what is broken in HubSpot today',{owner:'Omar', also:'Fofee',
     what:'From the 3 Nov audit of 904 home buyer contacts.',
     list:['City is free text (typos, street addresses): replace with a dropdown on every form','primary_lead_source is blank on all 800 checked: map it from UTMs','deposit_status and home_buyer_funnel_stage disagree often: set both from one rule','Meta Pixel sends PageView only: add Lead','HubSpot tracking also runs on staging: wrap it so test visits don\'t count']}),
-  B('HB-D8','process','Audit live HubSpot workflows before go live',{owner:'Fofee',
-    what:'The HubSpot connector cannot list workflows, so this is a manual check: list every workflow that emails home buyer contacts and switch off any that would double send next to Customer.io.',
-    list:['List workflows touching home_buyer_funnel_stage, deposit_status or city','Mark each: keep (sales tasks), move to Customer.io, or switch off','Note the date each was switched off on this card']})
+  B('HB-D8','process','Move all marketing out of HubSpot',{owner:'Fofee',
+    what:'Rule from 24 Nov: every marketing message (email, push, SMS, in app, newsletters, nurture, reactivation) runs in Customer.io only. HubSpot stays the CRM: contacts, deals, the sales pipeline, calls, meeting links, tasks and reporting. Nothing marketing sends from HubSpot.',
+    list:['Switch off every HubSpot workflow that sends a marketing email or adds people to a marketing list (keep the ones that only send webhooks or create sales tasks)','Stop all scheduled HubSpot marketing emails and newsletters','HubSpot forms: no follow up email on any form','Rebuild any HubSpot list used for sending as a Customer.io segment','Set contacts to non marketing in HubSpot once Customer.io is sending (fewer paid marketing contacts)','Note each switch off with its date in the comments']})
  ],
  emails:[
   B('HB-E1','email','Day 0 · Your Quick Score is in',{owner:'Fofee', msg:'hb1', when:'Within 5 minutes of quick_score_completed',
@@ -2137,7 +2137,7 @@ const HB = {
  web:[
   B('HB-WB1','webinar','Live: Your Guide to Homebuying',{owner:'Fofee', also:'Alex (presenter), Anouar (guest, quarterly), SJ (slides)', when:'Monthly, Tuesday 19:00, 45 minutes',
     what:'Run of show: 10 min how it works · 10 min your city\'s numbers · 10 min a live Bayuti Score walk through · 15 min live Q&A. Attendees get the first edition of "Bayuti: Your Guide to Homebuying" and priority with the sales team.',
-    exp:[['Invite to registration (warm)',6,'%','Flow 1 Day 10 and the HubSpot list of 904 home buyer leads.'],['Registration to attendance',35,'%','Free live webinars usually see a third to a half of sign ups turn up.'],['Attendee to call booked',25,'%','Priority slots held for 7 days.']],
+    exp:[['Invite to registration (warm)',6,'%','Flow 1 Day 10 and the Customer.io segment of the 904 home buyer leads (synced from HubSpot).'],['Registration to attendance',35,'%','Free live webinars usually see a third to a half of sign ups turn up.'],['Attendee to call booked',25,'%','Priority slots held for 7 days.']],
     track:['webinar_registered, webinar_attended, webinar_no_show, replay_watched','Webinar tool [to choose] webhook to Customer.io','Fofee','Attendance arrives 30 minutes after the end']}),
   B('HB-WB2','page','Webinar landing page',{owner:'Omar', also:'Fofee, SJ', what:'Date, what you get (the guide, priority call), form: first name, email, mobile, city, home deposit band, one question.',
     exp:[['Page visitor to registration',25,'%','Warm traffic from our own emails.']], track:['webinar_registered','Form to Customer.io and webinar tool','Omar','Registrant appears in both']}),
@@ -2212,7 +2212,7 @@ const INV = {
     exp:[['Nearly ready who opt in',15,'%','Only those who choose to.']], track:['grow_home_deposit_opted_in','Score page','Ridhima','']}),
   B('INV-W4','process','Registered but never invested',{owner:'Fofee', also:'Pankaj',
     what:'HubSpot already holds people who signed up and stopped (for example recent unverified registrations and onboarded non investors). They join at the step where they stopped, never at the start.',
-    exp:[['Reactivated to first investment',5,'%','Older, colder list.']], track:['Entry by HubSpot list','HubSpot to Customer.io','Fofee','Each joins at the right step']}),
+    exp:[['Reactivated to first investment',5,'%','Older, colder list.']], track:['Entry by Customer.io segment','HubSpot sync into Customer.io, sent from Customer.io only','Fofee','Each joins at the right step']}),
   B('INV-W5','page','App store listings',{owner:'Fofee', also:'Omar', what:'Screenshots and copy match the ads, so the store does not undo the promise.', exp:[['Store page to install',30,'%','Finance apps convert lower than average on store pages; matching screenshots help.']], track:['app_installed with store referrer where available','AppsFlyer only (the app tracking code), forwarded to Customer.io and HubSpot','Omar','Each install counted once']})
  ],
  data:[
@@ -3823,15 +3823,17 @@ const HBD_EXPLAIN = {
   watch:['Old contacts keep their free text city until cleaned: list the worst ones for Omar to tidy.']
  },
  'HB-D8': {
-  why:'The HubSpot connector cannot list workflows, so nobody has a full picture of what HubSpot sends today. If an old HubSpot workflow and a new Customer.io campaign both email the same person, they get two emails.',
+  why:'Two tools sending marketing means people get the same message twice, unsubscribes that only work in one place, and HubSpot marketing contacts we pay for. From now on Customer.io sends every marketing message; HubSpot is the CRM only.',
   steps:[
-   'Fofee: in HubSpot, go to Automation, then Workflows, and filter to contact workflows.',
-   'Fofee: list every workflow that uses home_buyer_funnel_stage, deposit_status or city, or that sends an email to home buyers.',
-   'Fofee: mark each one: keep (sales tasks only), move to Customer.io, or switch off.',
-   'Fofee: switch off the "switch off" ones on go live day, not before, and write the date in a comment on this box.'],
-  test:['On go live day, a test home buyer gets emails from Customer.io only, none from HubSpot.'],
-  done:'Every workflow on the list is marked and the switch off dates are in the comments.',
-  watch:['Do not delete workflows, only switch them off, so they can come back if needed.']
+   'Fofee: in HubSpot, go to Automation, then Workflows. Switch off every workflow that sends a marketing email or adds people to a marketing list. Keep the ones that only send webhooks to Customer.io or create sales tasks.',
+   'Fofee: Marketing, then Email: unschedule every scheduled email and newsletter.',
+   'Fofee: Marketing, then Forms: on every form, set the follow up email to none (the Quick Score form only stores the lead).',
+   'Fofee: any HubSpot list used for sending gets rebuilt as a data driven segment in Customer.io (for example the 904 home buyer leads).',
+   'Fofee: once Customer.io is sending, set contacts to non marketing in HubSpot so we stop paying for marketing contacts.',
+   'Fofee: unsubscribes stay in step both ways (see HB-D1), so someone who unsubscribes in Customer.io is never emailed from anywhere.'],
+  test:['For a test home buyer, every message in their HubSpot timeline after go live comes from Customer.io, none from HubSpot.','Submit the Quick Score: no HubSpot follow up email arrives.'],
+  done:'No HubSpot workflow, form or scheduled email sends marketing, and the switch off dates are in the comments.',
+  watch:['Switch workflows off, never delete them, so they can come back if needed.','Do not switch off webhook workflows: they feed Customer.io (calls, stages, keys).']
  },
  'HB-D9': {
   why:'The grow lane follows people inside the app: checks, bank, first investment, monthly plan. From HubSpot today: 29 KYC verified, 32 appropriateness tests done, SCA false for everyone, 11 bank accounts added, 8 invested, and recurring_mandate empty. Most of these steps are not tracked as events yet, so we cannot nudge people at the right moment.',
@@ -4054,9 +4056,9 @@ function gates(F){
   return [
     B(P+'-GATE1','gate','Gate 1 · Everything built and tracked',{owner:'Ridhima', also:'Omar, Fofee', what:'Every block in the way in, data, emails, videos, webinars and machine sections has Built and Tracking or Tested ticked.', checks:['Checked','Signed off'], auto:'build'}),
     B(P+'-GATE2','gate','Gate 2 · Every word approved',{owner:'SJ', also:F.reg?'Anouar':'', what: F.reg ? 'Every copy block has Anouar approved, then SJ. Dates of approval kept in the comments.' : 'Every copy block has SJ approved. Dates of approval kept in the comments.', checks:['Checked','Signed off'], auto:'sj'}),
-    B(P+'-GATE3','gate','Gate 3 · End to end test',{owner:'Fofee', also:'Ridhima', what:'Three seed people (three cities, three bands) go through the whole flow. Every event shows in Customer.io and HubSpot within 15 minutes; every link has UTMs; unsubscribe, STOP, quiet hours and the 1 email a day cap all work'+(F.reg?'; the risk banner shows on every message and screen.':'.'), checks:['Checked','Signed off']}),
+    B(P+'-GATE3','gate','Gate 3 · End to end test',{owner:'Fofee', also:'Ridhima', what:'Three seed people (three cities, three bands) go through the whole flow. Every event shows in Customer.io and HubSpot within 15 minutes; every link has UTMs; unsubscribe, STOP, quiet hours and the 1 email a day cap all work; every message comes from Customer.io and none from HubSpot'+(F.reg?'; the risk banner shows on every message and screen.':'.'), checks:['Checked','Signed off']}),
     B(P+'-GATE4','gate','Gate 4 · Measurement ready',{owner:'Fofee', also:'Naveed', what:'Every block\'s Expected number is on this board; the Actual column fills from Customer.io, GA4 and the weekly spend file; the 10% holdout is set.', checks:['Checked','Signed off']}),
-    B(P+'-GATE5','gate','Gate 5 · Go live',{owner:'Anouar', what:'Gates 1 to 4 signed off. Go live date agreed. First review booked 14 days after go live.', checks:['Checked','Signed off']})
+    B(P+'-GATE5','gate','Gate 5 · Go live',{owner:'Anouar', what:'Gates 1 to 4 signed off. HubSpot marketing switched off (HB-D8): Customer.io sends everything. Go live date agreed. First review booked 14 days after go live.', checks:['Checked','Signed off']})
   ];
 }
 const flowOf = id => FLOWS.find(f=>f.id===id);
