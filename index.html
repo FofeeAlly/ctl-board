@@ -774,6 +774,7 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
 .tcl-i i{flex:none;display:grid;place-items:center;min-width:24px;height:24px;border-radius:6px;border:2px solid #C9CDF0;font-style:normal;font-size:11px;font-weight:800}
 .tcl-i.ok i{background:#00A569;border-color:#00A569;color:#fff}.tcl-i.na i{background:#EEF0FF;border-color:#C9CDF0;color:#3D4060}.tcl-i.na span{color:#3D4060;text-decoration:line-through}
 .tcl-i small{display:block;color:#3D4060;font-size:11.5px}.tcl-i{white-space:normal}.tcl-i span{flex:1;min-width:0;overflow-wrap:anywhere}
+.ot-scope{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px;padding:8px;background:#EEF0FF;border-radius:14px;width:max-content;max-width:100%}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -4997,6 +4998,17 @@ function ownerSel(b, cls){
   const was = ORIG[b.id+'|owner'];
   return `<span class="own-w ${cls||''}"><label class="sr" for="own-${cls||'x'}-${b.id}">Owner of ${esc(b.id)}</label><select id="own-${cls||'x'}-${b.id}" class="own-sel" data-owner="${esc(b.id)}" ${ST.canWrite?'':'disabled'}>${names.map(n=>`<option${n===b.owner?' selected':''}>${esc(n)}</option>`).join('')}</select>${was&&was!==b.owner?`<small class="own-was">was ${esc(was)}</small>`:''}</span>`;
 }
+/* the tasks that sit on the journey map (the Manchester engine and its lanes) */
+function journeyIds(){
+  if(journeyIds.set) return journeyIds.set;
+  const known = new Set(FLOWS.flatMap(F=>blocksOf(F,true).map(b=>b.id))), set = new Set();
+  const walk = x => { if(x==null) return; if(typeof x==='string'){ if(known.has(x)) set.add(x); return; } if(Array.isArray(x)) return x.forEach(walk); if(typeof x==='object') Object.values(x).forEach(walk); };
+  walk(JOURNEY);
+  if(typeof NUDGEOF!=='undefined') [...set].forEach(id=>walk(NUDGEOF[id]));
+  if(typeof ADFROM!=='undefined') [...set].forEach(id=>walk(ADFROM[id]));
+  journeyIds.set = set; return set;
+}
+const inScope = b => (ST.openScope||'journey')==='all' || journeyIds().has(b.id);
 function taskOrder(rows){
   const ids = new Set(rows.map(r=>r.b.id)), lv = {}, seen = {};
   const L = id => { if(lv[id]) return lv[id]; if(seen[id]) return 1; seen[id] = 1; const deps = (DEPS[id]||[]).filter(d=>ids.has(d)); lv[id] = deps.length ? 1 + Math.max(...deps.map(L)) : 1; return lv[id]; };
@@ -5007,10 +5019,10 @@ function taskOrder(rows){
 }
 function viewOpen(F){
   const flt = ST.openF || 'all', today = TODAY();
-  let rows = blocksOf(F,true).filter(b=>visible(b) || (ST.owner && testerOf(b)===ST.owner && ['pend','part'].includes(testOf(b)[0]))).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b), st:stateOf(b), t:testOf(b), d:depInfo(b,F)}));
+  let rows = blocksOf(F,true).filter(inScope).filter(b=>visible(b) || (ST.owner && testerOf(b)===ST.owner && ['pend','part'].includes(testOf(b)[0]))).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b), st:stateOf(b), t:testOf(b), d:depInfo(b,F)}));
   const cnt = {all:rows.length, overdue:rows.filter(r=>r.st==='overdue').length, week:rows.filter(r=>r.due && (new Date(r.due)-new Date(today))/864e5 <= 7).length, blocked:rows.filter(r=>r.d.open.length).length, risk:rows.filter(r=>r.d.late.length).length, test:rows.filter(r=>r.t[0]==='pend'||r.t[0]==='part').length};
   rows = rows.filter(r=> flt==='all' || (flt==='overdue'&&r.st==='overdue') || (flt==='week'&&r.due&&(new Date(r.due)-new Date(today))/864e5<=7) || (flt==='blocked'&&r.d.open.length) || (flt==='risk'&&r.d.late.length) || (flt==='test'&&(r.t[0]==='pend'||r.t[0]==='part')));
-  const allOpen = blocksOf(F,true).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b)}));
+  const allOpen = blocksOf(F,true).filter(inScope).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b)}));
   const ORD = taskOrder(allOpen), stepOf = id => ORD.step[id], lvOf = id => (allOpen.find(x=>x.b.id===id)||{}).lv || 1;
   const byOrder = (ST.openSort||'order')==='order';
   rows.forEach(r=>{ r.step = stepOf(r.b.id); r.lv = lvOf(r.b.id); });
@@ -5029,8 +5041,9 @@ function viewOpen(F){
   const cal = `<div class="ot-cal">${wk.map((s,i)=>`<div class="ot-wk${i===0?' now':''}"><p>${i===0?'This week':'w/c '+s.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}<b>${byWeek[i].length}</b></p>${byWeek[i].slice(0,40).map(r=>`<button type="button" class="ot-pill st-${r.st}${r.d.late.length?' risk':''}" data-open="${r.b.id}" title="${esc(r.b.t)} · ${esc(r.b.owner)} · due ${esc(r.due||'')}">${r.d.late.length?'⚠ ':r.d.open.length?'⛓ ':''}${r.b.id}</button>`).join('')}</div>`).join('')}</div>`;
   return `<section class="bb-sec"><div class="bb-sh"><h3>Open tasks</h3><p>Everything not finished, in the order it has to happen: each task has a step number, and a task can only start when the tasks it waits on are done. Stage 1 can start now; stage 2 starts when its stage 1 tasks are done, and so on. ⛓ waits on something unfinished. ⚠ waits on something due after it, so the date can't hold.</p></div>
    <div class="ot-share"><button type="button" class="btn" data-copytxt="${BOARD_URL}">Copy the board link</button><a class="bb-teams" href="https://teams.microsoft.com/share?href=${encodeURIComponent(BOARD_URL)}&msgText=${encodeURIComponent('CrowdtoLive open tasks: due dates, what waits on what, and testing. Open the link in Chrome or Edge, then click Open tasks at the top.\n'+cnt.risk+' dates clash, '+cnt.overdue+' overdue.')}&preview=true" target="_blank" rel="noopener">Share in Teams</a><button type="button" class="btn" data-digest="1">Copy a summary for Teams</button>${ST.solo?'':`<button type="button" class="btn" data-solo="1">Open tasks full screen</button>`}</div>
+   <div class="ot-scope" role="group" aria-label="Which tasks"><button type="button" class="ot-chip${(ST.openScope||'journey')==='journey'?' on':''}" data-oscope="journey">Journey map · ${CITYN} only <b>${blocksOf(F,true).filter(b=>journeyIds().has(b.id)&&!isComplete(b)).length}</b></button><button type="button" class="ot-chip${ST.openScope==='all'?' on':''}" data-oscope="all">Everything in the flow <b>${blocksOf(F,true).filter(b=>!isComplete(b)).length}</b></button></div>
    <div class="ot-chips">${chip('all','All open')}${chip('overdue','Overdue')}${chip('week','Due in 7 days')}${chip('blocked','Waiting on something')}${chip('risk','Dates clash')}${chip('test','Testing pending (Ridhima)')}</div>
-   ${(()=>{ const names = [...new Set(blocksOf(F,true).map(b=>{ const n = nextStep(b); return n && n.who; }).filter(Boolean))].sort();
+   ${(()=>{ const names = [...new Set(blocksOf(F,true).filter(inScope).map(b=>{ const n = nextStep(b); return n && n.who; }).filter(Boolean))].sort();
       const ppl = names.map(n=>({n, r:personReminder(n)})).filter(x=>x.r.count);
       const all = [...new Set(Object.keys(PEOPLE).filter(n=>n!=='Mudassar').concat(names))].sort();
       return `<div class="tm-box"><div class="tm-h"><h4>${TEAMS_ICON} Send reminders in Teams</h4><button type="button" class="lnk" data-showemails="1">${ST.showEmails?'Hide':'Teams emails'}</button></div>
@@ -5340,7 +5353,7 @@ function boxReminder(b){ const n = nextStep(b); if(!n) return ''; const d = dueO
   return `Hi ${n.who}, a reminder from the CrowdtoLive board: ${b.id} ${b.t} needs "${tickLabel(b,n.c)}"${d?' by '+fmtDate(d):''}. ${stateOf(b)==='overdue'?'It is overdue. ':''}Open it here: ${boxLink(b.id)}`; }
 function personReminder(name){
   const F = flowOf(ST.flow), today = TODAY();
-  const mine = blocksOf(F,true).filter(b=>{ const n = nextStep(b); return n && n.who===name && !tickBlocked(b,n.c); }).map(b=>({b, d:dueOf(b), n:nextStep(b)})).sort((a,c)=>(a.d||'9')<(c.d||'9')?-1:1);
+  const mine = blocksOf(F,true).filter(b=>typeof inScope!=='function'||inScope(b)).filter(b=>{ const n = nextStep(b); return n && n.who===name && !tickBlocked(b,n.c); }).map(b=>({b, d:dueOf(b), n:nextStep(b)})).sort((a,c)=>(a.d||'9')<(c.d||'9')?-1:1);
   const late = mine.filter(x=>x.d && x.d<today), soon = mine.filter(x=>x.d && x.d>=today && (new Date(x.d)-new Date(today))/864e5<=7);
   const pick = late.concat(soon).slice(0,8);
   return {count: mine.length, late: late.length, soon: soon.length, msg: `Hi ${name}, your CrowdtoLive tasks: ${late.length} overdue, ${soon.length} due in the next 7 days.\n`+pick.map(x=>`• ${x.b.id} ${x.b.t}: ${tickLabel(x.b,x.n.c)}${x.d?' (due '+fmtDate(x.d)+')':''}`).join('\n')+(mine.length>pick.length?`\n…and ${mine.length-pick.length} more.`:'')+`\nYour list: ${location.origin+location.pathname}#build (pick your name in Everyone, then Open tasks)`};
@@ -5386,6 +5399,7 @@ function onClick(e){
   if(t.dataset.teamsrep){ teamsChat('Fofee', reportText(flowOf(ST.flow), ST.repDay||dayKey(new Date().toISOString()))); return; }
   if(t.dataset.tcl){ ST.testOpen = ST.testOpen===t.dataset.tcl ? null : t.dataset.tcl; render(); return; }
   if(t.dataset.tci){ const [bid, k] = t.dataset.tci.split('|'); clTick(bid, +k); return; }
+  if(t.dataset.oscope){ ST.openScope = t.dataset.oscope; render(); return; }
   if(t.dataset.tf){ ST.testF = t.dataset.tf; render(); return; }
   if(t.dataset.tres){ const [bid, r] = t.dataset.tres.split('|'); const inp = document.getElementById('tn-'+bid); saveTest(bid, r, inp ? inp.value.trim() : ''); return; }
   if(t.dataset.qclear){ ST.q = ''; render(); return; }
