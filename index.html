@@ -4065,18 +4065,20 @@ const TEST_TICKS = ['Tested','Tested on phones'];
 /* every task runs in one order: build (owner) -> test (Ridhima) -> Anouar -> SJ -> live */
 /* Darcy's video tasks: no testing step (Ridhima), and always SJ after Anouar */
 const isVideoTask = b => !!b && b.owner==='Darcy' && (b.type==='video' || /^(HB|INV)-VP$/.test(b.id) || b.platform==='tiktok' || /tiktok/i.test(b.t||''));
-const WITHAN_V = new Map();
-const withAn = (cs, vid) => { if(!cs) return cs; const M = vid ? WITHAN_V : WITHAN; const k = M.get(cs); if(k) return k;
+const WITHAN_V = new Map(), WITHAN_N = new Map();
+/* no testing step at all: anything of Darcy's, and every ad */
+const isNoTest = b => !!b && (b.owner==='Darcy' || b.type==='ad' || isVideoTask(b));
+const withAn = (cs, vid, nt) => { if(!cs) return cs; const M = vid ? WITHAN_V : nt ? WITHAN_N : WITHAN; const k = M.get(cs); if(k) return k;
   const build = cs.filter(c=>!TEST_TICKS.includes(c) && !['Fofee approved','Anouar approved','SJ approved','Live'].includes(c));
   const tests = cs.filter(c=>TEST_TICKS.includes(c));
-  const o = vid ? build.concat(['Fofee approved','Anouar approved','SJ approved'], cs.includes('Live')?['Live']:[]) : build.concat(tests.length?tests:['Tested'], ['Anouar approved'], cs.includes('SJ approved')?['SJ approved']:[], cs.includes('Live')?['Live']:[]);
+  const o = vid ? build.concat(['Fofee approved','Anouar approved','SJ approved'], cs.includes('Live')?['Live']:[]) : nt ? build.concat(['Anouar approved'], cs.includes('SJ approved')?['SJ approved']:[], cs.includes('Live')?['Live']:[]) : build.concat(tests.length?tests:['Tested'], ['Anouar approved'], cs.includes('SJ approved')?['SJ approved']:[], cs.includes('Live')?['Live']:[]);
   M.set(cs, o); return o; };
 const APPROVERS = {'Fofee approved':'Fofee','Anouar approved':'Anouar','SJ approved':'SJ'};
 const tickWho = (b,c) => TEST_TICKS.includes(c) ? (b.tester||'Ridhima') : APPROVERS[c] || b.owner;
 const tickLabel = (b,c) => APPROVERS[c] ? c : `${c} · ${tickWho(b,c)}`;
 const tickBlocked = (b,c) => { const cs = checksOf(b), i = cs.indexOf(c); if(i<=0 || isDone(b,c)) return ''; const miss = cs.slice(0,i).filter(x=>!isDone(b,x)); return miss.length ? miss[0] : ''; };
 const WITHAN = new Map();
-const checksOf = b => withAn(checksOf0(b), isVideoTask(b));
+const checksOf = b => withAn(checksOf0(b), isVideoTask(b), isNoTest(b));
 const checksOf0 = b => b.checks || ((b.id.startsWith('INV-') && TYPE[b.type].set==='copy') || b.type==='email' ? ['Built','Tracking live','Anouar approved','SJ approved','Live'] : CHECKSETS[TYPE[b.type].set]);
 const isDone = (b,c) => !!(ST.checks[b.id] && ST.checks[b.id][c] && ST.checks[b.id][c].v);
 const doneCount = b => checksOf(b).filter(c=>isDone(b,c)).length;
@@ -4136,7 +4138,7 @@ async function toggleCheck(b, c){
   if(APPROVERS[c] && !canApprove(c)){ alertBox('Only '+APPROVERS[c]+' can tick this, using their approval key.'); return; }
   const cur = Object.assign({}, ST.checks[b.id]||{});
   cur[c] = {v: !isDone(b,c), by: ST.me||'local', at: new Date().toISOString()};
-  cur.block = b.id; if(isVideoTask(b)) cur.notest = true;
+  cur.block = b.id; if(isNoTest(b)) cur.notest = true; if(isVideoTask(b)) cur.fofee = true;
   ST.checks[b.id] = cur; render();
   if(ST.db){ if(writing[b.id]) await writing[b.id]; writing[b.id] = ST.db.doc('checks/'+b.id).set(cur).catch(e=>{ if(e&&e.code==='invalid_argument'){ ST.canWrite=false; render(); } }); await writing[b.id]; writing[b.id]=null; }
   else localSave();
