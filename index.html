@@ -4153,7 +4153,11 @@ async function addNote(b, text){
   else { ST.notes.push(Object.assign({id:'l'+Date.now()}, n)); localSave(); render(); }
 }
 const TODAY = () => new Date().toISOString().slice(0,10);
-const dueOf = b => (ST.due[b.id] && ST.due[b.id].date) || b.due || (typeof defaultDue==='function' ? defaultDue(b.id) : null);
+/* 24 Nov 2026: everything is now due by Friday 27 Nov. Dates set before then are pulled in to 27 Nov; a date someone changes after that stands. */
+const DEADLINE = '2026-11-27', DEADLINE_SET = '2026-11-24T17:34:00Z';
+const dueOf = b => { const e = ST.due[b.id]; if(e && e.date && e.at && e.at > DEADLINE_SET) return e.date;
+  const d = (e && e.date) || b.due || (typeof defaultDue==='function' ? defaultDue(b.id) : null);
+  return !d || d > DEADLINE ? DEADLINE : d; };
 const isComplete = b => checksOf(b).every(c=>isDone(b,c));
 function stateOf(b){ if(isComplete(b)) return 'done'; const d = dueOf(b); if(!d) return 'open'; const days = (new Date(d) - new Date(TODAY()))/864e5; if(days < 0) return 'overdue'; if(days <= 3) return 'soon'; return 'open'; }
 const waitingFo = b => checksOf(b).includes('Fofee approved') && !isDone(b,'Fofee approved') && !tickBlocked(b,'Fofee approved');
