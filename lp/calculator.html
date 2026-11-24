@@ -249,6 +249,7 @@ input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px
 .chart .lg{display:flex;gap:14px;font-size:12px;font-weight:800;margin:0 0 6px}.chart .lg i{display:inline-block;width:14px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .chart svg{width:100%;height:auto;display:block}
 .chart .ln{fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.permo{margin:0;font-weight:700;font-size:14px;color:var(--ink);background:#F2FCF7;border-radius:16px;padding:12px 14px}.tot{margin:0;font-size:14px;font-weight:600;color:var(--muted)}.tot b{color:var(--navy)}
 .disc{font-size:12px;font-weight:600;color:var(--muted);margin:0}
 .keep{display:grid;gap:10px;background:var(--deep);color:#fff;border-radius:22px;padding:18px}
 .keep p{margin:0;font-weight:800;font-size:15px}
@@ -276,8 +277,8 @@ input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px
   </div>
   <div class="res" aria-live="polite">
     <div class="duo">
-      <div class="box rent"><small>Renting</small><b id="r-rent">£0</b><span>of rent, owned: nothing</span></div>
-      <div class="box own"><small>Co owning</small><b id="r-own">£0</b><span>of your home is yours</span></div>
+      <div class="box rent"><small>Renting</small><b id="r-rent">£0</b><span>of rent paid, owned: nothing</span></div>
+      <div class="box own"><small>Co owning</small><b id="r-own">£0</b><span id="r-own-t">of your home is yours</span></div>
     </div>
     <div class="housewrap">
       <svg class="house" viewBox="0 0 150 130" aria-hidden="true">
@@ -288,13 +289,15 @@ input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px
         <path d="M75 6 L144 62 L130 62 L130 124 L20 124 L20 62 L6 62 Z" fill="none" stroke="#000F96" stroke-width="5" stroke-linejoin="round"/>
         <rect x="62" y="88" width="26" height="36" rx="4" fill="#000F96"/>
       </svg>
-      <div><b id="r-share">0%</b><p id="r-share-t">of the home is yours after 10 years</p><p id="r-rentdrop" style="color:var(--green)"></p></div>
+      <div><b id="r-share">0%</b><p id="r-share-t">of the home is yours after 10 years</p></div>
     </div>
+    <p class="permo" id="r-rentdrop"></p>
+    <p class="tot" id="r-total"></p>
     <div class="chart">
-      <div class="lg"><span><i style="background:#B9BED8"></i>Rent paid, renting</span><span><i style="background:#00A569"></i>Rent paid, co owning</span></div>
+      <div class="lg"><span><i style="background:#B9BED8"></i>Rent paid, renting</span><span><i style="background:#00A569"></i>Rent paid, co owning (not counting what you put towards your home)</span></div>
       <svg id="c-svg" viewBox="0 0 400 170" role="img" aria-label="Rent paid over time, renting against co owning"></svg>
     </div>
-    <p class="disc">Illustration only, not a quote or a forecast. It keeps today's rent and home price the same and assumes the rent on the part you don't own falls in line with your share [confirm with the product team how rent on the rest is set]. Your real figures depend on the home, its rent and when you buy more.</p>
+    <p class="disc">Illustration only, not a quote or a forecast. It keeps today's rent and home price the same. Rent on the part you don't own is the market rent times the share you don't own yet [Anouar to confirm this is how rent on the rest is set]. Money you put towards your home buys more of it at today's price. Your real figures depend on the home, its rent and when you buy more.</p>
     <div class="keep">
       <p>Keep your numbers</p>
       <form class="row" id="c-form" novalidate><label class="sr" for="c-email">Your email</label><input id="c-email" type="email" placeholder="Your email" autocomplete="email"><button class="go2" type="submit">Email me my numbers</button></form>
@@ -312,14 +315,23 @@ input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px
   var IN = {rent:$('c-rent'), price:$('c-price'), dep:$('c-dep'), more:$('c-more'), yrs:$('c-yrs')};
   var gbp = function(v){ return '£'+Math.round(v).toLocaleString('en-GB'); };
   var tk = window.track || function(){};
+  /* The model, month by month, at today's rent and home price:
+     renting: you pay the full rent and own nothing.
+     co owning: your home deposit buys a share on day one; you pay rent only on the part you don't own yet,
+     plus whatever you put towards buying more. Each month that payment buys more of the home, so the rent drops.
+     Money out = rent (gone) + payments towards your share (they become yours). */
   function model(){
-    var share = Math.min(1, S.dep / S.price), months = S.yrs*12, rentPaid = 0, ctlPaid = 0, ptsR = [0], ptsC = [0], first = S.rent*(1-share), lastRent = first;
+    var share = Math.min(1, S.dep / S.price), months = S.yrs*12, rentPaid = 0, ctlRent = 0, bought = 0, ptsR = [0], ptsC = [0], ownedAt = null;
+    var first = {rent: S.rent*(1-share), more: share<1 ? Math.min(S.more, (1-share)*S.price) : 0}, last = first;
     for(var m=1; m<=months; m++){
-      lastRent = S.rent*(1-share); ctlPaid += lastRent; rentPaid += S.rent;
-      share = Math.min(1, share + S.more / S.price);
-      if(m % Math.max(1, Math.round(months/40)) === 0 || m === months){ ptsR.push(rentPaid); ptsC.push(ctlPaid); }
+      var rentM = S.rent*(1-share), moreM = Math.min(S.more, (1-share)*S.price);
+      ctlRent += rentM; bought += moreM; rentPaid += S.rent; last = {rent: rentM, more: moreM};
+      share = Math.min(1, share + moreM / S.price);
+      if(share>=1 && ownedAt===null) ownedAt = m;
+      if(m % Math.max(1, Math.round(months/40)) === 0 || m === months){ ptsR.push(rentPaid); ptsC.push(ctlRent); }
     }
-    return {rentPaid:rentPaid, ctlPaid:ctlPaid, share:share, first:first, last:lastRent, ptsR:ptsR, ptsC:ptsC};
+    return {rentPaid:rentPaid, ctlRent:ctlRent, bought:bought, share:share, owned: share*S.price, first:first, last:last, ownedAt:ownedAt, ptsR:ptsR, ptsC:ptsC,
+      outRent: rentPaid, outCtl: ctlRent + bought};
   }
   var anim = {};
   function tween(el, to, fmt){ var from = anim[el.id]||0; anim[el.id] = to; var t0 = performance.now(), d = 450;
@@ -331,7 +343,7 @@ input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px
     var back = r.ptsC.map(function(v,i){ return 'L'+pt(v,i); }).reverse().join('');
     var gap = path(r.ptsR) + back;
     $('c-svg').innerHTML = '<path d="'+gap+'Z" fill="rgba(43,224,143,.18)"/><path class="ln" d="'+path(r.ptsR)+'" stroke="#B9BED8"/><path class="ln" d="'+path(r.ptsC)+'" stroke="#00A569"/>'
-      + '<text x="'+(W-pad)+'" y="16" text-anchor="end" font-size="12" font-weight="800" fill="#00704A">You keep '+gbp(r.rentPaid-r.ctlPaid)+' of rent</text>';
+      + '<text x="'+(W-pad)+'" y="16" text-anchor="end" font-size="12" font-weight="800" fill="#00704A">'+gbp(r.rentPaid-r.ctlRent)+' less rent paid</text>';
   }
   function update(src){
     if(S.dep > S.price*0.9) S.dep = Math.round(S.price*0.9/500)*500;
@@ -339,9 +351,12 @@ input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px
     $('o-rent').textContent = gbp(S.rent); $('o-price').textContent = gbp(S.price); $('o-dep').textContent = gbp(S.dep); $('o-more').textContent = gbp(S.more); $('o-yrs').textContent = S.yrs+(S.yrs>1?' years':' year');
     $('s-dep').textContent = 'That buys '+Math.round(S.dep/S.price*100)+'% of the home on day one.';
     var r = model();
-    tween($('r-rent'), r.rentPaid, gbp); tween($('r-own'), r.share*S.price, gbp); tween($('r-share'), r.share*100, function(v){ return Math.round(v)+'%'; });
-    $('r-share-t').textContent = 'of the home is yours after '+S.yrs+(S.yrs>1?' years':' year');
-    $('r-rentdrop').textContent = 'Your rent: '+gbp(r.first)+' a month at the start, '+gbp(r.last)+' by the end.';
+    tween($('r-rent'), r.rentPaid, gbp); tween($('r-own'), r.owned, gbp); tween($('r-share'), r.share*100, function(v){ return Math.round(v)+'%'; });
+    $('r-own-t').textContent = 'is yours: '+gbp(S.dep)+' home deposit + '+gbp(r.bought)+' you put in';
+    $('r-share-t').textContent = r.ownedAt ? 'of the home is yours: fully yours after '+(r.ownedAt<12?r.ownedAt+' months':Math.round(r.ownedAt/12*10)/10+' years') : 'of the home is yours after '+S.yrs+(S.yrs>1?' years':' year');
+    var fm = r.first.rent + r.first.more, lm = r.last.rent + r.last.more;
+    $('r-rentdrop').textContent = 'Each month, renting: '+gbp(S.rent)+'. Co owning: '+gbp(r.first.rent)+' rent + '+gbp(r.first.more)+' towards your home = '+gbp(fm)+' at the start, '+gbp(r.last.rent)+' rent + '+gbp(r.last.more)+' = '+gbp(lm)+' by the end.';
+    $('r-total').innerHTML = 'Over '+S.yrs+(S.yrs>1?' years':' year')+'. Renting: <b>'+gbp(r.outRent)+'</b> of rent, and nothing is yours. Co owning: <b>'+gbp(r.ctlRent)+'</b> of rent and <b>'+gbp(r.bought)+'</b> towards your home. At the end, <b>'+gbp(r.owned)+'</b> of the home is yours: your '+gbp(S.dep)+' home deposit plus the '+gbp(r.bought)+' you put in.';
     var h = 118*r.share; $('h-fill').setAttribute('y', 124-h); $('h-fill').setAttribute('height', h);
     draw(r); C.last = r;
     if(src) tk('calculator_used', {field: src, rent:S.rent, price:S.price, home_deposit:S.dep, monthly_more:S.more, years:S.yrs});
@@ -364,9 +379,9 @@ input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px
     x.fillStyle = '#fff'; x.font = f(800,84); x.fillText('In '+S.yrs+' years,', 80, 240); x.fillStyle = '#2BE08F'; x.fillText(Math.round(r.share*100)+'% of my home', 80, 340); x.fillStyle = '#fff'; x.fillText('could be mine.', 80, 440);
     function card(y, label, val, sub, hot){ x.fillStyle = hot ? '#2BE08F' : 'rgba(255,255,255,.1)'; x.beginPath(); x.roundRect(80,y,920,190,36); x.fill();
       x.fillStyle = hot ? '#030733' : '#C9CEFF'; x.font = f(800,26); x.fillText(label, 120, y+56); x.fillStyle = hot ? '#030733' : '#fff'; x.font = f(800,72); x.fillText(val, 120, y+136); x.font = f(600,24); x.fillStyle = hot ? '#003D27' : '#C9CEFF'; x.fillText(sub, 120, y+172); }
-    card(520, 'RENTING', gbp(r.rentPaid), 'of rent, owned: nothing', false);
-    card(740, 'CO OWNING', gbp(r.share*S.price), 'of the home is mine', true);
-    card(960, 'MY RENT', gbp(r.first)+' → '+gbp(r.last), 'a month, start to end', false);
+    card(520, 'RENTING', gbp(r.rentPaid), 'of rent paid, owned: nothing', false);
+    card(740, 'CO OWNING', gbp(r.owned), 'of the home is mine ('+gbp(r.ctlRent)+' rent paid)', true);
+    card(960, 'EACH MONTH', gbp(r.first.rent+r.first.more)+' → '+gbp(r.last.rent+r.last.more), 'rent + towards my home, start to end', false);
     x.fillStyle = '#C9CEFF'; x.font = f(600,22); x.fillText('Illustration only, not a quote. Rent '+gbp(S.rent)+', home '+gbp(S.price)+',', 80, 1205); x.fillText('home deposit '+gbp(S.dep)+', '+gbp(S.more)+' a month towards more of the home.', 80, 1236);
     x.fillStyle = '#fff'; x.font = f(800,28); x.fillText('CrowdtoLive by Bayuti · crowdtolive.bayuti.com', 80, 1280);
     var a = document.createElement('a'); a.download = 'my-'+C.city.toLowerCase()+'-numbers.png'; a.href = cv.toDataURL('image/png'); document.body.appendChild(a); a.click(); a.remove();
@@ -377,7 +392,7 @@ input[type=range]:focus-visible{outline:3px solid var(--neon);outline-offset:4px
     var r = C.last, first = (window.CTL_UTM||{}).first || {};
     /* DEV · Customer.io: identify with the numbers (used by CALC-E1), then calculator_results_requested starts Flow 4 */
     if(window._cio && _cio.identify) _cio.identify({id: em, email: em, city_slug: (C.city||'').toLowerCase(), persona:'wants_numbers', calc_rent:S.rent, calc_price:S.price, calc_home_deposit:S.dep, calc_monthly_more:S.more, calc_years:S.yrs,
-      calc_ten_year_rent: gbp(S.rent*120), calc_share_end: Math.round(r.share*100), calc_link: link(), first_utm_source: first.utm_source, first_utm_campaign: first.utm_campaign, first_utm_content: first.utm_content, created_at: Math.floor(Date.now()/1000)});
+      calc_rent_paid_renting: gbp(r.outRent), calc_rent_paid_co_owning: gbp(r.ctlRent), calc_put_in: gbp(r.bought), calc_owned_end: gbp(r.owned), calc_share_end: Math.round(r.share*100), calc_link: link(), first_utm_source: first.utm_source, first_utm_campaign: first.utm_campaign, first_utm_content: first.utm_content, created_at: Math.floor(Date.now()/1000)});
     tk('calculator_results_requested', {years:S.yrs, share_end: Math.round(r.share*100)});
     msg('Sent. Your numbers are on their way to '+em+'.'); $('c-form').style.display = 'none';
   });
