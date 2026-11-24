@@ -710,6 +710,12 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .bb-explain li b{display:inline-block;background:#000F96;color:#fff;border-radius:6px;padding:0 7px;font-size:12.5px;margin-right:4px}
 .ot-tester{display:block;margin-top:4px;font-size:12px;font-weight:700;color:#3D4060}
 .bb-tester{margin:0 0 6px!important;font-weight:700;color:#000F96}
+.ot-sort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}.ot-sort span{color:#3D4060;font-size:14px;font-weight:700}
+.ot-ord{white-space:nowrap}.ot-ord b{display:block;color:#000F96;font-size:15px}.ot-ord small{display:block;color:#3D4060;font-size:12px}
+.ot-go{display:inline-block;margin-top:4px;font-size:12px;font-weight:800;color:#00704A;background:#E1F7EE;border-radius:6px;padding:2px 7px}
+.ot-wait{display:inline-block;margin-top:4px;font-size:12px;font-weight:800;color:#7A4E00;background:#FFF1D6;border-radius:6px;padding:2px 7px}
+.ot-stage td{background:#EEF0FF!important;color:#000F96;font-size:14px;padding:8px 12px!important}.ot-stage b{background:#000F96;color:#fff;border-radius:6px;padding:2px 8px;margin-right:6px}
+.ot-dep i{font-style:normal;font-size:11px;opacity:.75}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
@@ -4841,16 +4847,29 @@ function ownerSel(b, cls){
   const was = ORIG[b.id+'|owner'];
   return `<span class="own-w ${cls||''}"><label class="sr" for="own-${cls||'x'}-${b.id}">Owner of ${esc(b.id)}</label><select id="own-${cls||'x'}-${b.id}" class="own-sel" data-owner="${esc(b.id)}" ${ST.canWrite?'':'disabled'}>${names.map(n=>`<option${n===b.owner?' selected':''}>${esc(n)}</option>`).join('')}</select>${was&&was!==b.owner?`<small class="own-was">was ${esc(was)}</small>`:''}</span>`;
 }
+function taskOrder(rows){
+  const ids = new Set(rows.map(r=>r.b.id)), lv = {}, seen = {};
+  const L = id => { if(lv[id]) return lv[id]; if(seen[id]) return 1; seen[id] = 1; const deps = (DEPS[id]||[]).filter(d=>ids.has(d)); lv[id] = deps.length ? 1 + Math.max(...deps.map(L)) : 1; return lv[id]; };
+  rows.forEach(r=>{ r.lv = L(r.b.id); });
+  const sorted = rows.slice().sort((a,c)=> a.lv-c.lv || ((a.due||'9') < (c.due||'9') ? -1 : (a.due||'9') > (c.due||'9') ? 1 : a.b.id < c.b.id ? -1 : 1));
+  const step = {}; sorted.forEach((r,i)=>{ step[r.b.id] = i+1; r.step = i+1; });
+  return {sorted, step, stages: Math.max(0, ...rows.map(r=>r.lv))};
+}
 function viewOpen(F){
   const flt = ST.openF || 'all', today = TODAY();
   let rows = blocksOf(F,true).filter(b=>visible(b) || (ST.owner && testerOf(b)===ST.owner && ['pend','part'].includes(testOf(b)[0]))).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b), st:stateOf(b), t:testOf(b), d:depInfo(b,F)}));
   const cnt = {all:rows.length, overdue:rows.filter(r=>r.st==='overdue').length, week:rows.filter(r=>r.due && (new Date(r.due)-new Date(today))/864e5 <= 7).length, blocked:rows.filter(r=>r.d.open.length).length, risk:rows.filter(r=>r.d.late.length).length, test:rows.filter(r=>r.t[0]==='pend'||r.t[0]==='part').length};
   rows = rows.filter(r=> flt==='all' || (flt==='overdue'&&r.st==='overdue') || (flt==='week'&&r.due&&(new Date(r.due)-new Date(today))/864e5<=7) || (flt==='blocked'&&r.d.open.length) || (flt==='risk'&&r.d.late.length) || (flt==='test'&&(r.t[0]==='pend'||r.t[0]==='part')));
-  rows.sort((a,c)=> (a.due||'9') < (c.due||'9') ? -1 : (a.due||'9') > (c.due||'9') ? 1 : a.b.id < c.b.id ? -1 : 1);
+  const allOpen = blocksOf(F,true).filter(b=>!isComplete(b)).map(b=>({b, due:dueOf(b)}));
+  const ORD = taskOrder(allOpen), stepOf = id => ORD.step[id], lvOf = id => (allOpen.find(x=>x.b.id===id)||{}).lv || 1;
+  const byOrder = (ST.openSort||'order')==='order';
+  rows.forEach(r=>{ r.step = stepOf(r.b.id); r.lv = lvOf(r.b.id); });
+  if(byOrder) rows.sort((a,c)=> a.step-c.step);
+  else rows.sort((a,c)=> (a.due||'9') < (c.due||'9') ? -1 : (a.due||'9') > (c.due||'9') ? 1 : a.b.id < c.b.id ? -1 : 1);
   const days = d => d ? Math.round((new Date(d)-new Date(today))/864e5) : null;
   const dl = d => { const n = days(d); return n==null ? '' : n<0 ? `<b class="ot-late">${-n} day${n===-1?'':'s'} late</b>` : n===0 ? '<b class="ot-soon">today</b>' : n<=3 ? `<b class="ot-soon">in ${n} day${n===1?'':'s'}</b>` : `in ${n} days`; };
   const chip = (k,l) => `<button type="button" class="ot-chip${flt===k?' on':''}" data-openf="${k}">${l} <b>${cnt[k]}</b></button>`;
-  const depList = (list, cls) => list.map(x=>`<button type="button" class="ot-dep ${cls} ${isComplete(x)?'ok':''}" data-open="${x.id}" title="${esc(x.t)} · due ${esc(dueOf(x)||'')}">${isComplete(x)?'✓ ':''}${x.id}</button>`).join('');
+  const depList = (list, cls) => list.map(x=>`<button type="button" class="ot-dep ${cls} ${isComplete(x)?'ok':''}" data-open="${x.id}" title="${esc(x.t)} · due ${esc(dueOf(x)||'')}">${isComplete(x)?'✓ ':''}${x.id}${!isComplete(x)&&stepOf(x.id)?` <i>step ${stepOf(x.id)}</i>`:''}</button>`).join('');
   /* calendar: weeks from this Monday to the last due date */
   const mon = (()=>{ const d = new Date(today); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d; })();
   const lastDue = rows.reduce((m,r)=>r.due&&r.due>m?r.due:m, today), weeks = Math.min(14, Math.max(4, Math.ceil((new Date(lastDue)-mon)/6048e5)+1));
@@ -4858,13 +4877,16 @@ function viewOpen(F){
   const wi = d => d ? Math.floor((new Date(d)-mon)/6048e5) : -1;
   const byWeek = wk.map((_,i)=>rows.filter(r=>wi(r.due)===i || (i===0 && wi(r.due)<0)));
   const cal = `<div class="ot-cal">${wk.map((s,i)=>`<div class="ot-wk${i===0?' now':''}"><p>${i===0?'This week':'w/c '+s.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}<b>${byWeek[i].length}</b></p>${byWeek[i].slice(0,40).map(r=>`<button type="button" class="ot-pill st-${r.st}${r.d.late.length?' risk':''}" data-open="${r.b.id}" title="${esc(r.b.t)} · ${esc(r.b.owner)} · due ${esc(r.due||'')}">${r.d.late.length?'⚠ ':r.d.open.length?'⛓ ':''}${r.b.id}</button>`).join('')}</div>`).join('')}</div>`;
-  return `<section class="bb-sec"><div class="bb-sh"><h3>Open tasks</h3><p>Everything not finished, by due date: what it waits on, what it holds up, and whether testing is done. ⛓ waits on something unfinished. ⚠ waits on something due after it, so the date can't hold.</p></div>
+  return `<section class="bb-sec"><div class="bb-sh"><h3>Open tasks</h3><p>Everything not finished, in the order it has to happen: each task has a step number, and a task can only start when the tasks it waits on are done. Stage 1 can start now; stage 2 starts when its stage 1 tasks are done, and so on. ⛓ waits on something unfinished. ⚠ waits on something due after it, so the date can't hold.</p></div>
    <div class="ot-share"><button type="button" class="btn" data-copytxt="${BOARD_URL}">Copy the board link</button><a class="bb-teams" href="https://teams.microsoft.com/share?href=${encodeURIComponent(BOARD_URL)}&msgText=${encodeURIComponent('CrowdtoLive open tasks: due dates, what waits on what, and testing. Open the link in Chrome or Edge, then click Open tasks at the top.\n'+cnt.risk+' dates clash, '+cnt.overdue+' overdue.')}&preview=true" target="_blank" rel="noopener">Share in Teams</a><button type="button" class="btn" data-digest="1">Copy a summary for Teams</button>${ST.solo?'':`<button type="button" class="btn" data-solo="1">Open tasks full screen</button>`}</div>
    <div class="ot-chips">${chip('all','All open')}${chip('overdue','Overdue')}${chip('week','Due in 7 days')}${chip('blocked','Waiting on something')}${chip('risk','Dates clash')}${chip('test','Testing pending (Ridhima)')}</div>
    <h4 class="ot-h">Calendar</h4>${cal}
    <h4 class="ot-h">The list</h4>
-   <div class="bb-matrix"><table class="ot"><thead><tr><th>Due</th><th>Task</th><th>Owner</th><th>Status</th><th>Waits on</th><th>Holds up</th><th>Testing</th></tr></thead><tbody>
-   ${rows.map(r=>{ const [k,lab] = plainStatus(r.b); return `<tr class="${r.st==='overdue'?'late':''}">
+   <div class="ot-sort" role="group" aria-label="Sort the list"><button type="button" class="ot-chip${byOrder?' on':''}" data-osort="order" aria-pressed="${byOrder}">In order: what to do first</button><button type="button" class="ot-chip${byOrder?'':' on'}" data-osort="due" aria-pressed="${!byOrder}">By due date</button><span>${ORD.stages} stages, ${allOpen.length} steps</span></div>
+   <div class="bb-matrix"><table class="ot"><thead><tr><th>Order</th><th>Due</th><th>Task</th><th>Owner</th><th>Status</th><th>Waits on</th><th>Holds up</th><th>Testing</th></tr></thead><tbody>
+   ${rows.map((r,ix)=>{ const [k,lab] = plainStatus(r.b); const ready = !r.d.open.length; const head = byOrder && (ix===0 || rows[ix-1].lv!==r.lv) ? `<tr class="ot-stage"><td colspan="8"><b>Stage ${r.lv}</b> ${r.lv===1?'Can start now: waits on nothing that is unfinished':'Starts when the stage '+(r.lv-1)+' tasks it waits on are done'}</td></tr>` : '';
+     return head + `<tr class="${r.st==='overdue'?'late':''}">
+     <td class="ot-ord"><b>Step ${r.step}</b><small>Stage ${r.lv}</small>${ready?'<span class="ot-go">▶ Ready to start</span>':'<span class="ot-wait">⛓ Waiting</span>'}</td>
      <td class="ot-due"><label class="sr" for="od-${r.b.id}">Due date for ${r.b.id}</label><input type="date" id="od-${r.b.id}" data-due="${r.b.id}" value="${r.due||''}" ${ST.canWrite?'':'disabled'}><small>${dl(r.due)}</small></td>
      <td><button type="button" class="ot-t" data-open="${r.b.id}"><span>${r.b.id}</span>${esc(r.b.t)}</button></td>
      <td>${ownerSel(r.b,'ot')}</td>
@@ -4999,6 +5021,7 @@ function onClick(e){
   if(t.dataset.flow){ ST.flow = t.dataset.flow; ST.open=null; location.hash = ST.flow==='hb'?'build':'build-inv'; return; }
   if(t.dataset.view){ if(ST.solo && t.dataset.view!=='open'){ location.hash='build'; return; } ST.view = t.dataset.view; render(); const m=$('#bb-main'); if(m) m.scrollTop=0; if(t.dataset.gotoafter){ const s=document.getElementById(t.dataset.gotoafter); if(s) s.scrollIntoView({block:'start'}); } return; }
   if(t.dataset.ck){ e.stopPropagation(); const b = blocksOf(F,true).find(x=>x.id===t.dataset.ck) || (/^AZ-/.test(t.dataset.ck) ? {id:t.dataset.ck, checks:AZC} : null); if(b) toggleCheck(b, t.dataset.c); return; }
+  if(t.dataset.osort){ ST.openSort = t.dataset.osort; render(); return; }
   if(t.dataset.maptheme){ ST.mapDark = !ST.mapDark; try{ localStorage.setItem('ctl-mapdark', ST.mapDark?'1':'0'); }catch(e){} render(); return; }
   if(t.dataset.zoom){ const v = t.dataset.zoom; let z = ST.zoom||1;
     if(v==='+') z = Math.min(1.5, z+0.1); else if(v==='-') z = Math.max(0.3, z-0.1); else if(v==='1') z = 1;
