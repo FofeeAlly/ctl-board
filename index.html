@@ -719,7 +719,7 @@ body.map-light .jr-svg text{stroke:#F4F6FF;fill:#1A1A2E}
 .ap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}@media(max-width:900px){.ap-grid{grid-template-columns:minmax(0,1fr)}}
 .ap-col{background:#fff;border:1px solid #D5DAF0;border-radius:16px;padding:16px;color:#1A1A2E}
 .ap-head{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;border-radius:12px;padding:14px 16px;margin-bottom:6px}
-.ap-an .ap-head{background:#000F96;color:#fff}.ap-sj .ap-head{background:#00704A;color:#fff}
+.ap-an .ap-head{background:#000F96;color:#fff}.ap-fo .ap-head{background:#5059C9;color:#fff}.ap-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:1100px){.ap-grid.three{grid-template-columns:minmax(0,1fr)}}.ap-sj .ap-head{background:#00704A;color:#fff}
 .ap-head h3{margin:0;font-size:24px;color:#fff}.ap-head p{margin:0;font-size:14px;grid-column:1;color:#fff;opacity:.92}
 .ap-big{grid-row:1/3;grid-column:2;font-size:38px;line-height:1;text-align:center}.ap-head>span{grid-column:2;text-align:center;font-size:12px;font-weight:700}
 .ap-col h4{margin:16px 0 6px;font-size:15px;color:#000F96}
@@ -823,7 +823,7 @@ button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
     document.body.appendChild(w);
     function save(n,k){ try{ localStorage.setItem(LSN, n); if(k) localStorage.setItem('ctl-key', k); else localStorage.removeItem('ctl-key'); }catch(e){} w.remove(); location.reload(); }
     function pick(n){ n=(n||'').trim(); if(!n) return;
-      if(n!=='Anouar' && n!=='SJ'){ save(n); return; }
+      if(n!=='Anouar' && n!=='SJ' && n!=='Fofee'){ save(n); return; }
       var c=w.querySelector('.ctl-who-card'); c.innerHTML='<h2 id="ctl-who-h">Hi '+n+'</h2><p>Approvals in your name need your approval key. Fofee sends it to you privately. You only enter it once on this device.</p><form class="ctl-key"><label for="ctl-k">Your approval key</label><input id="ctl-k" autocomplete="off" required><p class="ctl-err" role="alert"></p><button type="submit">Check and continue</button><button type="button" class="ctl-skip">Continue without approving</button></form>';
       c.querySelector('.ctl-skip').addEventListener('click', function(){ save(n); });
       c.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var k=c.querySelector('#ctl-k').value.trim(), er=c.querySelector('.ctl-err'); er.textContent='Checking…';
@@ -831,7 +831,7 @@ button[disabled][title^="Only"]{opacity:.45;cursor:not-allowed}
       c.querySelector('#ctl-k').focus();
     }
     w.addEventListener('click', function(e){ var b=e.target.closest('[data-n]'); if(b) pick(b.dataset.n); });
-    w.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var v=w.querySelector('input').value.trim(); if(/^(anouar|sj)$/i.test(v)) v = v.toLowerCase()==='sj'?'SJ':'Anouar'; pick(v); });
+    w.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var v=w.querySelector('input').value.trim(); if(/^(anouar|sj|fofee)$/i.test(v)) v = {sj:'SJ',anouar:'Anouar',fofee:'Fofee'}[v.toLowerCase()]; pick(v); });
   };
   document.addEventListener('DOMContentLoaded', function(){ if(STORE) window.CTL_ASK_NAME(); });
 })();
@@ -4048,12 +4048,13 @@ const TEST_TICKS = ['Tested','Tested on phones'];
 const isVideoTask = b => !!b && b.owner==='Darcy' && (b.type==='video' || /^(HB|INV)-VP$/.test(b.id) || b.platform==='tiktok' || /tiktok/i.test(b.t||''));
 const WITHAN_V = new Map();
 const withAn = (cs, vid) => { if(!cs) return cs; const M = vid ? WITHAN_V : WITHAN; const k = M.get(cs); if(k) return k;
-  const build = cs.filter(c=>!TEST_TICKS.includes(c) && !['Anouar approved','SJ approved','Live'].includes(c));
+  const build = cs.filter(c=>!TEST_TICKS.includes(c) && !['Fofee approved','Anouar approved','SJ approved','Live'].includes(c));
   const tests = cs.filter(c=>TEST_TICKS.includes(c));
-  const o = vid ? build.concat(['Anouar approved','SJ approved'], cs.includes('Live')?['Live']:[]) : build.concat(tests.length?tests:['Tested'], ['Anouar approved'], cs.includes('SJ approved')?['SJ approved']:[], cs.includes('Live')?['Live']:[]);
+  const o = vid ? build.concat(['Fofee approved','Anouar approved','SJ approved'], cs.includes('Live')?['Live']:[]) : build.concat(tests.length?tests:['Tested'], ['Anouar approved'], cs.includes('SJ approved')?['SJ approved']:[], cs.includes('Live')?['Live']:[]);
   M.set(cs, o); return o; };
-const tickWho = (b,c) => TEST_TICKS.includes(c) ? (b.tester||'Ridhima') : c==='Anouar approved' ? 'Anouar' : c==='SJ approved' ? 'SJ' : b.owner;
-const tickLabel = (b,c) => c==='Anouar approved'||c==='SJ approved' ? c : `${c} · ${tickWho(b,c)}`;
+const APPROVERS = {'Fofee approved':'Fofee','Anouar approved':'Anouar','SJ approved':'SJ'};
+const tickWho = (b,c) => TEST_TICKS.includes(c) ? (b.tester||'Ridhima') : APPROVERS[c] || b.owner;
+const tickLabel = (b,c) => APPROVERS[c] ? c : `${c} · ${tickWho(b,c)}`;
 const tickBlocked = (b,c) => { const cs = checksOf(b), i = cs.indexOf(c); if(i<=0 || isDone(b,c)) return ''; const miss = cs.slice(0,i).filter(x=>!isDone(b,x)); return miss.length ? miss[0] : ''; };
 const WITHAN = new Map();
 const checksOf = b => withAn(checksOf0(b), isVideoTask(b));
@@ -4063,8 +4064,9 @@ const doneCount = b => checksOf(b).filter(c=>isDone(b,c)).length;
 const HOSTED = !!window.CTL_STORE_URL;
 const meName = () => { try{ return localStorage.getItem('ctl-me')||''; }catch(e){ return ''; } };
 const hasKey = () => { try{ return !!localStorage.getItem('ctl-key'); }catch(e){ return false; } };
-const canApprove = w => !HOSTED || (hasKey() && meName()===(w==='an'||w==='Anouar approved'?'Anouar':'SJ'));
-const apprLock = w => canApprove(w) ? '' : `disabled title="Only ${w==='an'||w==='Anouar approved'?'Anouar':'SJ'} can approve (with their approval key)"`;
+const apprName = w => w==='an'||w==='Anouar approved' ? 'Anouar' : w==='fo'||w==='Fofee approved' ? 'Fofee' : 'SJ';
+const canApprove = w => !HOSTED || (hasKey() && meName()===apprName(w));
+const apprLock = w => canApprove(w) ? '' : `disabled title="Only ${apprName(w)} can approve (with their approval key)"`;
 const notesFor = id => ST.notes.filter(n=>n.block===id).sort((a,b)=>a.at<b.at?-1:1);
 const initials = n => (n||'?').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
 function who(id){ return id==='local' ? 'You (this device)' : id==='claude' ? 'Claude' : (ST.names[id] || (String(id).indexOf('n:')===0 ? String(id).slice(2) : 'Someone')); }
@@ -4077,7 +4079,7 @@ function applyReassign(){
 }
 async function connect(){
   applyReassign();
-  try{ const fr = new URLSearchParams(location.search).get('for'); if(fr==='SJ'||fr==='Anouar'){ ST.view = 'approve'; ST.apFor = fr; if(!location.hash) location.hash = 'build'; } else if(HOSTED && (meName()==='SJ'||meName()==='Anouar') && !new URLSearchParams(location.search).get('box')){ ST.view = 'approve'; ST.apFor = meName(); } }catch(e){}
+  try{ const fr = new URLSearchParams(location.search).get('for'); if(fr==='SJ'||fr==='Anouar'||fr==='Fofee'){ ST.view = 'approve'; ST.apFor = fr; if(!location.hash) location.hash = 'build'; } else if(HOSTED && (meName()==='SJ'||meName()==='Anouar') && !new URLSearchParams(location.search).get('box')){ ST.view = 'approve'; ST.apFor = meName(); } }catch(e){}
   try{ const bx = new URLSearchParams(location.search).get('box'); if(bx){ ST.open = bx; const f = FLOWS.find(F=>blocksOf(F,true).some(b=>b.id===bx)); if(f) ST.flow = f.id; if(!['journey','mcr','build','open','copy','approve'].includes(ST.view)) ST.view = 'build'; if(!location.hash) location.hash = 'build'; } }catch(e){}
   document.addEventListener('click', e=>{ const r = document.getElementById('bb-qres'); if(r && !e.target.closest('.bb-search')) r.hidden = true; });
   document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ const r = document.getElementById('bb-qres'); if(r) r.hidden = true; } });
@@ -4111,7 +4113,7 @@ const writing = {};
 async function toggleCheck(b, c){
   if(!ST.canWrite) return;
   { const need = tickBlocked(b,c); if(need){ alertBox(`First: "${tickLabel(b,need)}". The order is build, test, Anouar, SJ.`); return; } }
-  if((c==='Anouar approved'||c==='SJ approved') && !canApprove(c)){ alertBox('Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can tick this, using their approval key.'); return; }
+  if(APPROVERS[c] && !canApprove(c)){ alertBox('Only '+APPROVERS[c]+' can tick this, using their approval key.'); return; }
   const cur = Object.assign({}, ST.checks[b.id]||{});
   cur[c] = {v: !isDone(b,c), by: ST.me||'local', at: new Date().toISOString()};
   cur.block = b.id; if(isVideoTask(b)) cur.notest = true;
@@ -4135,6 +4137,7 @@ const TODAY = () => new Date().toISOString().slice(0,10);
 const dueOf = b => (ST.due[b.id] && ST.due[b.id].date) || b.due || (typeof defaultDue==='function' ? defaultDue(b.id) : null);
 const isComplete = b => checksOf(b).every(c=>isDone(b,c));
 function stateOf(b){ if(isComplete(b)) return 'done'; const d = dueOf(b); if(!d) return 'open'; const days = (new Date(d) - new Date(TODAY()))/864e5; if(days < 0) return 'overdue'; if(days <= 3) return 'soon'; return 'open'; }
+const waitingFo = b => checksOf(b).includes('Fofee approved') && !isDone(b,'Fofee approved') && !tickBlocked(b,'Fofee approved');
 const waitingAn = b => checksOf(b).includes('Anouar approved') && !isDone(b,'Anouar approved') && !tickBlocked(b,'Anouar approved');
 const waitingSJ = b => checksOf(b).includes('SJ approved') && !isDone(b,'SJ approved') && !tickBlocked(b,'SJ approved');
 function fmtDate(d){ if(!d) return 'no date'; return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
@@ -4235,7 +4238,7 @@ function card(b, F){
     ${(b.exp||[]).length?`<dl class="bb-exp">${b.exp.slice(0,3).map(e=>`<div><dt>${esc(e[0])}</dt><dd>${fmtV(e[1],e[2])}</dd></div>`).join('')}</dl>`:''}
    </button>
    <div class="bb-foot"><span class="bb-owner" title="${esc(PEOPLE[b.owner]?PEOPLE[b.owner].role:'')}"><i>${initials(b.owner)}</i>${esc(b.owner)}</span>
-    <span class="bb-checks">${cs.map(c=>`<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled':''} title="${esc(c)}${isDone(b,c)?' · '+esc(who(ST.checks[b.id][c].by))+' · '+ago(ST.checks[b.id][c].at):''}" ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?'data-wait="1"':''}>${esc(tickLabel(b,c))}</button>`).join('')}</span>
+    <span class="bb-checks">${cs.map(c=>`<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${APPROVERS[c]&&!canApprove(c)?'disabled':''} title="${esc(c)}${isDone(b,c)?' · '+esc(who(ST.checks[b.id][c].by))+' · '+ago(ST.checks[b.id][c].at):''}" ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?'data-wait="1"':''}>${esc(tickLabel(b,c))}</button>`).join('')}</span>
     <button type="button" class="bb-cm" data-open="${b.id}" aria-label="${n} comments">💬 ${n}</button></div>
   </article>`;
 }
@@ -4331,7 +4334,7 @@ function drawer(id){
   return `<div class="bb-panel" aria-label="${esc(b.t)}">
    <div class="bb-dr-head"><div><button type="button" class="bb-id bb-idbtn" data-copylink="${b.id}" title="Copy a link straight to ${b.id}">${b.id} 🔗</button> <span class="bb-type">${TYPE[b.type].n}</span>${b.final?' <span class="bb-final">✓ Final ads</span>':''}${reg?' <span class="bb-reg">Regulated</span>':''}${jn?` <span class="bb-type">${esc(jn.L.name)} · ${esc(jn.S.t)}</span>`:''}<h3>${esc(b.t)}</h3>${E?`<p class="bb-subj">“${esc(sampleOf(E.subject))}”</p>`:''}</div><div class="bb-headbtns">${teamsBtn(b)}<button type="button" class="bb-x" data-close aria-label="Close and show alerts">✕</button></div></div>
    ${b.final?`<p class="bb-finalnote">✓ ${esc(b.final.note)}</p>`:''}
-   <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${(c==='Anouar approved'||c==='SJ approved')&&!canApprove(c)?'disabled title="Only '+(c==='Anouar approved'?'Anouar':'SJ')+' can approve"':''} ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?`aria-disabled="true" data-wait="1" title="Waits for: ${esc(tickLabel(b,tickBlocked(b,c)))}"`:''}><i class="ck-n">${cs.indexOf(c)+1}</i> ${esc(tickLabel(b,c))}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
+   <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${APPROVERS[c]&&!canApprove(c)?'disabled title="Only '+APPROVERS[c]+' can approve"':''} ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?`aria-disabled="true" data-wait="1" title="Waits for: ${esc(tickLabel(b,tickBlocked(b,c)))}"`:''}><i class="ck-n">${cs.indexOf(c)+1}</i> ${esc(tickLabel(b,c))}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
    <div class="bb-duerow st-${st}"><label for="due-${b.id}">Due</label><input type="date" id="due-${b.id}" data-due="${b.id}" value="${dueOf(b)||''}" ${ST.canWrite?'':'disabled'}><span class="bb-state">${st==='done'?'Done':st==='overdue'?'Overdue':st==='soon'?'Due soon':'On track'}</span>${typeof phaseOf==='function'&&phaseOf(b.id)?`<span class="bb-phase">${esc(phaseOf(b.id))}</span>`:''}
     ${(()=>{ const n = nextStep(b); return n ? `<button type="button" class="btn" data-ping="${b.id}" ${ST.canWrite?'':'disabled'}>🔔 Remind ${esc(n.who)}</button><button type="button" class="btn teams-r" data-teamsr="${b.id}" title="Opens Teams with a message to ${esc(n.who)}">${TEAMS_ICON} Remind in Teams</button>` : ''; })()}</div>
    ${pend.length?`<p class="bb-pend">${pend.length} reminder${pend.length>1?'s':''} queued for the next 08:45 run.</p>`:''}
@@ -4424,7 +4427,7 @@ function render(){
   const sc = {m: mainEl?mainEl.scrollTop:0, s: sideEl?sideEl.scrollTop:0, j: jw?jw.scrollLeft:0, open: ST._lastOpen};
   const status = ST.live ? (ST.stale ? 'Shared ticks can\'t be reached yet; showing what we have.' : (ST.canWrite ? 'Everything you tick, type or approve is shared with everyone on this link, with your name.' : 'You can look; ask Fofee for edit access to tick or approve.')) : 'Ticks are kept on this device only (sign in to share them).';
   const allOwners = [...new Set(FLOWS.flatMap(f=>blocksOf(f,true).map(b=>b.owner)))];
-  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['approve','Approvals'+((meName()==='SJ'||meName()==='Anouar')?' · '+apCount(meName()==='SJ'?'sj':'an'):'')],['mix','Channel mix']]);
+  const views = (F.id==='hb'?[['journey','Journey map'],['mcr','Manchester'],['dev','For developers'],['copy','Copy library']]:[]).concat([['build','List'],['analytics','Analytics'],['alerts','Alerts'],['open','Open tasks'],['approve','Approvals'+((meName()==='SJ'||meName()==='Anouar'||meName()==='Fofee')&&hasKey()?' · '+apCount(meName()==='SJ'?'sj':meName()==='Fofee'?'fo':'an'):'')],['mix','Channel mix']]);
   const ac = alertCount(F) + changesAsked().length;
   const body = ST.view==='copy'?viewCopy(F):ST.view==='dev'?viewDev(F):ST.view==='az'?viewAZ(F):ST.view==='approve'?viewApprove(F):ST.view==='numbers'?viewNumbers():ST.view==='words'?viewWords():ST.view==='mcr'?viewMcr(F):ST.view==='journey'?viewJourneyFull(F):ST.view==='build'?viewBuild(F):ST.view==='analytics'?viewAnalytics(F):ST.view==='alerts'?viewAlerts(F):ST.view==='open'?viewOpen(F):viewMix();
   const soloTop = ST.solo ? `<div class="solo-top"><h2>CrowdtoLive open tasks<span>Live: every date, tick and approval changes here and on the full board at the same moment.</span></h2><div class="sp"></div><button type="button" class="btn" data-solo="0">Open the full board</button></div>` : '';
@@ -4706,26 +4709,26 @@ function viewApprove(F){
   const lst = lines.map(r=>clState(r)[0]);
   const ago2 = x => x ? `${esc(who(x.by))} · ${ago(x.at)}` : '';
   const col = (who_, name, chk) => {
-    const boxW = blocks.filter(who_==='an' ? waitingAn : waitingSJ);
-    const pcW = pieces.filter(p=> who_==='an' ? !p.r.an : (p.r.an&&p.r.an.s==='approved'&&!p.r.sj));
-    const fixes = pieces.filter(p=> p.r[who_] && p.r[who_].s==='rejected');
-    const lnW = who_==='an' ? lst.filter(k=>k==='wait'||k==='changed').length : lst.filter(k=>k==='an').length;
+    const boxW = blocks.filter(who_==='an' ? waitingAn : who_==='fo' ? waitingFo : waitingSJ);
+    const pcW = who_==='fo' ? [] : pieces.filter(p=> who_==='an' ? !p.r.an : (p.r.an&&p.r.an.s==='approved'&&!p.r.sj));
+    const fixes = who_==='fo' ? [] : pieces.filter(p=> p.r[who_] && p.r[who_].s==='rejected');
+    const lnW = who_==='fo' ? 0 : who_==='an' ? lst.filter(k=>k==='wait'||k==='changed').length : lst.filter(k=>k==='an').length;
     const done = blocks.filter(b=>isDone(b,chk)).map(b=>({b, x:ST.checks[b.id][chk]})).sort((a,c)=>a.x.at<c.x.at?1:-1);
     const total = boxW.length + pcW.length + lnW;
     const boxRow = b => `<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b> ${esc(b.t)}</button><small>${esc(b.owner)}${dueOf(b)?' · due '+fmtDate(dueOf(b)):''}${who_==='sj'&&isDone(b,'Anouar approved')?' · Anouar approved '+ago(ST.checks[b.id]['Anouar approved'].at):''}</small></div><span class="ap-btns"><button type="button" class="btn sm" data-open="${b.id}">Review</button><button type="button" class="btn sm ok" data-ck="${b.id}" data-c="${chk}" ${ST.canWrite?'':'disabled'} ${apprLock(chk)}>✓ Approve</button></span></li>`;
     const pcRow = p => `<li class="ap-row"><div><button type="button" class="lnk" data-goway="${p.bid}"><b>${esc(p.label)}</b> · ${esc(p.name)}</button>${who_==='sj'&&p.r.an?`<small>Anouar approved · ${ago2(p.r.an)}</small>`:''}</div><span class="ap-btns"><button type="button" class="btn sm" data-goway="${p.bid}">Open and review</button></span></li>`;
-    return `<section class="ap-col ap-${who_}"><div class="ap-head"><h3>${name}</h3><p>${who_==='an'?'Approves first. Everything below is ready for you.':'Approves after Anouar. Only things Anouar has approved show here.'}</p><b class="ap-big">${total}</b><span>waiting</span></div>
+    return `<section class="ap-col ap-${who_}"><div class="ap-head"><h3>${name}</h3><p>${who_==='fo'?'Approves Darcy\'s videos first, before Anouar.':who_==='an'?'Approves before SJ. Everything below is ready for you.':'Approves after Anouar. Only things Anouar has approved show here.'}</p><b class="ap-big">${total}</b><span>waiting</span></div>
      <h4>Boxes to approve <span class="az-cnt">${boxW.length}</span></h4>${boxW.length?`<ul class="ap-list">${boxW.map(boxRow).join('')}</ul>`:'<p class="bb-empty">Nothing waiting.</p>'}
-     <h4>Ads and posts, piece by piece <span class="az-cnt">${pcW.length}</span></h4>${pcW.length?`<ul class="ap-list">${pcW.slice(0,40).map(pcRow).join('')}</ul>${pcW.length>40?`<p class="ot-n">+${pcW.length-40} more</p>`:''}`:'<p class="bb-empty">Nothing waiting.</p>'}
+     ${who_==='fo'?'':`<h4>Ads and posts, piece by piece <span class="az-cnt">${pcW.length}</span></h4>`}${who_==='fo'?'':pcW.length?`<ul class="ap-list">${pcW.slice(0,40).map(pcRow).join('')}</ul>${pcW.length>40?`<p class="ot-n">+${pcW.length-40} more</p>`:''}`:'<p class="bb-empty">Nothing waiting.</p>'}
      ${F.id==='hb'?`<h4>Copy library lines <span class="az-cnt">${lnW}</span></h4><p class="ap-lines">${lnW?`${lnW} lines are waiting for ${name}. `:'No lines waiting. '}<button type="button" class="btn sm" data-clgo="${who_==='an'?'wait':'an'}">Open them in the Copy library</button></p>`:''}
-     <h4>Sent back for changes <span class="az-cnt">${fixes.length}</span></h4>${fixes.length?`<ul class="ap-list">${fixes.map(p=>`<li class="ap-row"><div><button type="button" class="lnk" data-goway="${p.bid}"><b>${esc(p.label)}</b> · ${esc(p.name)}</button><small>${ago2(p.r[who_])}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">None.</p>'}
+     ${who_==='fo'?'':`<h4>Sent back for changes <span class="az-cnt">${fixes.length}</span></h4>`}${who_==='fo'?'':fixes.length?`<ul class="ap-list">${fixes.map(p=>`<li class="ap-row"><div><button type="button" class="lnk" data-goway="${p.bid}"><b>${esc(p.label)}</b> · ${esc(p.name)}</button><small>${ago2(p.r[who_])}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">None.</p>'}
      <h4>Approved so far <span class="az-cnt">${done.length}</span></h4>${done.length?`<ul class="ap-list done">${done.slice(0,15).map(({b,x})=>`<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}">✓ <b>${b.id}</b> ${esc(b.t)}</button><small>${ago2(x)}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">Nothing approved yet.</p>'}
     </section>`;
   };
-  return `<section class="bb-sec"><div class="bb-sh"><h3>Approvals</h3><p>Anouar approves first, then SJ. Each side lists only what is waiting for that person: whole boxes (tick Approve right here, or open to review), ad and post pieces, and Copy library lines. "Needs changes" sends a piece back to its owner with a comment.</p></div>
-   <div class="ap-tools"><span>Show:</span><button type="button" class="ot-chip${!ST.apFor?' on':''}" data-sjonly="">Both</button><button type="button" class="ot-chip${ST.apFor==='Anouar'?' on':''}" data-sjonly="Anouar">Anouar only</button><button type="button" class="ot-chip${ST.apFor==='SJ'?' on':''}" data-sjonly="SJ">SJ only</button>
+  return `<section class="bb-sec"><div class="bb-sh"><h3>Approvals</h3><p>Anouar approves first, then SJ. Darcy's videos go to Fofee before Anouar. Each side lists only what is waiting for that person: whole boxes (tick Approve right here, or open to review), ad and post pieces, and Copy library lines. "Needs changes" sends a piece back to its owner with a comment.</p></div>
+   <div class="ap-tools"><span>Show:</span><button type="button" class="ot-chip${!ST.apFor?' on':''}" data-sjonly="">Both</button><button type="button" class="ot-chip${ST.apFor==='Fofee'?' on':''}" data-sjonly="Fofee">Fofee only</button><button type="button" class="ot-chip${ST.apFor==='Anouar'?' on':''}" data-sjonly="Anouar">Anouar only</button><button type="button" class="ot-chip${ST.apFor==='SJ'?' on':''}" data-sjonly="SJ">SJ only</button>
      <button type="button" class="btn sm" data-copytxt="${location.origin+location.pathname}?for=SJ#build">Copy SJ's approval link</button><button type="button" class="btn sm" data-sjteams="1">${TEAMS_ICON} Send SJ her list in Teams</button></div>
-   <div class="ap-grid${ST.apFor?' one':''}">${ST.apFor==='SJ'?'':col('an','Anouar','Anouar approved')}${ST.apFor==='Anouar'?'':col('sj','SJ','SJ approved')}</div></section>`;
+   <div class="ap-grid${ST.apFor?' one':' three'}">${!ST.apFor||ST.apFor==='Fofee'?col('fo','Fofee','Fofee approved'):''}${!ST.apFor||ST.apFor==='Anouar'?col('an','Anouar','Anouar approved'):''}${!ST.apFor||ST.apFor==='SJ'?col('sj','SJ','SJ approved'):''}</div></section>`;
 }
 
 /* ---------- numbers ---------- */
@@ -5212,7 +5215,7 @@ function sjMessage(){
   const list = boxes.map(b=>'• '+b.id+' '+b.t).concat(pieces.map(x=>'• '+x)).slice(0,10);
   return `Hi SJ, Anouar has approved these, so they are ready for your approval:\n${list.join('\n')}${lines?`\n• ${lines} Copy library lines`:''}\nYour list: ${sjBoard()}`;
 }
-function apCount(w){ const F = flowOf(ST.flow); let n = blocksOf(F,true).filter(w==='sj'?waitingSJ:waitingAn).length;
+function apCount(w){ const F = flowOf(ST.flow); let n = blocksOf(F,true).filter(w==='sj'?waitingSJ:w==='fo'?waitingFo:waitingAn).length; if(w==='fo') return n;
   (AZ.sources||[]).forEach(([bid])=>{ const b = findBlock(bid); if(!b) return; itemNames(b).forEach((x,i)=>{ const r = revOf(bid,i); if(w==='an' ? !r.an : (r.an&&r.an.s==='approved'&&!r.sj)) n++; }); });
   if(typeof libRows==='function') n += libRows().filter(r=>{ const k = clState(r)[0]; return w==='an' ? (k==='wait'||k==='changed') : k==='an'; }).length;
   return n; }
