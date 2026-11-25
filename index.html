@@ -836,8 +836,6 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
   /* who is this? asked once, kept on this device */
   window.CTL_ASK_NAME = function(force){
     var PEOPLE0 = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj','Louise'];
-    /* picked a team name before keys existed: ask for the key once per visit, so their buttons work */
-    if(me() && !key() && PEOPLE0.indexOf(me())>=0){ var asked=false; try{ asked = sessionStorage.getItem('ctl-asked')==='1'; sessionStorage.setItem('ctl-asked','1'); }catch(e){} if(!asked) force = me(); }
     if(me() && !force) return;
     var people = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj','Louise'];
     var w = document.createElement('div'); w.id='ctl-who';
@@ -845,7 +843,7 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
     document.body.appendChild(w);
     function save(n,k){ try{ localStorage.setItem(LSN, n); if(k) localStorage.setItem('ctl-key', k); else localStorage.removeItem('ctl-key'); }catch(e){} w.remove(); location.reload(); }
     function pick(n){ n=(n||'').trim(); if(!n) return;
-      if(people.indexOf(n)<0){ save(n); return; }
+      save(n); return;
       var c=w.querySelector('.ctl-who-card'); c.innerHTML='<h2 id="ctl-who-h">Hi '+n+'</h2><p>Only you can tick your own steps, so the board needs your personal key. Fofee sends it to you privately. You only enter it once on this device.</p><form class="ctl-key"><label for="ctl-k">Your key</label><input id="ctl-k" autocomplete="off" required><p class="ctl-err" role="alert"></p><button type="submit">Check and continue</button><button type="button" class="ctl-skip">Just look (no ticking)</button></form>';
       c.querySelector('.ctl-skip').addEventListener('click', function(){ save(n); });
       c.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var k=c.querySelector('#ctl-k').value.trim(), er=c.querySelector('.ctl-err'); er.textContent='Checking…';
@@ -4091,13 +4089,14 @@ const isDone = (b,c) => !!(ST.checks[b.id] && ST.checks[b.id][c] && ST.checks[b.
 const doneCount = b => checksOf(b).filter(c=>isDone(b,c)).length;
 const HOSTED = !!window.CTL_STORE_URL;
 const meName = () => { try{ return localStorage.getItem('ctl-me')||''; }catch(e){ return ''; } };
-const hasKey = () => { try{ return !!localStorage.getItem('ctl-key'); }catch(e){ return false; } };
+const TEAM = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj','Louise'];
+const hasKey = () => TEAM.includes(meName());
 const apprName = w => w==='an'||w==='Anouar approved' ? 'Anouar' : w==='fo'||w==='Fofee approved' ? 'Fofee' : 'SJ';
 /* 25 Nov: every button belongs to the person who does that step. Fofee can click them all. */
 const isMe = n => !HOSTED || (hasKey() && (meName()==='Fofee' || meName()===n));
 const canApprove = w => isMe(apprName(w));
 const onlyWho = n => n==='Fofee' ? 'Only Fofee' : `Only ${n} (or Fofee)`;
-const apprLock = w => canApprove(w) ? '' : `disabled title="${onlyWho(apprName(w))} can click this, with their key"`;
+const apprLock = w => canApprove(w) ? '' : `disabled title="${onlyWho(apprName(w))} can click this"`;
 const cioOwner = () => (findBlock('MCR-CIO')||{}).owner || 'Omar';
 const canTick = (b,c) => isMe(tickWho(b,c) || cioOwner());
 const tickLock = (b,c) => canTick(b,c) ? '' : `disabled title="${esc(onlyWho(tickWho(b,c)||cioOwner()))} can tick this"`;
@@ -4148,7 +4147,7 @@ const writing = {};
 async function toggleCheck(b, c){
   if(!ST.canWrite) return;
   { const need = tickBlocked(b,c); if(need){ alertBox(`First: "${tickLabel(b,need)}". The order is build, test, Anouar, SJ.`); return; } }
-  if(!canTick(b,c)){ const w = tickWho(b,c)||cioOwner(); alertBox('Only '+w+' (or Fofee) can tick "'+c+'". '+(hasKey()?'You are signed in as '+meName()+'.':'Enter your key first: click your name at the top.')); return; }
+  if(!canTick(b,c)){ const w = tickWho(b,c)||cioOwner(); alertBox('Only '+w+' (or Fofee) can tick "'+c+'". '+(hasKey()?'You are signed in as '+meName()+'.':'Pick your name first: click Change at the top.')); return; }
   const cur = Object.assign({}, ST.checks[b.id]||{});
   cur[c] = {v: !isDone(b,c), by: ST.me||'local', at: new Date().toISOString()};
   cur.block = b.id; cur.owner = b.owner || cioOwner(); cur.tester = b.tester || TESTER; if(isNoTest(b)) cur.notest = true; if(isVideoTask(b)) cur.fofee = true;
@@ -4478,7 +4477,7 @@ function render(){
     <form class="bb-search" role="search" id="bb-sform"><label class="sr" for="bb-q">Search the whole board</label><input id="bb-q" type="search" placeholder="Search: a code like LP-P, a word, a name" value="${esc(ST.q)}" autocomplete="off" aria-controls="bb-qres"><button type="submit" class="btn" aria-label="Search">🔍 Search</button>${ST.q?'<button type="button" class="btn" data-qclear="1">Clear</button>':''}<div id="bb-qres" role="listbox" hidden></div></form>
     <button type="button" class="btn" id="bb-report">Daily report</button>
     ${ST.view==='build'?`<nav class="bb-jump" aria-label="Sections">${SECTIONS.map(([k,t])=>`<a href="#" data-goto="sec-${F.id}-${k}">${esc(t)}</a>`).join('')}</nav>`:''}
-    <p class="bb-status">${esc(status)}${HOSTED&&meName()?` · You are <b>${esc(meName())}</b>${hasKey()?(meName()==='Fofee'?' (can click every button)':' (you can click your own steps)'):' (view only: no key entered, so you cannot tick)'} <button type="button" class="lnk" data-whoreset="1">Change</button>`:''}</p></div>
+    <p class="bb-status">${esc(status)}${HOSTED&&meName()?` · You are <b>${esc(meName())}</b>${hasKey()?(meName()==='Fofee'?' (can click every button)':' (you can click your own steps)'):' (view only)'} <button type="button" class="lnk" data-whoreset="1">Change</button>`:''}</p></div>
    <div class="bb-layout${!ST.open&&ST.fold?' folded':''}"><div id="bb-main">${body}
    <p class="bb-src">Benchmarks: our HubSpot sends (Jul 2026: 20 to 23.5% open, 0.9 to 1.5% click); Omnisend 2025 (automations 4.66% click vs campaigns 0.74%; welcome emails 35.5% open); GetResponse 2024 (welcome emails 83.6% open, inflated by Apple Mail Privacy); WordStream/LocalIQ 2025 (Meta traffic CTR 1.71%); Superads (Meta finance cost per lead about $39). Opens are inflated by Apple Mail Privacy, so clicks and goal events decide In or Out.</p></div>
    <aside id="bb-side" class="${ST.open?'has':''}${!ST.open&&ST.fold?' fold':''}" aria-label="Ticks, comments and details">${ST.open?drawer(ST.open):ST.fold?`<button type="button" class="bb-unfold" data-fold="0" aria-label="Show alerts and build plan"><span>🔔</span><b>${ac}</b><i>Alerts and plan</i></button>`:panelHome(F)}</aside></div>
