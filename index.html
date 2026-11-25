@@ -776,6 +776,10 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
 .tcl-i small{display:block;color:#3D4060;font-size:11.5px}.tcl-i{white-space:normal}.tcl-i span{flex:1;min-width:0;overflow-wrap:anywhere}
 .ot-scope{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px;padding:8px;background:#EEF0FF;border-radius:14px;width:max-content;max-width:100%}
 .bb-done{background:#E1F7EE;color:#00704A;font-weight:700;border-radius:10px;padding:8px 10px}
+.nt-acts{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.nt-b{font:inherit;font-size:12px;padding:3px 8px;border:1px solid #c9cbe6;border-radius:6px;background:#fff;color:#1a1f5c;cursor:pointer}
+.nt-b:hover{background:#f0f1fb}.nt-del{border-color:#c62828;color:#c62828}.nt-sure span{font-size:12px;font-weight:600;color:#c62828}
+.nt-ed{font-size:11px;color:#6b6f8f;font-style:italic}.nt-edit textarea{width:100%;box-sizing:border-box;font:inherit;margin-top:4px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -4167,6 +4171,27 @@ async function addNote(b, text){
   if(ST.db){ try{ await ST.db.collection('notes').add(n); }catch(e){ if(e&&e.code==='quota_exceeded') alertBox('The comment store is full. Ask the board owner to clear old comments.'); } }
   else { ST.notes.push(Object.assign({id:'l'+Date.now()}, n)); localSave(); render(); }
 }
+/* 25 Nov: comments can be edited and deleted by anyone on the board */
+function noteItem(n){
+  const id = esc(n.id||''), can = ST.canWrite && n.id;
+  const ed = n.edited ? ` <span class="nt-ed">edited by ${esc(who(n.edited.by))} ${ago(n.edited.at)}</span>` : '';
+  if(ST.editNote===n.id) return `<li><b>${esc(who(n.by))}</b> <span>${ago(n.at)}</span>
+    <form class="nt-edit" data-editnote="${id}"><label class="sr" for="ne-${id}">Edit comment</label><textarea id="ne-${id}" rows="3">${esc(n.text)}</textarea>
+    <div class="nt-acts"><button class="btn" type="submit">Save</button><button type="button" class="nt-b" data-ncancel="1">Cancel</button></div></form></li>`;
+  const del = ST.delNote===n.id ? `<div class="nt-acts nt-sure"><span>Delete this comment?</span><button type="button" class="nt-b nt-del" data-ndelyes="${id}">Yes, delete</button><button type="button" class="nt-b" data-ncancel="1">No</button></div>`
+    : can ? `<div class="nt-acts"><button type="button" class="nt-b" data-nedit="${id}">✏️ Edit</button><button type="button" class="nt-b" data-ndel="${id}">🗑 Delete</button></div>` : '';
+  return `<li><b>${esc(who(n.by))}</b> <span>${ago(n.at)}</span>${ed}<p>${esc(n.text)}</p>${del}</li>`;
+}
+async function editNote(id, text){
+  const n = ST.notes.find(x=>x.id===id); if(!n) return;
+  const cur = Object.assign({}, n, {text:text.slice(0,2000), edited:{by:ST.me||'local', at:new Date().toISOString()}}); delete cur.id;
+  Object.assign(n, cur); ST.editNote = null; render();
+  if(ST.db){ await ST.db.doc('notes/'+id).set(cur).catch(()=>{}); } else localSave();
+}
+async function deleteNote(id){
+  ST.notes = ST.notes.filter(x=>x.id!==id); ST.delNote = null; render();
+  if(ST.db){ await ST.db.doc('notes/'+id).delete().catch(()=>{}); } else localSave();
+}
 const TODAY = () => new Date().toISOString().slice(0,10);
 /* 24 Nov 2026: everything is now due by Friday 27 Nov. Dates set before then are pulled in to 27 Nov; a date someone changes after that stands. */
 const DEADLINE = '2026-11-27', DEADLINE_SET = '2026-11-24T17:34:00Z';
@@ -4379,7 +4404,7 @@ function drawer(id){
    ${jn&&!b.q?`<h5>${esc(jn.S.q)}</h5><div class="bb-yns">${yn(jn.n[1],jn.n[2],'y')}${yn(jn.n[3],jn.n[4],'n')}</div>`:''}
    ${b.q?qPanel(b):''}${b.lp?lpPanel(b):''}${b.guide?guidePanel(b):''}${b.id==='CALC-1'&&b.build?buildPanel(b).replace('The page is built · ready for Omar','The calculator · try it here')+reviewBar(b.id,0,'The calculator'):''}${b.nudgeMsg?nudgePanel(b):''}${b.today&&!b.q?`<div class="q-today"><div><b>${b.today[0]}</b><span>${esc(b.today[2])}</span></div></div>`:''}${adsPanel(b) || adPreview(b)}${trackBox(b)}
    <h5>Comments ${notesFor(b.id).length?`(${notesFor(b.id).length})`:''}</h5>
-   <ul class="bb-notes">${notesFor(b.id).map(n=>`<li><b>${esc(who(n.by))}</b> <span>${ago(n.at)}</span><p>${esc(n.text)}</p></li>`).join('') || '<li class="nd">No comments yet. Ask a question, log a change, or leave an approval note with the date.</li>'}</ul>
+   <ul class="bb-notes">${notesFor(b.id).map(noteItem).join('') || '<li class="nd">No comments yet. Ask a question, log a change, or leave an approval note with the date.</li>'}</ul>
    <form class="bb-nf" data-note="${b.id}"><label for="nt-${b.id}" class="sr">Add a comment</label><textarea id="nt-${b.id}" rows="2" placeholder="Comment, change log or approval note" ${ST.canWrite?'':'disabled'}></textarea><button class="btn" type="submit" ${ST.canWrite?'':'disabled'}>Add comment</button></form>
    ${E?`<h5>The message</h5><dl class="bb-kv">${kv('Subject', esc(ST.liquid?E.subject:sampleOf(E.subject)))}${kv('Preview', esc(ST.liquid?(E.preview||''):sampleOf(E.preview||'')))}${kv('From', esc(E.from||(E.reg?'Bayuti':'Bayuti Home Buying')))}${E.push?kv('Push', `<b>${esc(sampleOf(E.push[0]))}</b> · ${esc(sampleOf(E.push[1]))}`):''}${E.sms?kv('SMS', esc(E.sms)):''}</dl>
      <div class="bb-emailbar"><button type="button" class="btn" data-copyhtml="${b.msg}">Copy HTML</button><button type="button" class="btn ghost" data-full="${b.msg}">Open full size</button><button type="button" class="btn ghost" data-liquid>${ST.liquid?'Sample data':'Liquid tags'}</button></div>
@@ -4461,6 +4486,7 @@ function render(){
   const F = flowOf(ST.flow);
   if(F.id!=='hb' && ['journey','mcr','az','numbers','dev'].includes(ST.view)) ST.view = 'build';
   const keep = document.activeElement && document.activeElement.id;
+  const drafts = {}; document.querySelectorAll('#buildwrap textarea[id]').forEach(x=>{ drafts[x.id] = [x.value, x.selectionStart]; });
   const mainEl = $('#bb-main'), sideEl = $('#bb-side'), jw = $('.jr-wrap');
   const sc = {m: mainEl?mainEl.scrollTop:0, s: sideEl?sideEl.scrollTop:0, j: jw?jw.scrollLeft:0, open: ST._lastOpen};
   const status = ST.live ? (ST.stale ? 'Shared ticks can\'t be reached yet; showing what we have.' : (ST.canWrite ? 'Everything you tick, type or approve is shared with everyone on this link, with your name.' : 'You can look; ask Fofee for edit access to tick or approve.')) : 'Ticks are kept on this device only (sign in to share them).';
@@ -4485,6 +4511,7 @@ function render(){
   const m2 = $('#bb-main'), s2 = $('#bb-side'), j2 = $('.jr-wrap');
   if(m2) m2.scrollTop = sc.m; if(s2) s2.scrollTop = (sc.open===ST.open) ? sc.s : 0; if(j2) j2.scrollLeft = sc.j;
   ST._lastOpen = ST.open;
+  Object.keys(drafts).forEach(id=>{ const x = document.getElementById(id); if(x && x.tagName==='TEXTAREA') x.value = drafts[id][0]; });
   if(keep){ const k = document.getElementById(keep); if(k){ k.focus({preventScroll:true}); if(k.setSelectionRange && k.type==='search'){ const L=k.value.length; k.setSelectionRange(L,L); } } }
   if(ST.view==='journey'||ST.view==='mcr') requestAnimationFrame(drawLinks);
   requestAnimationFrame(fillCode);
@@ -5404,6 +5431,10 @@ function apCount(w){ const F = flowOf(ST.flow); let n = blocksOf(F,true).filter(
 function boxLink(id){ return location.origin + location.pathname + '?box=' + encodeURIComponent(id); }
 function onClick(e){
   const t = e.target.closest('button, a, [data-close]'); if(!t || !document.getElementById('buildwrap').contains(t)) return;
+  if(t.dataset.nedit){ ST.editNote = t.dataset.nedit; ST.delNote = null; render(); const ta = document.getElementById('ne-'+t.dataset.nedit); if(ta){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } return; }
+  if(t.dataset.ndel){ ST.delNote = t.dataset.ndel; ST.editNote = null; render(); return; }
+  if(t.dataset.ndelyes){ deleteNote(t.dataset.ndelyes); return; }
+  if(t.dataset.ncancel){ ST.editNote = null; ST.delNote = null; render(); return; }
   if(t.dataset.teamsr){ const b = findBlock(t.dataset.teamsr); const n = b && nextStep(b); if(n) teamsChat(n.who, boxReminder(b)); return; }
   if(t.dataset.teamsp){ teamsChat(t.dataset.teamsp, personReminder(t.dataset.teamsp).msg); return; }
   if(t.dataset.showemails){ ST.showEmails = !ST.showEmails; render(); return; }
@@ -5492,6 +5523,7 @@ function onSubmit(e){
   if(e.target.id==='bb-sform'){ e.preventDefault(); const q = document.getElementById('bb-q'); const hits = searchHits(q&&q.value); const first = hits.find(h=>h.kind==='box'); const v = (q&&q.value||'').trim(); if(first && v.length>=2 && first.id.toLowerCase()===v.toLowerCase()){ ST.flow = first.flow; ST.open = first.id; } else ST.q = v.toLowerCase(); render(); return; }
   const fc = e.target.closest('form[data-clnote]'); if(fc){ e.preventDefault(); const inp = fc.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [rid, bid] = fc.dataset.clnote.split('|'); const r = libRows().find(x=>x.rid===rid); inp.value=''; ST.clNote = null; addNote({id:bid}, '['+(r?r.id:rid)+'] '+v); return; }
   const fi = e.target.closest('form[data-inote]'); if(fi){ e.preventDefault(); const inp = fi.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [bid, label] = fi.dataset.inote.split('|'); inp.value=''; addNote({id:bid}, '['+label+'] '+v); return; }
+  const fe = e.target.closest('form[data-editnote]'); if(fe){ e.preventDefault(); const v = fe.querySelector('textarea').value.trim(); if(!v) return; editNote(fe.dataset.editnote, v); return; }
   const f = e.target.closest('form[data-note]'); if(!f) return; e.preventDefault();
   const ta = f.querySelector('textarea'); const v = ta.value.trim(); if(!v) return;
   const F = flowOf(ST.flow); const b = blocksOf(F,true).find(x=>x.id===f.dataset.note); ta.value=''; addNote(b, v);
