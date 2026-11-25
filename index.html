@@ -834,8 +834,11 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
   function loop(){ clearTimeout(timer); timer = setTimeout(function(){ if(!document.hidden) pull(); loop(); }, 20000); }
   if(STORE){ loop(); document.addEventListener('visibilitychange', function(){ if(!document.hidden) pull(); }); }
   /* who is this? asked once, kept on this device */
-  window.CTL_ASK_NAME = function(){
-    if(me()) return;
+  window.CTL_ASK_NAME = function(force){
+    var PEOPLE0 = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj'];
+    /* picked a team name before keys existed: ask for the key once per visit, so their buttons work */
+    if(me() && !key() && PEOPLE0.indexOf(me())>=0){ var asked=false; try{ asked = sessionStorage.getItem('ctl-asked')==='1'; sessionStorage.setItem('ctl-asked','1'); }catch(e){} if(!asked) force = me(); }
+    if(me() && !force) return;
     var people = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj'];
     var w = document.createElement('div'); w.id='ctl-who';
     w.innerHTML = '<div class="ctl-who-card" role="dialog" aria-modal="true" aria-labelledby="ctl-who-h"><h2 id="ctl-who-h">Who are you?</h2><p>So everyone can see who ticked, approved or changed something. Asked once on this device.</p><div class="ctl-who-g">'+people.map(function(p){ return '<button type="button" data-n="'+p+'">'+p+'</button>'; }).join('')+'</div><form><label for="ctl-who-o">Someone else</label><input id="ctl-who-o" placeholder="Your first name" maxlength="30"><button type="submit">Go</button></form></div>';
@@ -851,6 +854,7 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
     }
     w.addEventListener('click', function(e){ var b=e.target.closest('[data-n]'); if(b) pick(b.dataset.n); });
     w.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var v=w.querySelector('input').value.trim(); people.forEach(function(p){ if(p.toLowerCase()===v.toLowerCase()) v = p; }); pick(v); });
+    if(force) pick(force);
   };
   document.addEventListener('DOMContentLoaded', function(){ if(STORE) window.CTL_ASK_NAME(); });
 })();
@@ -4091,10 +4095,11 @@ const apprName = w => w==='an'||w==='Anouar approved' ? 'Anouar' : w==='fo'||w==
 /* 25 Nov: every button belongs to the person who does that step. Fofee can click them all. */
 const isMe = n => !HOSTED || (hasKey() && (meName()==='Fofee' || meName()===n));
 const canApprove = w => isMe(apprName(w));
-const apprLock = w => canApprove(w) ? '' : `disabled title="Only ${apprName(w)} (or Fofee) can click this, with their key"`;
+const onlyWho = n => n==='Fofee' ? 'Only Fofee' : `Only ${n} (or Fofee)`;
+const apprLock = w => canApprove(w) ? '' : `disabled title="${onlyWho(apprName(w))} can click this, with their key"`;
 const cioOwner = () => (findBlock('MCR-CIO')||{}).owner || 'Omar';
 const canTick = (b,c) => isMe(tickWho(b,c) || cioOwner());
-const tickLock = (b,c) => canTick(b,c) ? '' : `disabled title="Only ${esc(tickWho(b,c)||cioOwner())} (or Fofee) can tick this"`;
+const tickLock = (b,c) => canTick(b,c) ? '' : `disabled title="${esc(onlyWho(tickWho(b,c)||cioOwner()))} can tick this"`;
 const notesFor = id => ST.notes.filter(n=>n.block===id).sort((a,b)=>a.at<b.at?-1:1);
 const initials = n => (n||'?').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
 function who(id){ return id==='local' ? 'You (this device)' : id==='claude' ? 'Claude' : (ST.names[id] || (String(id).indexOf('n:')===0 ? String(id).slice(2) : 'Someone')); }
