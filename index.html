@@ -835,11 +835,11 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
   if(STORE){ loop(); document.addEventListener('visibilitychange', function(){ if(!document.hidden) pull(); }); }
   /* who is this? asked once, kept on this device */
   window.CTL_ASK_NAME = function(force){
-    var PEOPLE0 = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj'];
+    var PEOPLE0 = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj','Louise'];
     /* picked a team name before keys existed: ask for the key once per visit, so their buttons work */
     if(me() && !key() && PEOPLE0.indexOf(me())>=0){ var asked=false; try{ asked = sessionStorage.getItem('ctl-asked')==='1'; sessionStorage.setItem('ctl-asked','1'); }catch(e){} if(!asked) force = me(); }
     if(me() && !force) return;
-    var people = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj'];
+    var people = ['Fofee','Omar','Ridhima','SJ','Anouar','Darcy','Alex','Pankaj','Louise'];
     var w = document.createElement('div'); w.id='ctl-who';
     w.innerHTML = '<div class="ctl-who-card" role="dialog" aria-modal="true" aria-labelledby="ctl-who-h"><h2 id="ctl-who-h">Who are you?</h2><p>So everyone can see who ticked, approved or changed something. Asked once on this device.</p><div class="ctl-who-g">'+people.map(function(p){ return '<button type="button" data-n="'+p+'">'+p+'</button>'; }).join('')+'</div><form><label for="ctl-who-o">Someone else</label><input id="ctl-who-o" placeholder="Your first name" maxlength="30"><button type="submit">Go</button></form></div>';
     document.body.appendChild(w);
@@ -1970,7 +1970,8 @@ const PEOPLE = {
   Pankaj:{role:'Head of Sales, Investors', owns:'Investor calls, scripts, HubSpot task times'},
   SJ:{role:'Compliance', owns:'Approves every message, page, ad, script and slide'},
   Darcy:{role:'Social and content', owns:'Organic social, videos, website library uploads'},
-  Anouar:{role:'CEO', owns:'Final sign off on each go live gate, webinar guest'}
+  Anouar:{role:'CEO', owns:'Final sign off on each go live gate, hosts the webinars'},
+  Louise:{role:'Head of Operations', owns:'Operations, provider updates, client communication'}
 };
 const SECTIONS = [
   ['way','1 · The way in','Every source, page and form that brings a person into this flow, with cost and tracking.'],
