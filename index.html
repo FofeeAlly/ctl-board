@@ -809,7 +809,7 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
     if(!STORE) return Promise.reject(new Error('Shared storage is not set up yet'));
     body.me = me(); body.key = key();
     return fetch(STORE, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(body)})
-      .then(function(r){ return r.json(); }).then(function(j){ if(!j.ok){ if(j.error==='not allowed'){ toast(j.message||'Only the approver can do that.'); cache=null; pull(); } throw new Error(j.error||'save failed'); } setTimeout(pull, 300); return j; });
+      .then(function(r){ return r.json(); }).then(function(j){ if(!j.ok){ if(j.error==='not allowed'){ toast(j.message||'Only the person who owns that step (or Fofee) can do that.'); cache=null; pull(); } throw new Error(j.error||'save failed'); } setTimeout(pull, 300); return j; });
   }
   function local(col, id, data){ cache = cache||{}; (cache[col]=cache[col]||{})[id] = data; subs.forEach(function(s){ if(s.col===col) fire(s); }); }
   function q(col, ob, lim){ return {
@@ -842,15 +842,15 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
     document.body.appendChild(w);
     function save(n,k){ try{ localStorage.setItem(LSN, n); if(k) localStorage.setItem('ctl-key', k); else localStorage.removeItem('ctl-key'); }catch(e){} w.remove(); location.reload(); }
     function pick(n){ n=(n||'').trim(); if(!n) return;
-      if(n!=='Anouar' && n!=='SJ' && n!=='Fofee'){ save(n); return; }
-      var c=w.querySelector('.ctl-who-card'); c.innerHTML='<h2 id="ctl-who-h">Hi '+n+'</h2><p>Approvals in your name need your approval key. Fofee sends it to you privately. You only enter it once on this device.</p><form class="ctl-key"><label for="ctl-k">Your approval key</label><input id="ctl-k" autocomplete="off" required><p class="ctl-err" role="alert"></p><button type="submit">Check and continue</button><button type="button" class="ctl-skip">Continue without approving</button></form>';
+      if(people.indexOf(n)<0){ save(n); return; }
+      var c=w.querySelector('.ctl-who-card'); c.innerHTML='<h2 id="ctl-who-h">Hi '+n+'</h2><p>Only you can tick your own steps, so the board needs your personal key. Fofee sends it to you privately. You only enter it once on this device.</p><form class="ctl-key"><label for="ctl-k">Your key</label><input id="ctl-k" autocomplete="off" required><p class="ctl-err" role="alert"></p><button type="submit">Check and continue</button><button type="button" class="ctl-skip">Just look (no ticking)</button></form>';
       c.querySelector('.ctl-skip').addEventListener('click', function(){ save(n); });
       c.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var k=c.querySelector('#ctl-k').value.trim(), er=c.querySelector('.ctl-err'); er.textContent='Checking…';
         fetch(STORE+'?check=1&who='+encodeURIComponent(n)+'&key='+encodeURIComponent(k)).then(function(r){ return r.json(); }).then(function(j){ if(j.ok&&j.valid) save(n,k); else er.textContent='That key is not right. Check it with Fofee.'; }).catch(function(){ er.textContent='Could not check the key. Try again.'; }); });
       c.querySelector('#ctl-k').focus();
     }
     w.addEventListener('click', function(e){ var b=e.target.closest('[data-n]'); if(b) pick(b.dataset.n); });
-    w.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var v=w.querySelector('input').value.trim(); if(/^(anouar|sj|fofee)$/i.test(v)) v = {sj:'SJ',anouar:'Anouar',fofee:'Fofee'}[v.toLowerCase()]; pick(v); });
+    w.querySelector('form').addEventListener('submit', function(e){ e.preventDefault(); var v=w.querySelector('input').value.trim(); people.forEach(function(p){ if(p.toLowerCase()===v.toLowerCase()) v = p; }); pick(v); });
   };
   document.addEventListener('DOMContentLoaded', function(){ if(STORE) window.CTL_ASK_NAME(); });
 })();
@@ -4088,8 +4088,13 @@ const HOSTED = !!window.CTL_STORE_URL;
 const meName = () => { try{ return localStorage.getItem('ctl-me')||''; }catch(e){ return ''; } };
 const hasKey = () => { try{ return !!localStorage.getItem('ctl-key'); }catch(e){ return false; } };
 const apprName = w => w==='an'||w==='Anouar approved' ? 'Anouar' : w==='fo'||w==='Fofee approved' ? 'Fofee' : 'SJ';
-const canApprove = w => !HOSTED || (hasKey() && meName()===apprName(w));
-const apprLock = w => canApprove(w) ? '' : `disabled title="Only ${apprName(w)} can approve (with their approval key)"`;
+/* 25 Nov: every button belongs to the person who does that step. Fofee can click them all. */
+const isMe = n => !HOSTED || (hasKey() && (meName()==='Fofee' || meName()===n));
+const canApprove = w => isMe(apprName(w));
+const apprLock = w => canApprove(w) ? '' : `disabled title="Only ${apprName(w)} (or Fofee) can click this, with their key"`;
+const cioOwner = () => (findBlock('MCR-CIO')||{}).owner || 'Omar';
+const canTick = (b,c) => isMe(tickWho(b,c) || cioOwner());
+const tickLock = (b,c) => canTick(b,c) ? '' : `disabled title="Only ${esc(tickWho(b,c)||cioOwner())} (or Fofee) can tick this"`;
 const notesFor = id => ST.notes.filter(n=>n.block===id).sort((a,b)=>a.at<b.at?-1:1);
 const initials = n => (n||'?').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
 function who(id){ return id==='local' ? 'You (this device)' : id==='claude' ? 'Claude' : (ST.names[id] || (String(id).indexOf('n:')===0 ? String(id).slice(2) : 'Someone')); }
@@ -4137,10 +4142,10 @@ const writing = {};
 async function toggleCheck(b, c){
   if(!ST.canWrite) return;
   { const need = tickBlocked(b,c); if(need){ alertBox(`First: "${tickLabel(b,need)}". The order is build, test, Anouar, SJ.`); return; } }
-  if(APPROVERS[c] && !canApprove(c)){ alertBox('Only '+APPROVERS[c]+' can tick this, using their approval key.'); return; }
+  if(!canTick(b,c)){ const w = tickWho(b,c)||cioOwner(); alertBox('Only '+w+' (or Fofee) can tick "'+c+'". '+(hasKey()?'You are signed in as '+meName()+'.':'Enter your key first: click your name at the top.')); return; }
   const cur = Object.assign({}, ST.checks[b.id]||{});
   cur[c] = {v: !isDone(b,c), by: ST.me||'local', at: new Date().toISOString()};
-  cur.block = b.id; if(isNoTest(b)) cur.notest = true; if(isVideoTask(b)) cur.fofee = true;
+  cur.block = b.id; cur.owner = b.owner || cioOwner(); cur.tester = b.tester || TESTER; if(isNoTest(b)) cur.notest = true; if(isVideoTask(b)) cur.fofee = true;
   ST.checks[b.id] = cur; render();
   if(ST.db){ if(writing[b.id]) await writing[b.id]; writing[b.id] = ST.db.doc('checks/'+b.id).set(cur).catch(e=>{ if(e&&e.code==='invalid_argument'){ ST.canWrite=false; render(); } }); await writing[b.id]; writing[b.id]=null; }
   else localSave();
@@ -4266,7 +4271,7 @@ function card(b, F){
     ${(b.exp||[]).length?`<dl class="bb-exp">${b.exp.slice(0,3).map(e=>`<div><dt>${esc(e[0])}</dt><dd>${fmtV(e[1],e[2])}</dd></div>`).join('')}</dl>`:''}
    </button>
    <div class="bb-foot"><span class="bb-owner" title="${esc(PEOPLE[b.owner]?PEOPLE[b.owner].role:'')}"><i>${initials(b.owner)}</i>${esc(b.owner)}</span>
-    <span class="bb-checks">${cs.map(c=>`<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${APPROVERS[c]&&!canApprove(c)?'disabled':''} title="${esc(c)}${isDone(b,c)?' · '+esc(who(ST.checks[b.id][c].by))+' · '+ago(ST.checks[b.id][c].at):''}" ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?'data-wait="1"':''}>${esc(tickLabel(b,c))}</button>`).join('')}</span>
+    <span class="bb-checks">${cs.map(c=>`<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${tickLock(b,c)} title="${esc(c)}${isDone(b,c)?' · '+esc(who(ST.checks[b.id][c].by))+' · '+ago(ST.checks[b.id][c].at):''}" ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?'data-wait="1"':''}>${esc(tickLabel(b,c))}</button>`).join('')}</span>
     <button type="button" class="bb-cm" data-open="${b.id}" aria-label="${n} comments">💬 ${n}</button></div>
   </article>`;
 }
@@ -4362,7 +4367,7 @@ function drawer(id){
   return `<div class="bb-panel" aria-label="${esc(b.t)}">
    <div class="bb-dr-head"><div><button type="button" class="bb-id bb-idbtn" data-copylink="${b.id}" title="Copy a link straight to ${b.id}">${b.id} 🔗</button> <span class="bb-type">${TYPE[b.type].n}</span>${b.final?' <span class="bb-final">✓ Final ads</span>':''}${reg?' <span class="bb-reg">Regulated</span>':''}${jn?` <span class="bb-type">${esc(jn.L.name)} · ${esc(jn.S.t)}</span>`:''}<h3>${esc(b.t)}</h3>${E?`<p class="bb-subj">“${esc(sampleOf(E.subject))}”</p>`:''}</div><div class="bb-headbtns">${teamsBtn(b)}<button type="button" class="bb-x" data-close aria-label="Close and show alerts">✕</button></div></div>
    ${b.final?`<p class="bb-finalnote">✓ ${esc(b.final.note)}</p>`:''}
-   <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${APPROVERS[c]&&!canApprove(c)?'disabled title="Only '+APPROVERS[c]+' can approve"':''} ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?`aria-disabled="true" data-wait="1" title="Waits for: ${esc(tickLabel(b,tickBlocked(b,c)))}"`:''}><i class="ck-n">${cs.indexOf(c)+1}</i> ${esc(tickLabel(b,c))}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
+   <div class="bb-checks big">${cs.map(c=>{ const x = ST.checks[b.id]&&ST.checks[b.id][c]; return `<button type="button" class="bb-ck${isDone(b,c)?' on':''}" data-ck="${b.id}" data-c="${esc(c)}" aria-pressed="${isDone(b,c)}" ${tickLock(b,c)} ${ST.canWrite?'':'disabled'} ${tickBlocked(b,c)?`aria-disabled="true" data-wait="1" title="Waits for: ${esc(tickLabel(b,tickBlocked(b,c)))}"`:''}><i class="ck-n">${cs.indexOf(c)+1}</i> ${esc(tickLabel(b,c))}${x&&x.v?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</button>`; }).join('')}</div>
    <div class="bb-duerow st-${st}"><label for="due-${b.id}">Due</label><input type="date" id="due-${b.id}" data-due="${b.id}" value="${dueOf(b)||''}" ${ST.canWrite?'':'disabled'}><span class="bb-state">${st==='done'?'Done':st==='overdue'?'Overdue':st==='soon'?'Due soon':'On track'}</span>${typeof phaseOf==='function'&&phaseOf(b.id)?`<span class="bb-phase">${esc(phaseOf(b.id))}</span>`:''}
     ${(()=>{ const n = nextStep(b); return n ? `<button type="button" class="btn" data-ping="${b.id}" ${ST.canWrite?'':'disabled'}>🔔 Remind ${esc(n.who)}</button><button type="button" class="btn teams-r" data-teamsr="${b.id}" title="Opens Teams with a message to ${esc(n.who)}">${TEAMS_ICON} Remind in Teams</button>` : ''; })()}</div>
    ${pend.length?`<p class="bb-pend">${pend.length} reminder${pend.length>1?'s':''} queued for the next 08:45 run.</p>`:''}
@@ -4467,7 +4472,7 @@ function render(){
     <form class="bb-search" role="search" id="bb-sform"><label class="sr" for="bb-q">Search the whole board</label><input id="bb-q" type="search" placeholder="Search: a code like LP-P, a word, a name" value="${esc(ST.q)}" autocomplete="off" aria-controls="bb-qres"><button type="submit" class="btn" aria-label="Search">🔍 Search</button>${ST.q?'<button type="button" class="btn" data-qclear="1">Clear</button>':''}<div id="bb-qres" role="listbox" hidden></div></form>
     <button type="button" class="btn" id="bb-report">Daily report</button>
     ${ST.view==='build'?`<nav class="bb-jump" aria-label="Sections">${SECTIONS.map(([k,t])=>`<a href="#" data-goto="sec-${F.id}-${k}">${esc(t)}</a>`).join('')}</nav>`:''}
-    <p class="bb-status">${esc(status)}${HOSTED&&meName()?` · You are <b>${esc(meName())}</b>${(meName()==='Anouar'||meName()==='SJ')?(hasKey()?' (approver)':' (no approval key yet)'):''} <button type="button" class="lnk" data-whoreset="1">Change</button>`:''}</p></div>
+    <p class="bb-status">${esc(status)}${HOSTED&&meName()?` · You are <b>${esc(meName())}</b>${hasKey()?(meName()==='Fofee'?' (can click every button)':' (you can click your own steps)'):' (view only: no key entered, so you cannot tick)'} <button type="button" class="lnk" data-whoreset="1">Change</button>`:''}</p></div>
    <div class="bb-layout${!ST.open&&ST.fold?' folded':''}"><div id="bb-main">${body}
    <p class="bb-src">Benchmarks: our HubSpot sends (Jul 2026: 20 to 23.5% open, 0.9 to 1.5% click); Omnisend 2025 (automations 4.66% click vs campaigns 0.74%; welcome emails 35.5% open); GetResponse 2024 (welcome emails 83.6% open, inflated by Apple Mail Privacy); WordStream/LocalIQ 2025 (Meta traffic CTR 1.71%); Superads (Meta finance cost per lead about $39). Opens are inflated by Apple Mail Privacy, so clicks and goal events decide In or Out.</p></div>
    <aside id="bb-side" class="${ST.open?'has':''}${!ST.open&&ST.fold?' fold':''}" aria-label="Ticks, comments and details">${ST.open?drawer(ST.open):ST.fold?`<button type="button" class="bb-unfold" data-fold="0" aria-label="Show alerts and build plan"><span>🔔</span><b>${ac}</b><i>Alerts and plan</i></button>`:panelHome(F)}</aside></div>
@@ -4687,7 +4692,7 @@ function rateOf(i){ const S = AZ.steps; if(i===0) return null; const prev = actu
 function stepHTML(s, i, F){
   const prev = i ? AZ.steps[i-1] : null, act = actualOf(s.id), ar = rateOf(i);
   const pcs = (s.pieces||[]).map(findBlock).filter(Boolean).filter(visible);
-  const cio = {id:s.id, checks:AZC}; const cdone = AZC.filter(c=>isDone(cio,c)).length;
+  const cio = {id:s.id, checks:AZC, owner:cioOwner()}; const cdone = AZC.filter(c=>isDone(cio,c)).length;
   return `<section class="az-step" id="az-${s.L}">
    <div class="az-sl"><span class="az-L">${s.L}</span><i></i></div>
    <div class="az-sb">
@@ -4700,7 +4705,7 @@ function stepHTML(s, i, F){
       <p class="az-why">${esc(s.why)}</p></div>
      <div class="az-cio"><p class="az-k">${gl('Customer.io')} wiring <span>${cdone}/4</span></p>
       <dl><dt>${gl('Event')}</dt><dd><code>${esc(s.event)}</code></dd><dt>Fires from</dt><dd>${esc(s.fires)}</dd><dt>${gl('Segment')}</dt><dd>${esc(s.segment)}</dd><dt>${gl('Campaign')}</dt><dd>${esc(s.campaign)}</dd></dl>
-      <div class="az-cck">${AZC.map(c=>`<button type="button" class="bb-ck${isDone(cio,c)?' on':''}" data-ck="${s.id}" data-c="${esc(c)}" aria-pressed="${isDone(cio,c)}" ${ST.canWrite?'':'disabled'}>${esc(c)}</button>`).join('')}</div></div>
+      <div class="az-cck">${AZC.map(c=>`<button type="button" class="bb-ck${isDone(cio,c)?' on':''}" data-ck="${s.id}" data-c="${esc(c)}" aria-pressed="${isDone(cio,c)}" ${ST.canWrite?'':'disabled'} ${tickLock(cio,c)}>${esc(c)}</button>`).join('')}</div></div>
     </div>
     ${s.today?`<p class="az-today">📊 Today: ${esc(s.today)}</p>`:''}
     ${s.stop?`<p class="az-stop"><b>If they stop here:</b> ${glText(s.stop)}</p>`:''}
@@ -5000,7 +5005,7 @@ function ownerSel(b, cls){
   const names = [...new Set(Object.keys(PEOPLE).filter(n=>n!=='Mudassar'))];
   if(b.owner && !names.includes(b.owner)) names.unshift(b.owner);
   const was = ORIG[b.id+'|owner'];
-  return `<span class="own-w ${cls||''}"><label class="sr" for="own-${cls||'x'}-${b.id}">Owner of ${esc(b.id)}</label><select id="own-${cls||'x'}-${b.id}" class="own-sel" data-owner="${esc(b.id)}" ${ST.canWrite?'':'disabled'}>${names.map(n=>`<option${n===b.owner?' selected':''}>${esc(n)}</option>`).join('')}</select>${was&&was!==b.owner?`<small class="own-was">was ${esc(was)}</small>`:''}</span>`;
+  return `<span class="own-w ${cls||''}"><label class="sr" for="own-${cls||'x'}-${b.id}">Owner of ${esc(b.id)}</label><select id="own-${cls||'x'}-${b.id}" class="own-sel" data-owner="${esc(b.id)}" ${ST.canWrite&&isMe('Fofee')?'':'disabled title="Only Fofee can change the owner"'}>${names.map(n=>`<option${n===b.owner?' selected':''}>${esc(n)}</option>`).join('')}</select>${was&&was!==b.owner?`<small class="own-was">was ${esc(was)}</small>`:''}</span>`;
 }
 /* the tasks that sit on the journey map (the Manchester engine and its lanes) */
 function journeyIds(){
@@ -5083,10 +5088,11 @@ function testState(b){
 }
 async function saveTest(bid, res, note){
   const b = findBlock(bid); if(!b) return;
+  if(!isMe(b.tester||TESTER)){ alertBox('Only '+(b.tester||TESTER)+' (or Fofee) can pass or fail a test.'); return; }
   if(res==='fail' && !note){ alertBox('Write what failed, so '+b.owner+' knows what to fix.'); const i = document.getElementById('tn-'+bid); if(i) i.focus(); return; }
   const prev = (ST.tests||{})[bid] || {}; const entry = {s:res, note, by:ST.me||'local', at:new Date().toISOString()};
   if(res==='pass'){ const k = tclState(b); if(k.all && k.done<k.all){ alertBox('Tick every checklist item first ('+k.done+' of '+k.all+' done). Use N/A for anything that does not apply.'); ST.testOpen = bid; render(); return; } }
-  const cur = Object.assign({}, prev, {block:bid, s:res, note, by:entry.by, at:entry.at, log:(prev.log||[]).concat([entry]).slice(-20)});
+  const cur = Object.assign({}, prev, {block:bid, tester:b.tester||TESTER, s:res, note, by:entry.by, at:entry.at, log:(prev.log||[]).concat([entry]).slice(-20)});
   ST.tests = ST.tests||{}; ST.tests[bid] = cur; render();
   if(ST.db){ await ST.db.doc('tests/'+bid).set(cur).catch(()=>alertBox('Could not save the test result. Try again.')); } else localSave();
   if(res==='pass'){ const tt = checksOf(b).filter(c=>TEST_TICKS.includes(c)&&!isDone(b,c)); for(const c of tt) await toggleCheck(b,c); alertBox(b.id+' passed and is ticked Tested. It now goes to the next approver.'); }
@@ -5095,7 +5101,7 @@ async function saveTest(bid, res, note){
 function clRow(b){
   const k = tclState(b); let n = -1; const groups = {};
   k.it.forEach(([g,t],i)=>{ (groups[g] = groups[g]||[]).push([t,i]); });
-  return `<tr class="tcl-row"><td colspan="6"><div class="tcl"><p class="tcl-h"><b>${esc(b.id)} testing checklist</b> · click once for ✓ done, twice for N/A, three times to clear. Pass unlocks when every line is ✓ or N/A.</p><div class="tcl-g">${Object.entries(groups).map(([g,items])=>`<div><h5>${esc(g)}</h5>${items.map(([t,i])=>{ const x = k.c[i]; return `<button type="button" class="tcl-i ${x?x.s:''}" data-tci="${b.id}|${i}" ${ST.canWrite?'':'disabled'}><i>${x?(x.s==='ok'?'✓':'N/A'):''}</i><span>${esc(t)}${x?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</span></button>`; }).join('')}</div>`).join('')}</div></div></td></tr>`;
+  return `<tr class="tcl-row"><td colspan="6"><div class="tcl"><p class="tcl-h"><b>${esc(b.id)} testing checklist</b> · click once for ✓ done, twice for N/A, three times to clear. Pass unlocks when every line is ✓ or N/A.</p><div class="tcl-g">${Object.entries(groups).map(([g,items])=>`<div><h5>${esc(g)}</h5>${items.map(([t,i])=>{ const x = k.c[i]; return `<button type="button" class="tcl-i ${x?x.s:''}" data-tci="${b.id}|${i}" ${ST.canWrite&&isMe(b.tester||TESTER)?'':'disabled'}><i>${x?(x.s==='ok'?'✓':'N/A'):''}</i><span>${esc(t)}${x?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</span></button>`; }).join('')}</div>`).join('')}</div></div></td></tr>`;
 }
 function viewTests(F){
   const rows = blocksOf(F,true).map(b=>({b, st:testState(b)})).filter(r=>r.st);
@@ -5104,13 +5110,13 @@ function viewTests(F){
   const show = rows.filter(r=>tf==='all'||r.st[0]===tf).sort((a,c)=>(dueOf(a.b)||'9')<(dueOf(c.b)||'9')?-1:1);
   const chip = (k,l) => `<button type="button" class="ot-chip${tf===k?' on':''}" data-tf="${k}" aria-pressed="${tf===k}">${l} <b>${cnt[k]}</b></button>`;
   const fmt = x => x ? `${esc(who(x.by))} · ${ago(x.at)}` : '';
-  const row = ({b, st}) => { const r = (ST.tests||{})[b.id], steps = testSteps(b), canT = ST.canWrite && (st[0]==='ready'||st[0]==='fail');
+  const row = ({b, st}) => { const r = (ST.tests||{})[b.id], steps = testSteps(b), canT = ST.canWrite && (st[0]==='ready'||st[0]==='fail') && isMe(b.tester||TESTER);
     return `<tr class="ts-${st[0]}"><td><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b></button><small>${esc(b.t)}</small></td>
      <td>${esc(b.owner)}<small>${dueOf(b)?'due '+fmtDate(dueOf(b)):''}</small></td>
      <td><span class="ts-st">${st[0]==='done'?'✓ ':st[0]==='fail'?'✗ ':st[0]==='ready'?'▶ ':'⏳ '}${esc(st[1])}</span>${st[2]&&st[0]==='done'?`<small>${fmt(st[2])}</small>`:''}${r?`<small class="ts-last">Last result: <b>${r.s==='pass'?'Pass':'Fail'}</b>${r.note?' · '+esc(r.note):''} · ${fmt(r)}</small>`:''}</td>
      <td>${(()=>{ const k = tclState(b); return k.all ? `<button type="button" class="tcl-b${k.done===k.all?' full':''}" data-tcl="${b.id}" aria-expanded="${ST.testOpen===b.id}">☑ ${k.done} of ${k.all}</button>` : '<small>Not user facing</small>'; })()}</td>
      <td>${steps.length?`<details><summary>${steps.length} test${steps.length>1?'s':''}</summary><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></details>`:'<small>See the box</small>'}</td>
-     <td>${canT?`<div class="ts-act"><label class="sr" for="tn-${b.id}">Notes on the test of ${b.id}</label><input id="tn-${b.id}" placeholder="What you checked, or what failed" maxlength="300"><span><button type="button" class="btn sm ok" data-tres="${b.id}|pass">✓ Pass</button><button type="button" class="btn sm no" data-tres="${b.id}|fail">✗ Fail</button></span></div>`:st[0]==='done'?'<small>Done</small>':'<small>Not ready yet</small>'}</td></tr>${ST.testOpen===b.id?clRow(b):''}`; };
+     <td>${canT?`<div class="ts-act"><label class="sr" for="tn-${b.id}">Notes on the test of ${b.id}</label><input id="tn-${b.id}" placeholder="What you checked, or what failed" maxlength="300"><span><button type="button" class="btn sm ok" data-tres="${b.id}|pass">✓ Pass</button><button type="button" class="btn sm no" data-tres="${b.id}|fail">✗ Fail</button></span></div>`:st[0]==='done'?'<small>Done</small>':(st[0]==='ready'||st[0]==='fail')?'<small>Only '+esc(b.tester||TESTER)+' (or Fofee) can pass or fail this</small>':'<small>Not ready yet</small>'}</td></tr>${ST.testOpen===b.id?clRow(b):''}`; };
   return `<section class="bb-sec"><div class="bb-sh"><h3>Testing</h3><p>Everything Ridhima tests, in one place. Every user facing task (pages, emails, push and SMS, ads, app screens, webinars, the guide) has a checklist: web, mobile, does it work, tracking, words and rules. A task is <b>ready to test</b> once its owner has built it. <b>Pass</b> ticks it Tested and sends it on to the next approver. <b>Fail</b> sends it back to the owner with your note, as a comment and a reminder.</p></div>
    <div class="ot-chips">${chip('ready','Ready to test')}${chip('fail','Failed, being fixed')}${chip('wait','Waiting for the build')}${chip('done','Tested')}${chip('all','All')}</div>
    <div class="cl-wrap"><table class="ts-t stack"><thead><tr><th>Task</th><th>Built by</th><th>Testing</th><th>Checklist</th><th>What to test</th><th>Result</th></tr></thead><tbody>${show.map(row).join('')||`<tr><td colspan="6">Nothing here.</td></tr>`}</tbody></table></div></section>`;
@@ -5194,7 +5200,8 @@ function clItems(b){ const k = clKind(b); if(!k) return []; const out = []; TCL[
 function tclState(b){ const it = clItems(b), c = ((ST.tests||{})[b.id]||{}).cl || {}; const done = it.filter((x,i)=>c[i]&&(c[i].s==='ok'||c[i].s==='na')).length; return {it, c, done, all: it.length}; }
 async function clTick(bid, i){
   const b = findBlock(bid); if(!b || !ST.canWrite) return;
-  const cur = JSON.parse(JSON.stringify((ST.tests||{})[bid] || {block:bid})); cur.cl = cur.cl || {};
+  if(!isMe(b.tester||TESTER)){ alertBox('Only '+(b.tester||TESTER)+' (or Fofee) can tick the testing checklist.'); return; }
+  const cur = JSON.parse(JSON.stringify((ST.tests||{})[bid] || {block:bid})); cur.cl = cur.cl || {}; cur.tester = b.tester||TESTER;
   const now = cur.cl[i] && cur.cl[i].s; const next = !now ? 'ok' : now==='ok' ? 'na' : null;
   if(next) cur.cl[i] = {s:next, by:ST.me||'local', at:new Date().toISOString()}; else delete cur.cl[i];
   ST.tests = ST.tests||{}; ST.tests[bid] = cur; render();
@@ -5415,7 +5422,7 @@ function onClick(e){
   const F = flowOf(ST.flow);
   if(t.dataset.flow){ ST.flow = t.dataset.flow; ST.open=null; location.hash = ST.flow==='hb'?'build':'build-inv'; return; }
   if(t.dataset.view){ if(ST.solo && t.dataset.view!=='open'){ location.hash='build'; return; } ST.view = t.dataset.view; render(); const m=$('#bb-main'); if(m) m.scrollTop=0; if(t.dataset.gotoafter){ const s=document.getElementById(t.dataset.gotoafter); if(s) s.scrollIntoView({block:'start'}); } return; }
-  if(t.dataset.ck){ e.stopPropagation(); const b = blocksOf(F,true).find(x=>x.id===t.dataset.ck) || (/^AZ-/.test(t.dataset.ck) ? {id:t.dataset.ck, checks:AZC} : null); if(b) toggleCheck(b, t.dataset.c); return; }
+  if(t.dataset.ck){ e.stopPropagation(); const b = blocksOf(F,true).find(x=>x.id===t.dataset.ck) || (/^AZ-/.test(t.dataset.ck) ? {id:t.dataset.ck, checks:AZC, owner:cioOwner()} : null); if(b) toggleCheck(b, t.dataset.c); return; }
   if(t.dataset.clgo){ ST.view = 'copy'; ST.clF = t.dataset.clgo; ST.clN = 80; render(); return; }
   if(t.dataset.osort){ ST.openSort = t.dataset.osort; render(); return; }
   if(t.dataset.maptheme){ ST.mapDark = !ST.mapDark; try{ localStorage.setItem('ctl-mapdark', ST.mapDark?'1':'0'); }catch(e){} render(); return; }
