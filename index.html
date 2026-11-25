@@ -4171,9 +4171,9 @@ async function addNote(b, text){
   if(ST.db){ try{ await ST.db.collection('notes').add(n); }catch(e){ if(e&&e.code==='quota_exceeded') alertBox('The comment store is full. Ask the board owner to clear old comments.'); } }
   else { ST.notes.push(Object.assign({id:'l'+Date.now()}, n)); localSave(); render(); }
 }
-/* 25 Nov: comments can be edited and deleted by anyone on the board */
+/* 25 Nov: a comment can be edited or deleted by the person who wrote it, and by Fofee */
 function noteItem(n){
-  const id = esc(n.id||''), can = ST.canWrite && n.id;
+  const id = esc(n.id||''), mine = !HOSTED || meName()==='Fofee' || n.by===ST.me || who(n.by)===meName(), can = ST.canWrite && n.id && mine;
   const ed = n.edited ? ` <span class="nt-ed">edited by ${esc(who(n.edited.by))} ${ago(n.edited.at)}</span>` : '';
   if(ST.editNote===n.id) return `<li><b>${esc(who(n.by))}</b> <span>${ago(n.at)}</span>
     <form class="nt-edit" data-editnote="${id}"><label class="sr" for="ne-${id}">Edit comment</label><textarea id="ne-${id}" rows="3">${esc(n.text)}</textarea>
@@ -4182,13 +4182,15 @@ function noteItem(n){
     : can ? `<div class="nt-acts"><button type="button" class="nt-b" data-nedit="${id}">✏️ Edit</button><button type="button" class="nt-b" data-ndel="${id}">🗑 Delete</button></div>` : '';
   return `<li><b>${esc(who(n.by))}</b> <span>${ago(n.at)}</span>${ed}<p>${esc(n.text)}</p>${del}</li>`;
 }
+const canNote = n => !HOSTED || meName()==='Fofee' || n.by===ST.me || who(n.by)===meName();
 async function editNote(id, text){
-  const n = ST.notes.find(x=>x.id===id); if(!n) return;
+  const n = ST.notes.find(x=>x.id===id); if(!n || !canNote(n)) return;
   const cur = Object.assign({}, n, {text:text.slice(0,2000), edited:{by:ST.me||'local', at:new Date().toISOString()}}); delete cur.id;
   Object.assign(n, cur); ST.editNote = null; render();
   if(ST.db){ await ST.db.doc('notes/'+id).set(cur).catch(()=>{}); } else localSave();
 }
 async function deleteNote(id){
+  const n = ST.notes.find(x=>x.id===id); if(!n || !canNote(n)) return;
   ST.notes = ST.notes.filter(x=>x.id!==id); ST.delNote = null; render();
   if(ST.db){ await ST.db.doc('notes/'+id).delete().catch(()=>{}); } else localSave();
 }
