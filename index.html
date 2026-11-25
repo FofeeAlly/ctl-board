@@ -2139,7 +2139,7 @@ const HB = {
     track:['video_started, explainer_watched (percent)','Video player to Customer.io and GA4','Omar','Percent milestones fire']})
  ],
  web:[
-  B('HB-WB1','webinar','Live: Your Guide to Homebuying',{owner:'Fofee', also:'Alex (presenter), Anouar (guest, quarterly), SJ (slides)', when:'Monthly, Tuesday 19:00, 45 minutes',
+  B('HB-WB1','webinar','Live: Your Guide to Homebuying',{owner:'Fofee', also:'Anouar (hosts and presents), Alex (sales follow up), SJ (slides)', when:'Monthly, Tuesday 19:00, 45 minutes',
     what:'Run of show: 10 min how it works · 10 min your city\'s numbers · 10 min a live Bayuti Score walk through · 15 min live Q&A. Attendees get the first edition of "Bayuti: Your Guide to Homebuying" and priority with the sales team.',
     exp:[['Invite to registration (warm)',6,'%','Flow 1 Day 10 and the Customer.io segment of the 904 home buyer leads (synced from HubSpot).'],['Registration to attendance',35,'%','Free live webinars usually see a third to a half of sign ups turn up.'],['Attendee to call booked',25,'%','Priority slots held for 7 days.']],
     track:['webinar_registered, webinar_attended, webinar_no_show, replay_watched','Webinar tool [to choose] webhook to Customer.io','Fofee','Attendance arrives 30 minutes after the end']}),
@@ -2891,7 +2891,7 @@ HB.sections.mcr = [
   pixel:['QR carries the UTM','Staff tablet Quick Score with utm_source = event'], segment:SEG('MCR · Event','city_slug = manchester AND first_utm_source = event'), campaign:'C1 Flow 1, plus a sales call within 2 days',
   exp:[['People who come',40,'','From the email invite, flyers and partners.'],['Quick Scores on the night',25,'','Most people do it with us.'],['Calls booked',8,'','Face to face trust converts.']],
   track:['quick_score_completed with utm_source = event','Tablet and QR','Fofee','Test the QR on 3 phones']}),
- MB('MCR-WEB','webinar','Webinar · Manchester edition',{owner:'Fofee', also:'Alex, SJ', when:'First Tuesday after launch, 19:00', platform:'webinar', msg:'mcr2',
+ MB('MCR-WEB','webinar','Webinar · Manchester edition',{owner:'Fofee', also:'Anouar (hosts), Alex (sales follow up), SJ', when:'First Tuesday after launch, 19:00', platform:'webinar', msg:'mcr2',
   what:'"Manchester: Your Guide to Homebuying, live." Manchester numbers, a live Quick Score, and questions. Invited from the email, LinkedIn and retargeting.',
   link:'https://crowdtolive.bayuti.com/manchester/webinar?utm_source=customerio&utm_medium=email&utm_campaign=hb_mcr_webinar&utm_content=MCR-WEB',
   pixel:['webinar_registered with city = manchester'], segment:SEG('MCR · Webinar','city_slug = manchester AND event webinar_registered'), campaign:'C9 Webinar, then C1',
