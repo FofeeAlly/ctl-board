@@ -780,6 +780,12 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
 .nt-b{font:inherit;font-size:12px;padding:3px 8px;border:1px solid #c9cbe6;border-radius:6px;background:#fff;color:#1a1f5c;cursor:pointer}
 .nt-b:hover{background:#f0f1fb}.nt-del{border-color:#c62828;color:#c62828}.nt-sure span{font-size:12px;font-weight:600;color:#c62828}
 .nt-ed{font-size:11px;color:#6b6f8f;font-style:italic}.nt-edit textarea{width:100%;box-sizing:border-box;font:inherit;margin-top:4px}
+.tcl-i{display:flex;flex-direction:column;gap:6px;align-items:stretch;padding:6px 8px;border:1px solid #e3e4f2;border-radius:8px;margin:4px 0;background:#fff;text-align:left;width:100%;box-sizing:border-box}
+.tcl-i>span:first-child{flex:1}.tcl-i small{display:block;font-size:11px;color:#6b6f8f}
+.tcl-i.ok{background:#eef8f0;border-color:#9fd3aa}.tcl-i.fail{background:#fdeeee;border-color:#e59a9a}.tcl-i.na{background:#f4f4f7}
+.tcl-bs{display:flex;gap:4px;flex:0 0 auto}.tcl-x{font:inherit;font-size:12px;padding:3px 7px;border-radius:6px;border:1px solid #c9cbe6;background:#fff;color:#1a1f5c;cursor:pointer;white-space:nowrap}
+.tcl-x.ok.on{background:#1b7a35;border-color:#1b7a35;color:#fff}.tcl-x.fail.on{background:#c62828;border-color:#c62828;color:#fff}.tcl-x.na.on{background:#5b5f7a;border-color:#5b5f7a;color:#fff}
+.tcl-x:disabled{opacity:.45;cursor:not-allowed}.tcl-fails{color:#c62828}.tcl-b.bad{border-color:#c62828;color:#c62828}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -5123,6 +5129,9 @@ function testState(b){
 async function saveTest(bid, res, note){
   const b = findBlock(bid); if(!b) return;
   if(!isMe(b.tester||TESTER)){ alertBox('Only '+(b.tester||TESTER)+' (or Fofee) can pass or fail a test.'); return; }
+  const kk = tclState(b);
+  if(res==='fail' && !note && kk.fail) note = 'Failed: '+kk.failed.join('; ');
+  if(res==='pass' && kk.fail){ alertBox(kk.fail+' checklist line'+(kk.fail>1?'s':'')+' failed. Fail the task instead, or clear the failed lines once fixed.'); ST.testOpen = bid; render(); return; }
   if(res==='fail' && !note){ alertBox('Write what failed, so '+b.owner+' knows what to fix.'); const i = document.getElementById('tn-'+bid); if(i) i.focus(); return; }
   const prev = (ST.tests||{})[bid] || {}; const entry = {s:res, note, by:ST.me||'local', at:new Date().toISOString()};
   if(res==='pass'){ const k = tclState(b); if(k.all && k.done<k.all){ alertBox('Tick every checklist item first ('+k.done+' of '+k.all+' done). Use N/A for anything that does not apply.'); ST.testOpen = bid; render(); return; } }
@@ -5133,9 +5142,11 @@ async function saveTest(bid, res, note){
   else { await addNote({id:bid}, '[Test failed] '+note); await addPing(b, 'Test failed: '+note); }
 }
 function clRow(b){
-  const k = tclState(b); let n = -1; const groups = {};
+  const k = tclState(b); const groups = {}, can = ST.canWrite && isMe(b.tester||TESTER);
   k.it.forEach(([g,t],i)=>{ (groups[g] = groups[g]||[]).push([t,i]); });
-  return `<tr class="tcl-row"><td colspan="6"><div class="tcl"><p class="tcl-h"><b>${esc(b.id)} testing checklist</b> · click once for ✓ done, twice for N/A, three times to clear. Pass unlocks when every line is ✓ or N/A.</p><div class="tcl-g">${Object.entries(groups).map(([g,items])=>`<div><h5>${esc(g)}</h5>${items.map(([t,i])=>{ const x = k.c[i]; return `<button type="button" class="tcl-i ${x?x.s:''}" data-tci="${b.id}|${i}" ${ST.canWrite&&isMe(b.tester||TESTER)?'':'disabled'}><i>${x?(x.s==='ok'?'✓':'N/A'):''}</i><span>${esc(t)}${x?`<small>${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</span></button>`; }).join('')}</div>`).join('')}</div></div></td></tr>`;
+  const bt = (i,st,l,x) => `<button type="button" class="tcl-x ${st}${x&&x.s===st?' on':''}" data-tcs="${b.id}|${i}|${st}" aria-pressed="${!!(x&&x.s===st)}" ${can?'':'disabled'}>${l}</button>`;
+  return `<tr class="tcl-row"><td colspan="6"><div class="tcl"><p class="tcl-h"><b>${esc(b.id)} testing checklist</b> · mark every line <b>✓ Pass</b>, <b>✗ Fail</b> or <b>N/A</b>. Click it again to clear. The task can pass only when no line has failed and every line is marked.${k.fail?` <b class="tcl-fails">${k.fail} failed: fail the task so ${esc(b.owner)} can fix it.</b>`:''}</p><div class="tcl-g">${Object.entries(groups).map(([g,items])=>`<div><h5>${esc(g)}</h5>${items.map(([t,i])=>{ const x = k.c[i];
+    return `<div class="tcl-i ${x?x.s:''}"><span>${esc(t)}${x?`<small>${x.s==='ok'?'Passed':x.s==='fail'?'Failed':'N/A'} · ${esc(who(x.by))} · ${ago(x.at)}</small>`:''}</span><div class="tcl-bs">${bt(i,'ok','✓ Pass',x)}${bt(i,'fail','✗ Fail',x)}${bt(i,'na','N/A',x)}</div></div>`; }).join('')}</div>`).join('')}</div></div></td></tr>`;
 }
 function viewTests(F){
   const rows = blocksOf(F,true).map(b=>({b, st:testState(b)})).filter(r=>r.st);
@@ -5148,7 +5159,7 @@ function viewTests(F){
     return `<tr class="ts-${st[0]}"><td><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b></button><small>${esc(b.t)}</small></td>
      <td>${esc(b.owner)}<small>${dueOf(b)?'due '+fmtDate(dueOf(b)):''}</small></td>
      <td><span class="ts-st">${st[0]==='done'?'✓ ':st[0]==='fail'?'✗ ':st[0]==='ready'?'▶ ':'⏳ '}${esc(st[1])}</span>${st[2]&&st[0]==='done'?`<small>${fmt(st[2])}</small>`:''}${r?`<small class="ts-last">Last result: <b>${r.s==='pass'?'Pass':'Fail'}</b>${r.note?' · '+esc(r.note):''} · ${fmt(r)}</small>`:''}</td>
-     <td>${(()=>{ const k = tclState(b); return k.all ? `<button type="button" class="tcl-b${k.done===k.all?' full':''}" data-tcl="${b.id}" aria-expanded="${ST.testOpen===b.id}">☑ ${k.done} of ${k.all}</button>` : '<small>Not user facing</small>'; })()}</td>
+     <td>${(()=>{ const k = tclState(b); return k.all ? `<button type="button" class="tcl-b${k.fail?' bad':k.done===k.all?' full':''}" data-tcl="${b.id}" aria-expanded="${ST.testOpen===b.id}">☑ ${k.done} of ${k.all}${k.fail?` · ✗ ${k.fail} failed`:''}</button>` : '<small>Not user facing</small>'; })()}</td>
      <td>${steps.length?`<details><summary>${steps.length} test${steps.length>1?'s':''}</summary><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></details>`:'<small>See the box</small>'}</td>
      <td>${canT?`<div class="ts-act"><label class="sr" for="tn-${b.id}">Notes on the test of ${b.id}</label><input id="tn-${b.id}" placeholder="What you checked, or what failed" maxlength="300"><span><button type="button" class="btn sm ok" data-tres="${b.id}|pass">✓ Pass</button><button type="button" class="btn sm no" data-tres="${b.id}|fail">✗ Fail</button></span></div>`:st[0]==='done'?'<small>Done</small>':(st[0]==='ready'||st[0]==='fail')?'<small>Only '+esc(b.tester||TESTER)+' (or Fofee) can pass or fail this</small>':'<small>Not ready yet</small>'}</td></tr>${ST.testOpen===b.id?clRow(b):''}`; };
   return `<section class="bb-sec"><div class="bb-sh"><h3>Testing</h3><p>Everything Ridhima tests, in one place. Every user facing task (pages, emails, push and SMS, ads, app screens, webinars, the guide) has a checklist: web, mobile, does it work, tracking, words and rules. A task is <b>ready to test</b> once its owner has built it. <b>Pass</b> ticks it Tested and sends it on to the next approver. <b>Fail</b> sends it back to the owner with your note, as a comment and a reminder.</p></div>
@@ -5231,7 +5242,15 @@ const TCL = {
 function clKind(b){ if(b.msg && (b.type==='email'||b.type==='webinar')) return b.type==='webinar'?'webinar':'email';
   return ({page:'web', component:'web', form:'web', email:'email', push:'msg', sms:'msg', ad:'ad', app:'app', webinar:'webinar', doc:'doc'})[b.type] || null; }
 function clItems(b){ const k = clKind(b); if(!k) return []; const out = []; TCL[k].forEach(([g,items])=>items.forEach(t=>out.push([g,t]))); return out; }
-function tclState(b){ const it = clItems(b), c = ((ST.tests||{})[b.id]||{}).cl || {}; const done = it.filter((x,i)=>c[i]&&(c[i].s==='ok'||c[i].s==='na')).length; return {it, c, done, all: it.length}; }
+function tclState(b){ const it = clItems(b), c = ((ST.tests||{})[b.id]||{}).cl || {}; const done = it.filter((x,i)=>c[i]&&(c[i].s==='ok'||c[i].s==='na')).length; const failed = it.map((x,i)=>c[i]&&c[i].s==='fail'?x[1]:null).filter(Boolean); return {it, c, done, all: it.length, fail: failed.length, failed}; }
+async function clSet(bid, i, st){
+  const b = findBlock(bid); if(!b || !ST.canWrite) return;
+  if(!isMe(b.tester||TESTER)){ alertBox('Only '+(b.tester||TESTER)+' (or Fofee) can mark the testing checklist.'); return; }
+  const cur = JSON.parse(JSON.stringify((ST.tests||{})[bid] || {block:bid})); cur.cl = cur.cl || {}; cur.tester = b.tester||TESTER;
+  if(cur.cl[i] && cur.cl[i].s===st) delete cur.cl[i]; else cur.cl[i] = {s:st, by:ST.me||'local', at:new Date().toISOString()};
+  ST.tests = ST.tests||{}; ST.tests[bid] = cur; render();
+  if(ST.db){ await ST.db.doc('tests/'+bid).set(cur).catch(()=>alertBox('Could not save that. Try again.')); } else localSave();
+}
 async function clTick(bid, i){
   const b = findBlock(bid); if(!b || !ST.canWrite) return;
   if(!isMe(b.tester||TESTER)){ alertBox('Only '+(b.tester||TESTER)+' (or Fofee) can tick the testing checklist.'); return; }
@@ -5447,6 +5466,7 @@ function onClick(e){
   if(t.dataset.copyrep){ copyText(reportText(flowOf(ST.flow), ST.repDay||dayKey(new Date().toISOString())), 'Report copied.'); return; }
   if(t.dataset.teamsrep){ teamsChat('Fofee', reportText(flowOf(ST.flow), ST.repDay||dayKey(new Date().toISOString()))); return; }
   if(t.dataset.tcl){ ST.testOpen = ST.testOpen===t.dataset.tcl ? null : t.dataset.tcl; render(); return; }
+  if(t.dataset.tcs){ const [bid,ix,st] = t.dataset.tcs.split('|'); clSet(bid, +ix, st); return; }
   if(t.dataset.tci){ const [bid, k] = t.dataset.tci.split('|'); clTick(bid, +k); return; }
   if(t.dataset.oscope){ ST.openScope = t.dataset.oscope; render(); return; }
   if(t.dataset.tf){ ST.testF = t.dataset.tf; render(); return; }
