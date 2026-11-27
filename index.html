@@ -4222,6 +4222,7 @@ async function toggleCheck(b, c){
   if(ST.db){ if(writing[b.id]) await writing[b.id]; writing[b.id] = ST.db.doc('checks/'+b.id).set(cur).catch(e=>{ if(e&&e.code==='invalid_argument'){ ST.canWrite=false; render(); } }); await writing[b.id]; writing[b.id]=null; }
   else localSave();
   if(c==='Anouar approved' && isDone(b,c)) toSJ(b.id, b.id+' '+b.t);
+  if((c==='Anouar approved'||c==='SJ approved') && isDone(b,c) && !ST.syncing) syncFromBox(b,c);
 }
 async function setActual(b, i, v){
   const cur = Object.assign({}, ST.actuals[b.id]||{});
@@ -4692,7 +4693,52 @@ async function saveReview(bid, i, who_, s, note){
   if(note) await addNote({id:bid}, note);
   if(ST.db){ await ST.db.doc('reviews/'+bid).set(cur).catch(()=>{}); } else localSave();
   if(s==='approved'){ const b = findBlock(bid); if(b){ const n = Math.max(1, itemNames(b).length); const all = [...Array(n).keys()].every(j=>{ const r = revOf(bid,j)[who_]; return r && r.s==='approved'; }); const c = who_==='sj'?'SJ approved':'Anouar approved'; if(all && checksOf(b).includes(c) && !isDone(b,c)){ if(tickBlocked(b,c)) alertBox('Every piece approved. The box tick "'+c+'" follows once "'+tickLabel(b,tickBlocked(b,c))+'" is done.'); else { await toggleCheck(b,c); alertBox('Every piece approved, so "'+c+'" is now ticked for the whole set.'); } } } }
+  if(s==='approved'){ const b = findBlock(bid); const n = b ? itemNames(b).length : 0; const L = linesOf(bid).filter(r=> n<=1 ? true : linePiece(r)===i); await approveLines(L, who_); }
   if(who_==='an' && s==='approved'){ const b = findBlock(bid); toSJ(bid, (b?b.id+' '+b.t:bid)+' · '+((b&&itemNames(b)[i])||'piece '+(i+1))); }
+}
+/* 27 Nov: one approval shows everywhere: the task tick, its ad and post pieces, and its Copy library lines */
+const W2C = {an:'Anouar approved', sj:'SJ approved'};
+const pieceN = bid => { const sb = findBlock(bid); return sb ? itemNames(sb).length : 0; };
+const linesOf = bid => (typeof libRows==='function' ? libRows() : []).filter(r=>r.owner===bid || r.bid===bid);
+const linePiece = r => { const m = /^ad~[a-z0-9]+~(\d+)~/i.exec(r.path); return m ? +m[1] : null; };
+const lineOK = (r, w) => { const d = (ST.copyrev||{})[r.rid]||{}, x = d[w]; return !!(x && x.s==='approved' && x.txt===r.v && (w==='an' || (d.an && d.an.s==='approved' && d.an.txt===r.v))); };
+async function approveLines(rows, w){
+  const now = new Date().toISOString(), seen = new Set();
+  const todo = rows.filter(r=>{ if(seen.has(r.rid)) return false; seen.add(r.rid); const d = (ST.copyrev||{})[r.rid]||{}; if(w==='sj' && !(d.an && d.an.s==='approved' && d.an.txt===r.v)) return false; return !lineOK(r, w); });
+  if(!todo.length) return 0;
+  ST.copyrev = ST.copyrev||{}; const docs = {};
+  todo.forEach(r=>{ const cur = JSON.parse(JSON.stringify(ST.copyrev[r.rid]||{})); cur[w] = {s:'approved', by:ST.me||'local', at:now, txt:r.v, via:'sync'}; ST.copyrev[r.rid] = cur; docs[r.rid] = cur; });
+  render();
+  if(ST.db){ for(const id of Object.keys(docs)){ try{ await ST.db.doc('copyrev/'+id).set(docs[id]); }catch(e){} ST.copyrev[id] = Object.assign({}, ST.copyrev[id]||{}, docs[id]); } } else localSave();
+  return todo.length;
+}
+async function approvePieces(bid, w, idx){
+  const cur = JSON.parse(JSON.stringify(ST.reviews[bid] || {block:bid})), now = new Date().toISOString(); let ch = 0;
+  idx.forEach(i=>{ const k = 'i'+i; cur[k] = cur[k]||{}; if(w==='sj' && !(cur[k].an && cur[k].an.s==='approved')) return; if(cur[k][w] && cur[k][w].s==='approved') return; cur[k][w] = {s:'approved', by:ST.me||'local', at:now, via:'sync'}; ch++; });
+  if(!ch) return 0;
+  ST.reviews[bid] = cur; render();
+  if(ST.db){ await ST.db.doc('reviews/'+bid).set(cur).catch(()=>{}); } else localSave();
+  return ch;
+}
+/* the task was ticked approved: approve every piece and line inside it */
+async function syncFromBox(b, c){
+  const w = c==='SJ approved' ? 'sj' : c==='Anouar approved' ? 'an' : null; if(!w || !isDone(b,c)) return;
+  const src = srcOf(b), n = pieceN(src); let a = 0;
+  if(n) a += await approvePieces(src, w, [...Array(n).keys()]);
+  a += await approveLines(linesOf(b.id).concat(src!==b.id ? linesOf(src) : []), w);
+  if(a) alertBox(`${b.id}: "${c}" now shows everywhere. ${a} piece${a>1?'s and lines':' or line'} updated in Approvals and the Copy library.`);
+}
+/* a piece or a line was approved: fill in what it completes */
+async function syncUp(boxId, w){
+  const b = findBlock(boxId); if(!b) return;
+  const c = W2C[w]; const src = srcOf(b), n = pieceN(src), lines = linesOf(b.id).concat(src!==b.id ? linesOf(src) : []);
+  if(n){ const done = [...Array(n).keys()].filter(i=>{ const r = revOf(src,i)[w]; return !(r && r.s==='approved'); }).filter(i=>{ const L = lines.filter(r=>linePiece(r)===i); return L.length && L.every(r=>lineOK(r,w)); }); if(done.length) await approvePieces(src, w, done); }
+  const piecesOK = !n || [...Array(n).keys()].every(i=>{ const r = revOf(src,i)[w]; return r && r.s==='approved'; });
+  const linesOK = lines.every(r=>lineOK(r,w));
+  if(piecesOK && linesOK && (n || lines.length) && checksOf(b).includes(c) && !isDone(b,c) && canTick(b,c)){
+    if(tickBlocked(b,c)) alertBox(`Everything in ${b.id} is approved. The task tick "${c}" follows once "${tickLabel(b,tickBlocked(b,c))}" is done.`);
+    else { ST.syncing = true; await toggleCheck(b,c); ST.syncing = false; alertBox(`Everything in ${b.id} is approved, so "${c}" is now ticked on the task too.`); }
+  }
 }
 async function saveCount(id, v){
   const cur = {step:id}; if(v!=='') cur.actual = {v:Number(v), by: ST.me||'local', at: new Date().toISOString()};
@@ -5435,6 +5481,7 @@ async function saveCopyRev(rid, who_, s, txt){
   ST.copyrev = ST.copyrev || {}; ST.copyrev[rid] = cur; render();
   if(ST.db){ await ST.db.doc('copyrev/'+rid).set(cur).catch(()=>alertBox('That approval could not be shared. Try again.')); } else localSave();
   if(who_==='an' && s==='approved'){ const r = libRows().find(x=>x.rid===rid); toSJ(r?r.owner:'', 'Copy line '+(r?r.id:rid), true); }
+  if(s==='approved'){ const r = libRows().find(x=>x.rid===rid); if(r) syncUp(r.owner, who_); }
 }
 function clExport(kind){
   const rows = libRows().filter(r=>clState(r)[0]==='ready');
