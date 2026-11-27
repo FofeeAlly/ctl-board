@@ -786,6 +786,43 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
 .tcl-bs{display:flex;gap:4px;flex:0 0 auto}.tcl-x{font:inherit;font-size:12px;padding:3px 7px;border-radius:6px;border:1px solid #c9cbe6;background:#fff;color:#1a1f5c;cursor:pointer;white-space:nowrap}
 .tcl-x.ok.on{background:#1b7a35;border-color:#1b7a35;color:#fff}.tcl-x.fail.on{background:#c62828;border-color:#c62828;color:#fff}.tcl-x.na.on{background:#5b5f7a;border-color:#5b5f7a;color:#fff}
 .tcl-x:disabled{opacity:.45;cursor:not-allowed}.tcl-fails{color:#c62828}.tcl-b.bad{border-color:#c62828;color:#c62828}
+
+/* 27 Nov: bigger approvals */
+.ap-grid.one .ap-col{max-width:980px;margin:0 auto}
+.ap-col{font-size:17px}.ap-col h4{font-size:19px;margin:22px 0 10px}
+.ap-cards{display:grid;gap:14px}
+.ap-card{list-style:none;border:2px solid #D5DAF0;border-radius:14px;padding:16px 18px;background:#fff}
+.ap-card .ap-ch .lnk{font-size:19px;line-height:1.35;text-align:left;color:#1A1A2E}.ap-card .ap-ch .lnk b{color:#000F96}
+.ap-card .ap-ch small{display:block;font-size:15px;color:#3D4060;margin-top:4px}
+.ap-what{font-size:16px;line-height:1.5;color:#1A1A2E;margin:10px 0 0}
+.ap-last{background:#FFF8E5;border-left:4px solid #E0A100;border-radius:8px;padding:10px 12px;margin-top:12px}.ap-last b{font-size:14px;color:#6B4E00}.ap-last p{margin:4px 0 0;font-size:16px;line-height:1.45}
+.ap-form{margin-top:12px}.ap-form label{display:block;font-weight:700;font-size:15px;margin-bottom:6px;color:#000F96}
+.ap-form textarea{width:100%;box-sizing:border-box;min-height:86px;font:inherit;font-size:17px;line-height:1.45;padding:10px 12px;border:2px solid #C9CDF0;border-radius:10px}
+.ap-form textarea:focus{outline:3px solid #000F96;outline-offset:1px;border-color:#000F96}
+.ap-acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.ap-acts .btn{font-size:16px;padding:11px 18px;border-radius:10px;min-height:46px}
+.ap-acts .ap-ok{font-weight:800}.ap-acts .ap-back{background:#fff;color:#B3261E;border:2px solid #B3261E}.ap-acts .ap-open{background:#fff;color:#000F96;border:2px solid #C9CDF0}
+.ap-row .lnk{font-size:16.5px}.ap-row small{font-size:14.5px}
+#cmt-pop{position:fixed;right:18px;bottom:18px;z-index:9999;width:min(420px,calc(100vw - 36px));max-height:70vh;overflow:auto;background:#fff;border:2px solid #000F96;border-radius:14px;box-shadow:0 12px 32px rgba(0,15,150,.25);padding:14px 16px;color:#1A1A2E;font-size:15px}
+#cmt-pop .cp-h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}#cmt-pop .cp-h b{font-size:16px;color:#000F96}
+#cmt-pop .cp-x{border:0;background:none;font-size:18px;cursor:pointer;color:#3D4060}
+#cmt-pop ul{list-style:none;margin:8px 0;padding:0}#cmt-pop li{border-top:1px solid #E3E4F2;padding:8px 0}#cmt-pop li p{margin:4px 0 0;line-height:1.4}
+#cmt-pop .lnk{text-align:left;color:#1A1A2E}#cmt-pop .lnk b{color:#000F96}.cp-acts{display:flex;gap:8px;flex-wrap:wrap}.cp-more{margin:0;font-size:13px;color:#3D4060}
+
+/* 27 Nov: copy line side panel */
+.cl-open{text-align:left;padding:0;color:#000F96;font-size:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.cl-open b{color:#000F96}
+.cs-back{position:fixed;inset:0;background:rgba(10,15,60,.35);z-index:9990}
+.cs{position:fixed;top:0;right:0;bottom:0;width:min(620px,100vw);z-index:9991;background:#fff;overflow:auto;padding:22px 26px 40px;box-shadow:-12px 0 32px rgba(0,15,150,.2);color:#1A1A2E;font-size:17px;line-height:1.5;box-sizing:border-box}
+.cs-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.cs-top h2{margin:0;color:#000F96;font-size:26px}.cs-top p{margin:4px 0 10px;color:#3D4060;font-size:15px}
+.cs-x{border:2px solid #C9CDF0;background:#fff;border-radius:10px;font-size:20px;width:44px;height:44px;cursor:pointer;color:#1A1A2E;flex:0 0 auto}
+.cs h3{font-size:19px;color:#000F96;margin:22px 0 8px}
+.cs-now{font-size:20px;line-height:1.5;background:#F4F5FF;border-radius:10px;padding:14px 16px;margin:0}.cs-meta{font-size:14px;color:#3D4060;margin:6px 0 0}
+.cs-apr,.cs-cm,.cs-vs{list-style:none;padding:0;margin:0}.cs-apr li,.cs-cm li{padding:8px 0;border-top:1px solid #E3E4F2}.cs-cm p{margin:4px 0 0}
+.cs-btns{display:flex;gap:10px;align-items:center;margin-top:10px}.cs-btns span{width:64px;font-weight:800}.cs-btns .btn{font-size:16px;padding:10px 16px;min-height:44px}
+.cs-chg{margin-top:6px;background:#FFF4F4;border-radius:8px;padding:8px 10px}
+.cs-form{margin-top:10px}.cs-form label{display:block;font-weight:700;font-size:15px;color:#000F96;margin-bottom:6px}.cs-form textarea{width:100%;box-sizing:border-box;font:inherit;font-size:17px;padding:10px 12px;border:2px solid #C9CDF0;border-radius:10px;min-height:86px}.cs-form .btn{margin-top:8px;font-size:16px;padding:10px 16px}
+.cs-v{border:1px solid #E3E4F2;border-radius:10px;padding:10px 12px;margin-bottom:8px}.cs-v.now{border:2px solid #000F96}.cs-vh{font-size:14px;color:#3D4060}.cs-vt{margin:6px 0 2px;font-size:17px}.cs-v small{font-size:12.5px;color:#6B6F8F}
+.cs del{margin-right:3px;background:#FDE2E2;color:#9B1C1C;text-decoration:line-through}.cs ins{background:#DDF4E4;color:#0B5D2A;text-decoration:none;font-weight:600}
+.bb-home{font:inherit;font-weight:800;font-size:15px;padding:10px 16px;border-radius:12px;border:2px solid #000F96;background:#000F96;color:#fff;cursor:pointer;white-space:nowrap}.bb-home:hover{background:#1a2bb5}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -4177,6 +4214,23 @@ async function addNote(b, text){
   if(ST.db){ try{ await ST.db.collection('notes').add(n); }catch(e){ if(e&&e.code==='quota_exceeded') alertBox('The comment store is full. Ask the board owner to clear old comments.'); } }
   else { ST.notes.push(Object.assign({id:'l'+Date.now()}, n)); localSave(); render(); }
 }
+/* 27 Nov: comments from Anouar and SJ notify everyone who opens the board */
+const NOTIFY_FROM = ['Anouar','SJ'];
+const seenAt = () => { try{ let v = localStorage.getItem('ctl-seen'); if(!v){ v = new Date(Date.now()-3*864e5).toISOString(); localStorage.setItem('ctl-seen', v); } return v; }catch(e){ return new Date().toISOString(); } };
+const unseenNotes = () => { if(!HOSTED) return []; const t = seenAt(); return ST.notes.filter(n=>n.at>t && NOTIFY_FROM.includes(who(n.by)) && who(n.by)!==meName()).sort((a,b)=>a.at<b.at?1:-1); };
+function notifyPanel(){
+  let el = document.getElementById('cmt-pop'); const u = unseenNotes();
+  const told = notifyPanel.told || (notifyPanel.told = new Set(u.map(n=>n.id)));
+  u.filter(n=>!told.has(n.id)).forEach(n=>{ told.add(n.id); try{ if('Notification' in window && Notification.permission==='granted'){ const x = new Notification(who(n.by)+' commented on '+n.block, {body:String(n.text).slice(0,140), tag:'ctl-'+n.id}); x.onclick = ()=>{ window.focus(); ST.open = n.block; render(); }; } }catch(e){} });
+  if(!u.length){ if(el) el.hidden = true; return; }
+  if(!el){ const w = document.getElementById('buildwrap'); if(!w) return; el = document.createElement('div'); el.id = 'cmt-pop'; el.setAttribute('role','status'); w.appendChild(el); }
+  const perm = ('Notification' in window) ? Notification.permission : 'denied';
+  el.hidden = false;
+  el.innerHTML = `<div class="cp-h"><b>💬 ${u.length} new comment${u.length>1?'s':''} from ${[...new Set(u.map(n=>who(n.by)))].join(' and ')}</b><button type="button" class="cp-x" data-cmtread="1" aria-label="Mark all as read">✕</button></div>
+   <ul>${u.slice(0,6).map(n=>{ const b = findBlock(n.block); return `<li><button type="button" class="lnk" data-cmtopen="${esc(n.block)}"><b>${esc(n.block)}</b> ${b?esc(b.t):''}</button><p><b>${esc(who(n.by))}</b> · ${ago(n.at)}: ${esc(String(n.text).slice(0,220))}</p></li>`; }).join('')}</ul>
+   ${u.length>6?`<p class="cp-more">+${u.length-6} more</p>`:''}
+   <div class="cp-acts"><button type="button" class="btn sm" data-cmtread="1">Mark all as read</button>${perm==='default'?'<button type="button" class="btn sm" data-cmtperm="1">🔔 Also alert me on my computer</button>':''}</div>`;
+}
 /* 25 Nov: a comment can be edited or deleted by the person who wrote it, and by Fofee */
 function noteItem(n){
   const id = esc(n.id||''), mine = !HOSTED || meName()==='Fofee' || n.by===ST.me || who(n.by)===meName(), can = ST.canWrite && n.id && mine;
@@ -4488,6 +4542,7 @@ function drawLinks(){
 }
 /* ---------- shell ---------- */
 function render(){
+  try{ setTimeout(notifyPanel, 0); }catch(e){}
   document.body.classList.toggle('map-light', !ST.mapDark);
   try{ if(!ST.solo) localStorage.setItem('ctl-view', ST.view); }catch(e){}
   const wrap = document.getElementById('buildwrap'); if(!wrap || wrap.hidden) return;
@@ -4507,6 +4562,7 @@ function render(){
     <div class="bb-seg" role="tablist" aria-label="Flow">${FLOWS.map(f=>`<button type="button" role="tab" aria-selected="${f.id===ST.flow}" data-flow="${f.id}">${esc(f.name)}</button>`).join('')}</div>
     <div class="bb-seg" role="tablist" aria-label="View" ${ST.solo?'hidden':''}>${views.map(([v,l])=>`<button type="button" role="tab" aria-selected="${v===ST.view}" data-view="${v}">${l}</button>`).join('')}</div>
     ${ST.solo?'':`<button type="button" class="bb-bell${ac?' on':''}" data-view="alerts" aria-label="${ac} alerts">🔔 <b>${ac}</b></button>`}
+    ${ST.view!=='journey'||ST.open||ST.clSide||ST.owner||ST.q?`<button type="button" class="bb-home" data-home="1">← Back to the main board</button>`:''}
     <label class="sr" for="bb-owner">Filter by owner</label><select id="bb-owner" class="jump"><option value="">Everyone</option>${allOwners.map(o=>`<option ${o===ST.owner?'selected':''}>${esc(o)}</option>`).join('')}</select>
     <form class="bb-search" role="search" id="bb-sform"><label class="sr" for="bb-q">Search the whole board</label><input id="bb-q" type="search" placeholder="Search: a code like LP-P, a word, a name" value="${esc(ST.q)}" autocomplete="off" aria-controls="bb-qres"><button type="submit" class="btn" aria-label="Search">🔍 Search</button>${ST.q?'<button type="button" class="btn" data-qclear="1">Clear</button>':''}<div id="bb-qres" role="listbox" hidden></div></form>
     <button type="button" class="btn" id="bb-report">Daily report</button>
@@ -4600,7 +4656,11 @@ function applyEdits(){
 }
 async function saveEdit(bid, k, v){
   const cur = JSON.parse(JSON.stringify(ST.edits[bid] || {block:bid, f:{}}));
-  cur.f = cur.f || {}; cur.f[k] = {v, by: ST.me||'local', at: new Date().toISOString()};
+  cur.f = cur.f || {}; const prev = cur.f[k];
+  /* 27 Nov: keep the last versions so everyone can see what changed */
+  const h = prev ? (prev.h||[]).concat([{v:prev.v, by:prev.by, at:prev.at}]) : [];
+  if(prev && prev.v===v) return;
+  cur.f[k] = {v, by: ST.me||'local', at: new Date().toISOString(), h: h.filter(x=>typeof x.v!=='string'||x.v.length<1500).slice(-8)};
   ST.edits[bid] = cur; applyEdits(); render();
   if(ST.db){ await ST.db.doc('edits/'+bid).set(cur).catch(()=>alertBox('That edit could not be shared. Try again.')); } else localSave();
 }
@@ -4788,10 +4848,15 @@ function viewApprove(F){
     const lnW = who_==='fo' ? 0 : who_==='an' ? lst.filter(k=>k==='wait'||k==='changed').length : lst.filter(k=>k==='an').length;
     const done = blocks.filter(b=>isDone(b,chk)).map(b=>({b, x:ST.checks[b.id][chk]})).sort((a,c)=>a.x.at<c.x.at?1:-1);
     const total = boxW.length + pcW.length + lnW;
-    const boxRow = b => `<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b> ${esc(b.t)}</button><small>${esc(b.owner)}${dueOf(b)?' · due '+fmtDate(dueOf(b)):''}${who_==='sj'&&isDone(b,'Anouar approved')?' · Anouar approved '+ago(ST.checks[b.id]['Anouar approved'].at):''}</small></div><span class="ap-btns"><button type="button" class="btn sm" data-open="${b.id}">Review</button><button type="button" class="btn sm ok" data-ck="${b.id}" data-c="${chk}" ${ST.canWrite?'':'disabled'} ${apprLock(chk)}>✓ Approve</button></span></li>`;
+    const boxRow = b => { const ns = notesFor(b.id), last = ns[ns.length-1], fid = 'apn-'+who_+'-'+b.id;
+      return `<li class="ap-card"><div class="ap-ch"><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b> ${esc(b.t)}</button><small>Built by ${esc(b.owner)}${dueOf(b)?' · due '+fmtDate(dueOf(b)):''}${who_==='sj'&&isDone(b,'Anouar approved')?' · Anouar approved '+ago(ST.checks[b.id]['Anouar approved'].at):''}</small></div>
+       ${b.what?`<p class="ap-what">${esc(String(b.what).slice(0,260))}${String(b.what).length>260?'…':''}</p>`:''}
+       ${ns.length?`<div class="ap-last"><b>Latest comment · ${esc(who(last.by))} · ${ago(last.at)}</b><p>${esc(last.text)}</p>${ns.length>1?`<button type="button" class="lnk" data-open="${b.id}">See all ${ns.length} comments</button>`:''}</div>`:''}
+       <form class="ap-form" data-apnote="${b.id}"><label for="${fid}">Your comment</label><textarea id="${fid}" rows="3" placeholder="Write here. Everyone on the board gets a notification." ${ST.canWrite?'':'disabled'}></textarea>
+       <div class="ap-acts"><button type="submit" class="btn ap-send" ${ST.canWrite?'':'disabled'}>💬 Send comment</button><button type="button" class="btn ap-back" data-apback="${b.id}|${fid}" ${ST.canWrite?'':'disabled'}>↩ Needs changes</button><button type="button" class="btn ok ap-ok" data-ck="${b.id}" data-c="${chk}" ${ST.canWrite?'':'disabled'} ${apprLock(chk)}>✓ Approve</button><button type="button" class="btn ap-open" data-open="${b.id}">Open the full task</button></div></form></li>`; };
     const pcRow = p => `<li class="ap-row"><div><button type="button" class="lnk" data-goway="${p.bid}"><b>${esc(p.label)}</b> · ${esc(p.name)}</button>${who_==='sj'&&p.r.an?`<small>Anouar approved · ${ago2(p.r.an)}</small>`:''}</div><span class="ap-btns"><button type="button" class="btn sm" data-goway="${p.bid}">Open and review</button></span></li>`;
     return `<section class="ap-col ap-${who_}"><div class="ap-head"><h3>${name}</h3><p>${who_==='fo'?'Approves Darcy\'s videos first, before Anouar.':who_==='an'?'Approves before SJ. Everything below is ready for you.':'Approves after Anouar. Only things Anouar has approved show here.'}</p><b class="ap-big">${total}</b><span>waiting</span></div>
-     <h4>Boxes to approve <span class="az-cnt">${boxW.length}</span></h4>${boxW.length?`<ul class="ap-list">${boxW.map(boxRow).join('')}</ul>`:'<p class="bb-empty">Nothing waiting.</p>'}
+     <h4>Tasks to approve <span class="az-cnt">${boxW.length}</span></h4>${boxW.length?`<ul class="ap-list ap-cards">${boxW.map(boxRow).join('')}</ul>`:'<p class="bb-empty">Nothing waiting.</p>'}
      ${who_==='fo'?'':`<h4>Ads and posts, piece by piece <span class="az-cnt">${pcW.length}</span></h4>`}${who_==='fo'?'':pcW.length?`<ul class="ap-list">${pcW.slice(0,40).map(pcRow).join('')}</ul>${pcW.length>40?`<p class="ot-n">+${pcW.length-40} more</p>`:''}`:'<p class="bb-empty">Nothing waiting.</p>'}
      ${F.id==='hb'?`<h4>Copy library lines <span class="az-cnt">${lnW}</span></h4><p class="ap-lines">${lnW?`${lnW} lines are waiting for ${name}. `:'No lines waiting. '}<button type="button" class="btn sm" data-clgo="${who_==='an'?'wait':'an'}">Open them in the Copy library</button></p>`:''}
      ${who_==='fo'?'':`<h4>Sent back for changes <span class="az-cnt">${fixes.length}</span></h4>`}${who_==='fo'?'':fixes.length?`<ul class="ap-list">${fixes.map(p=>`<li class="ap-row"><div><button type="button" class="lnk" data-goway="${p.bid}"><b>${esc(p.label)}</b> · ${esc(p.name)}</button><small>${ago2(p.r[who_])}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">None.</p>'}
@@ -5358,7 +5423,7 @@ function viewCopy(F){
     const rowsN = Math.min(8, Math.max(1, Math.ceil(n/60)));
     const by = x => x ? ` <small>${esc(who(x.by))} · ${ago(x.at)}</small>` : '';
     return `<tr class="cl-row cl-${k}">
-     <td class="cl-id"><b>${esc(r.id)}</b><small>${esc(r.where)}</small><span class="cl-ch">${esc(r.ch)}</span></td>
+     <td class="cl-id"><button type="button" class="lnk cl-open" data-clside="${r.rid}" title="Open the details, changes and comments"><b>${esc(r.id)}&nbsp;›</b></button><small>${esc(r.where)}</small><span class="cl-ch">${esc(r.ch)}</span></td>
      <td class="cl-txt"><label class="cl-lab" for="cl-${r.rid}">${esc(r.label)}${e?` <span class="az-ed">✎ ${esc(who(e.by))} · ${ago(e.at)}</span>`:''}</label>
        <textarea id="cl-${r.rid}" rows="${rowsN}" data-edit="${esc(r.bid)}|${esc(r.path)}|txt" data-lim="${r.lim||0}" ${dis}>${esc(r.v)}</textarea>
        <div class="cl-meta"><span class="cl-n${r.lim&&n>r.lim?' over':''}" data-n>${n}${r.lim?' of '+r.lim:''} characters</span>${fl.map(x=>`<span class="cl-flag">⚠ ${esc(x)}</span>`).join('')}</div></td>
@@ -5376,7 +5441,50 @@ function viewCopy(F){
     <p class="cl-count">${rows.length} ${rows.length===1?'line':'lines'}${rows.length>N?`, showing the first ${N}`:''}. Use the search box at the top to find any word.</p>
     <div class="cl-wrap"><table class="cl-t stack"><thead><tr><th>ID and where</th><th>The words</th><th>Approval</th></tr></thead><tbody>${shown.map(row).join('')||`<tr><td colspan="3">Nothing matches. Try another filter.</td></tr>`}</tbody></table></div>
     ${rows.length>N?`<p><button type="button" class="btn" data-clmore="1">Show ${Math.min(80, rows.length-N)} more</button></p>`:''}
-  </section>`;
+  </section>${ST.clSide?clSide():""}`;
+}
+
+/* 27 Nov: side panel for one copy line: full text, every change, approvals, comments */
+function wdiff(a, b){
+  const A = String(a||'').split(/(\s+)/), B = String(b||'').split(/(\s+)/);
+  if(A.length*B.length > 250000) return `<del>${esc(a)}</del> <ins>${esc(b)}</ins>`;
+  const m = A.length, n = B.length, L = Array.from({length:m+1},()=>new Uint16Array(n+1));
+  for(let i=m-1;i>=0;i--) for(let j=n-1;j>=0;j--) L[i][j] = A[i]===B[j] ? L[i+1][j+1]+1 : Math.max(L[i+1][j], L[i][j+1]);
+  let i=0, j=0, out='';
+  while(i<m && j<n){ if(A[i]===B[j]){ out += esc(A[i]); i++; j++; } else if(L[i+1][j]>=L[i][j+1]){ out += A[i].trim()?`<del>${esc(A[i])}</del>`:esc(A[i]); i++; } else { out += B[j].trim()?`<ins>${esc(B[j])}</ins>`:esc(B[j]); j++; } }
+  while(i<m){ out += A[i].trim()?`<del>${esc(A[i])}</del>`:esc(A[i]); i++; } while(j<n){ out += B[j].trim()?`<ins>${esc(B[j])}</ins>`:esc(B[j]); j++; }
+  return out;
+}
+function clSide(){
+  const r = libRows().find(x=>x.rid===ST.clSide); if(!r) return '';
+  const [k, lab] = clState(r), d = (ST.copyrev||{})[r.rid] || {}, fl = clFlags(r), n = clLen(r.v);
+  const e = ST.edits[r.bid] && ST.edits[r.bid].f && ST.edits[r.bid].f[r.path];
+  const orig = ORIG[r.bid+'|'+r.path];
+  const vers = [];
+  if(e){ vers.push({v:e.v, by:e.by, at:e.at, now:1}); (e.h||[]).slice().reverse().forEach(x=>vers.push(x)); if(orig!=null && (!vers.length || vers[vers.length-1].v!==orig)) vers.push({v:orig, orig:1}); }
+  else vers.push({v:r.v, now:1, orig:1});
+  const vHTML = vers.map((x,i)=>{ const older = vers[i+1];
+    return `<li class="cs-v${x.now?' now':''}"><div class="cs-vh"><b>${x.now?'Now':x.orig?'Original, from the plan':'Earlier version'}</b>${x.by?` · ${esc(who(x.by))} · ${ago(x.at)}`:''}</div>
+      <p class="cs-vt">${older ? wdiff(older.v, x.v) : esc(x.v)}</p>${older?'<small>Red with a line through = taken out. Green = added.</small>':''}</li>`; }).join('');
+  const apr = (w, name) => { const x = d[w]; if(!x) return `<li><b>${name}</b> · not yet</li>`;
+    const same = x.txt===r.v; return `<li><b>${name}</b> · ${x.s==='approved'?'✓ approved':'↩ asked for changes'} · ${esc(who(x.by))} · ${ago(x.at)}${x.s==='approved'&&!same?`<div class="cs-chg"><b>Changed since ${name} approved:</b><p class="cs-vt">${wdiff(x.txt, r.v)}</p></div>`:''}</li>`; };
+  const cm = notesFor(r.owner).filter(x=>(x.text||'').startsWith('['+r.id+']'));
+  const dis = ST.canWrite ? '' : 'disabled';
+  return `<div class="cs-back" data-clside="" aria-hidden="true"></div>
+  <aside class="cs" role="dialog" aria-modal="true" aria-labelledby="cs-h">
+   <div class="cs-top"><div><h2 id="cs-h">${esc(r.id)}</h2><p>${esc(r.label)} · ${esc(r.where)} · ${esc(r.ch)}</p></div><button type="button" class="cs-x" data-clside="" aria-label="Close">✕</button></div>
+   <span class="cl-st st-${k}">${esc(lab)}</span>
+   <h3>The line now</h3><p class="cs-now">${esc(r.v)}</p>
+   <p class="cs-meta">${n}${r.lim?' of '+r.lim:''} characters${fl.map(x=>` · ⚠ ${esc(x)}`).join('')}</p>
+   <h3>Every change <span class="az-cnt">${vers.length}</span></h3><ol class="cs-vs">${vHTML}</ol>
+   <h3>Approvals</h3><ul class="cs-apr">${apr('an','Anouar')}${apr('sj','SJ')}</ul>
+   <div class="cs-btns"><span>Anouar</span><button type="button" class="btn ok" data-cl="${r.rid}|an|approved" ${apprLock('an')} ${dis}>✓ Approve</button><button type="button" class="btn no" data-cl="${r.rid}|an|rejected" ${apprLock('an')} ${dis}>↩ Changes</button></div>
+   <div class="cs-btns"><span>SJ</span><button type="button" class="btn ok" data-cl="${r.rid}|sj|approved" ${apprLock('sj')} ${d.an&&d.an.s==='approved'&&k!=='changed'?dis:'disabled'}>✓ Approve</button><button type="button" class="btn no" data-cl="${r.rid}|sj|rejected" ${apprLock('sj')} ${dis}>↩ Changes</button></div>
+   <h3>Comments <span class="az-cnt">${cm.length}</span></h3>
+   ${cm.length?`<ul class="cs-cm">${cm.map(x=>`<li><b>${esc(who(x.by))}</b> · ${ago(x.at)}<p>${esc(x.text.slice(r.id.length+3))}</p></li>`).join('')}</ul>`:'<p class="bb-empty">No comments yet.</p>'}
+   <form class="cs-form" data-clnote="${r.rid}|${esc(r.owner)}"><label for="csn-${r.rid}">Your comment</label><textarea id="csn-${r.rid}" rows="3" placeholder="Write here. Everyone on the board gets a notification." ${dis}></textarea><button type="submit" class="btn" ${dis}>💬 Send comment</button></form>
+
+  </aside>`;
 }
 
 function setZoom(z){ ST.zoom = Math.round(z*100)/100; try{ localStorage.setItem('ctl-zoom', ST.zoom); }catch(e){} const jr = document.getElementById('jr'); if(jr){ jr.style.zoom = ST.zoom; const lab = document.querySelector('[data-zoom="1"]'); if(lab) lab.textContent = Math.round(ST.zoom*100)+'%'; requestAnimationFrame(drawLinks); } else render(); }
@@ -5452,6 +5560,12 @@ function apCount(w){ const F = flowOf(ST.flow); let n = blocksOf(F,true).filter(
 function boxLink(id){ return location.origin + location.pathname + '?box=' + encodeURIComponent(id); }
 function onClick(e){
   const t = e.target.closest('button, a, [data-close]'); if(!t || !document.getElementById('buildwrap').contains(t)) return;
+  if(t.dataset.clside!=null){ ST.clSide = t.dataset.clside || null; render(); if(ST.clSide) setTimeout(()=>{ const x = document.querySelector('.cs .cs-x'); if(x) x.focus(); }, 30); return; }
+  if(t.dataset.home){ ST.view = 'journey'; ST.open = null; ST.clSide = null; ST.owner = ''; ST.q = ''; ST.apFor = (HOSTED && (meName()==='SJ'||meName()==='Anouar')) ? meName() : ST.apFor; render(); window.scrollTo({top:0, behavior:'smooth'}); return; }
+  if(t.dataset.cmtread){ try{ localStorage.setItem('ctl-seen', new Date().toISOString()); }catch(e){} notifyPanel(); return; }
+  if(t.dataset.cmtperm){ try{ Notification.requestPermission().then(()=>notifyPanel()); }catch(e){} return; }
+  if(t.dataset.cmtopen){ ST.open = t.dataset.cmtopen; if(ST.view==='approve'||ST.view==='tests'||ST.view==='report'||ST.view==='copy') ST.view = 'build'; render(); setTimeout(()=>{ const d = document.querySelector('.bb-notes'); if(d) d.scrollIntoView({block:'center'}); }, 300); return; }
+  if(t.dataset.apback){ const [bid, fid] = t.dataset.apback.split('|'); const ta = document.getElementById(fid); const v = ta && ta.value.trim(); if(!v){ alertBox('Write what needs to change first, so '+((findBlock(bid)||{}).owner||'the owner')+' knows what to fix.'); if(ta) ta.focus(); return; } const b = findBlock(bid); ta.value = ''; addNote({id:bid}, '[Needs changes] '+v).then(()=>render()); if(b) addPing(b, 'Needs changes: '+v); alertBox('Sent back to '+(b?b.owner:'the owner')+' with your comment. Everyone gets a notification.'); return; }
   if(t.dataset.nedit){ ST.editNote = t.dataset.nedit; ST.delNote = null; render(); const ta = document.getElementById('ne-'+t.dataset.nedit); if(ta){ ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } return; }
   if(t.dataset.ndel){ ST.delNote = t.dataset.ndel; ST.editNote = null; render(); return; }
   if(t.dataset.ndelyes){ deleteNote(t.dataset.ndelyes); return; }
@@ -5543,14 +5657,15 @@ function onChange(e){
 function onSubmit(e){
   if(e.target.id==='tm-emails'){ e.preventDefault(); const map = {}; e.target.querySelectorAll('input[data-em]').forEach(i=>{ const v = i.value.trim(); if(v) map[i.dataset.em] = v; }); ST.showEmails = false; saveEmails(map); return; }
   if(e.target.id==='bb-sform'){ e.preventDefault(); const q = document.getElementById('bb-q'); const hits = searchHits(q&&q.value); const first = hits.find(h=>h.kind==='box'); const v = (q&&q.value||'').trim(); if(first && v.length>=2 && first.id.toLowerCase()===v.toLowerCase()){ ST.flow = first.flow; ST.open = first.id; } else ST.q = v.toLowerCase(); render(); return; }
-  const fc = e.target.closest('form[data-clnote]'); if(fc){ e.preventDefault(); const inp = fc.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [rid, bid] = fc.dataset.clnote.split('|'); const r = libRows().find(x=>x.rid===rid); inp.value=''; ST.clNote = null; addNote({id:bid}, '['+(r?r.id:rid)+'] '+v); return; }
+  const fc = e.target.closest('form[data-clnote]'); if(fc){ e.preventDefault(); const inp = fc.querySelector('textarea,input'); const v = inp.value.trim(); if(!v) return; const [rid, bid] = fc.dataset.clnote.split('|'); const r = libRows().find(x=>x.rid===rid); inp.value=''; ST.clNote = null; addNote({id:bid}, '['+(r?r.id:rid)+'] '+v).then(()=>render()); alertBox('Comment sent. Everyone on the board gets a notification.'); return; }
   const fi = e.target.closest('form[data-inote]'); if(fi){ e.preventDefault(); const inp = fi.querySelector('input'); const v = inp.value.trim(); if(!v) return; const [bid, label] = fi.dataset.inote.split('|'); inp.value=''; addNote({id:bid}, '['+label+'] '+v); return; }
+  const fa = e.target.closest('form[data-apnote]'); if(fa){ e.preventDefault(); const ta = fa.querySelector('textarea'); const v = ta.value.trim(); if(!v){ ta.focus(); return; } ta.value = ''; addNote({id:fa.dataset.apnote}, v).then(()=>render()); alertBox('Comment sent. Everyone on the board gets a notification.'); return; }
   const fe = e.target.closest('form[data-editnote]'); if(fe){ e.preventDefault(); const v = fe.querySelector('textarea').value.trim(); if(!v) return; editNote(fe.dataset.editnote, v); return; }
   const f = e.target.closest('form[data-note]'); if(!f) return; e.preventDefault();
   const ta = f.querySelector('textarea'); const v = ta.value.trim(); if(!v) return;
   const F = flowOf(ST.flow); const b = blocksOf(F,true).find(x=>x.id===f.dataset.note); ta.value=''; addNote(b, v);
 }
-function onKey(e){ if(e.key==='Escape' && $('#bb-modal') && !$('#bb-modal').hidden){ $('#bb-modal').hidden=true; $('#bb-modal').innerHTML=''; return; } if(e.key==='Escape' && ST.open){ const id=ST.open; ST.open=null; render(); const back=document.querySelector(`[data-open="${id}"]`); if(back) back.focus(); } }
+function onKey(e){ if(e.key==='Escape' && ST.clSide){ ST.clSide = null; render(); return; } if(e.key==='Escape' && $('#bb-modal') && !$('#bb-modal').hidden){ $('#bb-modal').hidden=true; $('#bb-modal').innerHTML=''; return; } if(e.key==='Escape' && ST.open){ const id=ST.open; ST.open=null; render(); const back=document.querySelector(`[data-open="${id}"]`); if(back) back.focus(); } }
 
 let wired = false;
 window.BuildBoard = {
