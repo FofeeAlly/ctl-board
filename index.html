@@ -843,6 +843,24 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
 .zb-card div{padding:8px 10px;background:#F4F5F7;display:grid;gap:2px}.zb-card small{color:#6B6F8F;text-transform:uppercase;font-size:11px}.zb-card b{font-size:15px}.zb-card span{font-size:13px;color:#3D4060}
 .zb-card i{display:block;font-style:normal;text-align:center;font-weight:800;padding:8px;border-top:1px solid #E3E4F2}
 .zb-thumbs{display:flex;gap:8px;margin-top:12px;overflow-x:auto}.zb-thumbs button{border:2px solid transparent;background:#fff;border-radius:8px;padding:3px;cursor:pointer;width:96px;flex:0 0 auto;font:inherit}.zb-thumbs button.on{border-color:#000F96}.zb-thumbs img{width:100%;border-radius:5px;display:block}.zb-thumbs span{display:block;font-size:11px;line-height:1.2;margin-top:3px}
+
+/* 27 Nov: emails step by step */
+.ap-mode{display:inline-flex;gap:4px;background:#EEF0FF;border-radius:14px;padding:4px;margin:0 0 14px}
+.ap-m{font:inherit;font-weight:800;font-size:16px;padding:10px 18px;border:0;border-radius:10px;background:transparent;color:#000F96;cursor:pointer}.ap-m.on{background:#000F96;color:#fff}.ap-m b{background:#2EE091;color:#000F96;border-radius:999px;padding:1px 8px;margin-left:4px;font-size:13px}
+.em-list{list-style:none;margin:12px auto 0;padding:0;max-width:980px;display:grid;gap:14px}
+.em-g h4{margin:14px 0 0;font-size:18px;color:#000F96;border-bottom:2px solid #D5DAF0;padding-bottom:6px}
+.em-card{display:grid;grid-template-columns:52px minmax(0,1fr);gap:14px;background:#fff;border:2px solid #D5DAF0;border-radius:14px;padding:16px 18px;font-size:17px;color:#1A1A2E}
+.em-card.em-an{border-color:#000F96}.em-card.em-sj{border-color:#7A5CFF}.em-card.em-done{border-color:#2EC27E;background:#F6FCF8}.em-card.em-build{opacity:.85}
+.em-n{width:46px;height:46px;border-radius:50%;background:#000F96;color:#fff;display:grid;place-items:center;font-weight:800;font-size:19px}.em-done .em-n{background:#00A569}
+.em-st{margin:0;font-size:14px;font-weight:800;color:#3D4060;text-transform:uppercase;letter-spacing:.03em}.em-an .em-st{color:#000F96}.em-sj .em-st{color:#5B3FD6}.em-done .em-st{color:#00704A}
+.em-card h5{text-transform:none;letter-spacing:0;font-weight:800;margin:4px 0 2px;font-size:21px;line-height:1.3;color:#1A1A2E}.em-pv{margin:0;color:#3D4060;font-size:16px}
+.em-meta{margin:6px 0 0;font-size:14.5px;color:#3D4060}.em-meta .lnk b{color:#000F96}
+.em-acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}.em-acts .btn{font-size:16px;padding:11px 18px;min-height:46px;border-radius:10px}
+.em-read{background:#fff;color:#000F96;border:2px solid #000F96}.em-ok{font-weight:800;color:#00704A;font-size:15px}
+.em-frame{margin-top:12px;border:1px solid #D5DAF0;border-radius:12px;overflow:hidden;background:#F4F5FA}.em-frame iframe{width:100%;height:760px;border:0;display:block;background:#fff}
+.em-cm{margin:8px 0 0;font-size:14.5px;color:#6B4E00;background:#FFF8E5;border-radius:8px;padding:8px 10px}
+.li-ph{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 8px}.li-ph img{width:200px;max-width:100%;border-radius:10px;border:1px solid #D5DAF0;display:block}
+.li-ph-none{margin:4px 0 8px;font-size:14px;color:#3D4060;background:#F4F5FF;border-radius:8px;padding:8px 10px}.li-ph-tip{margin:0 0 8px;font-size:12.5px;color:#6B6F8F}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -4773,6 +4791,14 @@ function piece(b){
   const E = b.msg && EMAILS[b.msg], [k, lab] = plainStatus(b), n = notesFor(b.id).length;
   return `<button type="button" class="az-pc" data-open="${b.id}"><span class="az-pi">${ICON[b.type]||'●'}</span><span class="az-pt"><b>${esc(E ? sampleOf(E.subject) : b.t)}</b><small>${esc(TYPE[b.type].n)}${b.nudge?' · only if they don\'t do it':''} · ${esc(b.owner)}</small></span><span class="az-st s-${k}">${lab}</span><span class="az-cm">💬 ${n}</span></button>`;
 }
+/* 27 Nov: photos on LinkedIn posts, from a Google Drive (or any image) link */
+function photoURL(u){ u = String(u||'').trim(); const m = /\/file\/d\/([\w-]{10,})/.exec(u) || /[?&]id=([\w-]{10,})/.exec(u); return m ? 'https://drive.google.com/thumbnail?id='+m[1]+'&sz=w1600' : u; }
+function liPhotos(p, i){
+  const urls = String(p.photo||'').split(/[\s,]+/).filter(x=>/^https?:\/\//.test(x)).map(photoURL);
+  if(!urls.length) return `<p class="li-ph-none">📷 No photo yet. Put it in Google Drive, share it as "Anyone with the link", and paste the link below.</p>`;
+  const set = urls.map((u,n)=>[u, 'Photo '+(n+1)]), z = u => `data-zoom="${esc(u)}" data-zset="${esc(JSON.stringify(set))}" data-zcap="${esc('Post '+p.n+' · '+p.who)}" data-ztxt="${esc(JSON.stringify([(p.hook||'')+'\n\n'+(p.body||''),'','','']))}"`;
+  return `<div class="li-ph">${urls.map((u,n)=>`<button type="button" class="fin-zbtn" ${z(u)} aria-label="Open photo ${n+1} large"><img src="${esc(u)}" alt="Photo ${n+1} for post ${p.n}" loading="lazy" referrerpolicy="no-referrer"></button>`).join('')}</div><p class="li-ph-tip">Click a photo to see it large with the post. If a photo does not show, check it is shared as "Anyone with the link".</p>`;
+}
 function ef(bid, k, label, type, def, extra){
   const o = tgtOf(bid); let v = getP(o, k); if(v==null) v = def;
   const e = ST.edits[bid] && ST.edits[bid].f && ST.edits[bid].f[k];
@@ -4828,7 +4854,7 @@ function wayItems(b){
      <div class="az-fields">${v.script.map((s,j)=>ef(bid,`ad~videos~${i}~script~${j}~1`,esc(s[0])+' · what they say','area')).join('')}${ef(bid,`ad~videos~${i}~caption`,'Caption','line')}
      <p class="az-utm">${gl('UTM')}: <code>${esc((v.link||'').split('utm_content=')[1]||'')}</code> <button type="button" class="lnk" data-copytxt="${esc(v.link||'')}">Copy link</button></p></div>${adNums(bid, `ad~videos~${i}`, 'tiktok')}`]));
   else if(b.platform==='google') items.push(['Search ad', `<div class="az-fields wide">${(a.headlines||[]).map((h,i)=>ef(bid,`ad~headlines~${i}`,`Headline ${i+1} (${(h||'').length} of 30)`,'line')).join('')}${(a.descriptions||[]).map((h,i)=>ef(bid,`ad~descriptions~${i}`,`Description ${i+1} (${(h||'').length} of 90)`,'area')).join('')}</div>`]);
-  else if(b.platform==='linkedin12') (a.posts||[]).forEach((p,i)=>items.push(['Post '+p.n+' · '+p.who, `<div class="az-fields wide">${ef(bid,`ad~posts~${i}~hook`,'First line','line')}${ef(bid,`ad~posts~${i}~body`,'The post','area')}<p class="az-utm">${gl('UTM')}: <code>${esc(p.link.split('utm_content=')[1])}</code> <button type="button" class="lnk" data-copytxt="${esc(p.link)}">Copy link</button></p></div>`]));
+  else if(b.platform==='linkedin12') (a.posts||[]).forEach((p,i)=>items.push(['Post '+p.n+' · '+p.who, `<div class="az-fields wide">${liPhotos(p, i)}${ef(bid,`ad~posts~${i}~photo`,'Photos: paste a Google Drive or image link (one per line)','area')}${ef(bid,`ad~posts~${i}~hook`,'First line','line')}${ef(bid,`ad~posts~${i}~body`,'The post','area')}<p class="az-utm">${gl('UTM')}: <code>${esc(p.link.split('utm_content=')[1])}</code> <button type="button" class="lnk" data-copytxt="${esc(p.link)}">Copy link</button></p></div>`]));
   else if(b.platform==='trade') (a.pieces||[]).forEach((p,i)=>items.push([p.outlet, `<div class="az-fields wide">${ef(bid,`ad~pieces~${i}~headline`,'Headline','line')}${ef(bid,`ad~pieces~${i}~angle`,'The angle','area')}<p class="az-utm">${gl('UTM')}: <code>${esc(p.link.split('utm_content=')[1])}</code> <button type="button" class="lnk" data-copytxt="${esc(p.link)}">Copy link</button></p></div>`]));
   else if(b.platform==='reddit') (a.answers||[]).forEach((r,i)=>items.push([r.sub, `<div class="az-fields wide"><p class="az-q">“${esc(r.q)}”</p>${ef(bid,`ad~answers~${i}~a`,'Our answer (always says "I work at Bayuti")','area')}<p class="az-utm">${r.linkOk?`${gl('UTM')}: <code>${esc(r.link.split('utm_content=')[1])}</code> <button type="button" class="lnk" data-copytxt="${esc(r.link)}">Copy link</button>`:'No link here: this subreddit bans self promotion.'}</p></div>`]));
   else if(b.platform==='pr') items.push(['Press release', `<div class="az-fields wide">${ef(bid,'ad~headline','Headline','line')}${ef(bid,'ad~quote','Anouar\'s quote','area')}</div>`]);
@@ -4930,10 +4956,49 @@ function viewApprove(F){
      <h4>Approved so far <span class="az-cnt">${done.length}</span></h4>${done.length?`<ul class="ap-list done">${done.slice(0,15).map(({b,x})=>`<li class="ap-row"><div><button type="button" class="lnk" data-open="${b.id}">✓ <b>${b.id}</b> ${esc(b.t)}</button><small>${ago2(x)}</small></div></li>`).join('')}</ul>`:'<p class="bb-empty">Nothing approved yet.</p>'}
     </section>`;
   };
-  return `<section class="bb-sec"><div class="bb-sh"><h3>Approvals</h3><p>Anouar approves first, then SJ. Darcy's videos go to Fofee before Anouar. Each side lists only what is waiting for that person: whole boxes (tick Approve right here, or open to review), ad and post pieces, and Copy library lines. "Needs changes" sends a piece back to its owner with a comment.</p></div>
+  const modeBar = `<div class="ap-mode" role="tablist" aria-label="How to show approvals"><button type="button" role="tab" class="ap-m${ST.apMode!=='emails'?' on':''}" aria-selected="${ST.apMode!=='emails'}" data-apmode="person">👤 By person</button><button type="button" role="tab" class="ap-m${ST.apMode==='emails'?' on':''}" aria-selected="${ST.apMode==='emails'}" data-apmode="emails">📧 Emails, step by step <b>${emailSteps(F).filter(x=>waitingAn(x.b)||waitingSJ(x.b)).length}</b></button></div>`;
+  if(ST.apMode==='emails') return `<section class="bb-sec">${modeBar}${viewEmailSteps(F)}</section>`;
+  return `<section class="bb-sec">${modeBar}<div class="bb-sh"><h3>Approvals</h3><p>Anouar approves first, then SJ. Darcy's videos go to Fofee before Anouar. Each side lists only what is waiting for that person: whole boxes (tick Approve right here, or open to review), ad and post pieces, and Copy library lines. "Needs changes" sends a piece back to its owner with a comment.</p></div>
    <div class="ap-tools"><span>Show:</span><button type="button" class="ot-chip${!ST.apFor?' on':''}" data-sjonly="">Both</button><button type="button" class="ot-chip${ST.apFor==='Fofee'?' on':''}" data-sjonly="Fofee">Fofee only</button><button type="button" class="ot-chip${ST.apFor==='Anouar'?' on':''}" data-sjonly="Anouar">Anouar only</button><button type="button" class="ot-chip${ST.apFor==='SJ'?' on':''}" data-sjonly="SJ">SJ only</button>
      <button type="button" class="btn sm" data-copytxt="${location.origin+location.pathname}?for=SJ#build">Copy SJ's approval link</button><button type="button" class="btn sm" data-sjteams="1">${TEAMS_ICON} Send SJ her list in Teams</button></div>
    <div class="ap-grid${ST.apFor?' one':' three'}">${!ST.apFor||ST.apFor==='Fofee'?col('fo','Fofee','Fofee approved'):''}${!ST.apFor||ST.apFor==='Anouar'?col('an','Anouar','Anouar approved'):''}${!ST.apFor||ST.apFor==='SJ'?col('sj','SJ','SJ approved'):''}</div></section>`;
+}
+
+/* 27 Nov: every email in the order the customer gets it, to approve one after another */
+function emailSteps(F){
+  const isE = b => b && b.msg && EMAILS[b.msg] && (b.type==='email' || b.type==='webinar');
+  const out = [], seen = new Set();
+  const take = (id, group) => { const b = findBlock(id); if(!isE(b) || seen.has(b.id)) return; seen.add(b.id); out.push({b, group}); };
+  const Js = [].concat(typeof MCR_J!=='undefined' ? MCR_J : [], JOURNEY);
+  Js.forEach(L=>(L.stages||[]).forEach(S=>{ const g = L.name+' · '+S.t; (S.n||[]).forEach(n=>{ [n[0], n[2], n[4]].forEach(id=>{ take(id, g); if(typeof NUDGEOF!=='undefined' && NUDGEOF[id]) [].concat(NUDGEOF[id]).forEach(x=>take(typeof x==='string'?x:x&&x.id, g)); }); }); }));
+  blocksOf(F,true).filter(inScope).forEach(b=>take(b.id, 'Other emails in the Manchester flow'));
+  return out;
+}
+function viewEmailSteps(F){
+  const all = emailSteps(F), f = ST.emF || 'wait';
+  const stOf = b => isDone(b,'SJ approved') ? 'done' : isDone(b,'Anouar approved') ? 'sj' : waitingAn(b) ? 'an' : 'build';
+  const cnt = {all:all.length, wait:0, an:0, sj:0, done:0, build:0}; all.forEach(x=>{ const k = stOf(x.b); cnt[k]++; if(k==='an'||k==='sj') cnt.wait++; });
+  const show = all.map((x,i)=>Object.assign({n:i+1, k:stOf(x.b)}, x)).filter(x=> f==='all' || (f==='wait' ? (x.k==='an'||x.k==='sj') : x.k===f));
+  const chip = (k,l) => `<button type="button" class="ot-chip${f===k?' on':''}" data-emf="${k}" aria-pressed="${f===k}">${l} <b>${cnt[k]}</b></button>`;
+  const lab = {an:'Waiting for Anouar', sj:'Anouar approved · waiting for SJ', done:'✓ Approved by Anouar and SJ', build:'Not ready yet'};
+  let g0 = '';
+  const card = x => { const b = x.b, E = EMAILS[b.msg], need = tickBlocked(b,'Anouar approved'), fid = 'eml-'+b.id;
+    const head = x.group!==g0 ? `<li class="em-g"><h4>${esc(x.group)}</h4></li>` : ''; g0 = x.group;
+    const tick = (c, w) => checksOf(b).includes(c) ? (isDone(b,c) ? `<span class="em-ok">✓ ${w} approved${who(ST.checks[b.id][c].by)!==w?' (ticked by '+esc(who(ST.checks[b.id][c].by))+')':''} · ${ago(ST.checks[b.id][c].at)}</span>` : `<button type="button" class="btn ok em-ap" data-ck="${b.id}" data-c="${c}" ${ST.canWrite?'':'disabled'} ${apprLock(c==='SJ approved'?'sj':'an')} ${tickBlocked(b,c)?'disabled':''}>✓ Approve as ${w}</button>`) : '';
+    return head + `<li class="em-card em-${x.k}" id="em-${b.id}"><div class="em-n" aria-hidden="true">${x.n}</div><div class="em-body">
+      <p class="em-st">${esc(lab[x.k])}${x.k==='build'&&need?` · first: ${esc(tickLabel(b,need))}`:''}</p>
+      <h5>${esc(sampleOf(E.subject||b.t))}</h5>
+      ${E.preview?`<p class="em-pv">${esc(sampleOf(E.preview))}</p>`:''}
+      <p class="em-meta"><button type="button" class="lnk" data-open="${b.id}"><b>${b.id}</b></button> · ${esc(b.t)}${b.when?` · <span>Sent: ${esc(b.when)}</span>`:''}${E.from?` · From ${esc(E.from)}`:''}</p>
+      <div class="em-acts"><button type="button" class="btn em-read" data-emread="${b.id}" aria-expanded="${ST.emOpen===b.id}">${ST.emOpen===b.id?'▲ Hide the email':'👁 Read the email'}</button>${tick('Anouar approved','Anouar')}${tick('SJ approved','SJ')}</div>
+      ${ST.emOpen===b.id?`<div class="em-frame"><iframe title="Email: ${esc(E.subject||'')}" sandbox="" srcdoc="${esc(sampleOf(emailHTML(b.msg,F,b.id)))}"></iframe></div>`:''}
+      <form class="ap-form" data-apnote="${b.id}"><label for="${fid}">Comment on this email</label><textarea id="${fid}" rows="2" placeholder="Write here. Everyone on the board gets a notification." ${ST.canWrite?'':'disabled'}></textarea>
+      <div class="ap-acts"><button type="submit" class="btn ap-send" ${ST.canWrite?'':'disabled'}>💬 Send comment</button><button type="button" class="btn ap-back" data-apback="${b.id}|${fid}" ${ST.canWrite?'':'disabled'}>↩ Needs changes</button></div></form>
+      ${notesFor(b.id).length?`<p class="em-cm">💬 ${notesFor(b.id).length} comment${notesFor(b.id).length>1?'s':''} · latest from ${esc(who(notesFor(b.id).slice(-1)[0].by))}: “${esc(notesFor(b.id).slice(-1)[0].text.slice(0,140))}”</p>`:''}
+    </div></li>`; };
+  return `<div class="bb-sh"><h3>Emails, step by step</h3><p>Every email in the order a customer gets it, grouped by where they are in the journey. Read each one, then approve it: Anouar first, then SJ. Approving an email also approves all its lines in the Copy library.</p></div>
+   <div class="ot-chips">${chip('wait','Waiting for approval')}${chip('an','Waiting for Anouar')}${chip('sj','Waiting for SJ')}${chip('done','Approved')}${chip('build','Not ready yet')}${chip('all','All emails')}</div>
+   ${show.length?`<ol class="em-list">${show.map(card).join('')}</ol>`:'<p class="bb-empty">Nothing here.</p>'}`;
 }
 
 /* ---------- numbers ---------- */
@@ -5046,7 +5111,7 @@ function adStrip(b){
   else if(sb.platform==='meta' || (sb.platform==='meta' && a.variants)) h = (a.variants||[]).map((v,i)=>cell(i, `${v.persona?`<span class="ads-p">${esc(v.persona)}</span>`:''}${sb.final?'<span class="ads-final">✓ Final</span>':''}${v.img?`<span class="ads-img real"><button type="button" class="fin-zbtn" ${zAttr(v, v.img.sq)} aria-label="Open ${esc(v.name)} large"><img src="${v.img.sq}" alt="${esc(v.name)}" loading="lazy"></button></span>`:`<span class="ads-img"><b>${esc(v.bigline)}</b><small>${esc(v.smallline)}</small>`}${v.img?'<span hidden>':''}</span><span class="ads-h">${esc(v.headline)}</span><span class="ads-n">${esc(v.name)}${v.lp?` → ${esc(v.lp)}`:''}</span>`)).join('');
   else if(sb.platform==='tiktok') h = (a.videos||[]).map((v,i)=>cell(i, `${v.persona?`<span class="ads-p">${esc(v.persona)}</span>`:''}<span class="ads-img tt"><b>${esc(v.bigline)}</b><small>${esc(v.smallline)}</small></span><span class="ads-n">${esc(v.name)}</span>`, 'tt')).join('');
   else if(sb.platform==='google') h = cell(0, `<span class="ads-g"><small>Sponsored · bayuti.com</small><b>${esc((a.headlines||[]).slice(0,2).join(' | '))}</b><span>${esc((a.descriptions||[])[0]||'')}</span></span>`, 'full');
-  else if(sb.platform==='linkedin12') h = (a.posts||[]).map((p,i)=>cell(i, `<span class="ads-t"><i>${p.n}</i>${esc(p.hook)}</span>`, 'chip')).join('');
+  else if(sb.platform==='linkedin12') h = (a.posts||[]).map((p,i)=>{ const ph = String(p.photo||'').split(/[\s,]+/).find(x=>/^https?:\/\//.test(x)); return cell(i, `${ph?`<span class="ads-img real"><img src="${esc(photoURL(ph))}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>`:''}<span class="ads-t"><i>${p.n}</i>${esc(p.hook)}</span>`, 'chip'); }).join('');
   else if(sb.platform==='trade') h = (a.pieces||[]).map((p,i)=>cell(i, `<span class="ads-t"><i>📰</i>${esc(p.outlet)}</span>`, 'chip')).join('');
   else if(sb.platform==='reddit') h = (a.answers||[]).map((r,i)=>cell(i, `<span class="ads-t"><i>💬</i>${esc(r.sub)}</span>`, 'chip')).join('');
   else if(sb.platform==='pr') h = cell(0, `<span class="ads-g"><small>Press release</small><b>${esc(a.headline||'')}</b></span>`, 'full');
@@ -5647,6 +5712,9 @@ function onClick(e){
   if(t.dataset.zgo!=null){ if(ST.zb){ ST.zb.src = ST.zb.set[+t.dataset.zgo][0]; zoomBox(); } return; }
   if(t.dataset.zclose){ ST.zb = null; zoomBox(); if(ST.zoomFrom && document.body.contains(ST.zoomFrom)) ST.zoomFrom.focus(); return; }
   if(t.dataset.clside!=null){ ST.clSide = t.dataset.clside || null; render(); if(ST.clSide) setTimeout(()=>{ const x = document.querySelector('.cs .cs-x'); if(x) x.focus(); }, 30); return; }
+  if(t.dataset.apmode){ ST.apMode = t.dataset.apmode; render(); return; }
+  if(t.dataset.emf){ ST.emF = t.dataset.emf; render(); return; }
+  if(t.dataset.emread){ ST.emOpen = ST.emOpen===t.dataset.emread ? null : t.dataset.emread; render(); return; }
   if(t.dataset.home){ ST.view = 'journey'; ST.open = null; ST.clSide = null; ST.owner = ''; ST.q = ''; ST.apFor = (HOSTED && (meName()==='SJ'||meName()==='Anouar')) ? meName() : ST.apFor; render(); window.scrollTo({top:0, behavior:'smooth'}); return; }
   if(t.dataset.cmtread){ try{ localStorage.setItem('ctl-seen', new Date().toISOString()); }catch(e){} notifyPanel(); return; }
   if(t.dataset.cmtperm){ try{ Notification.requestPermission().then(()=>notifyPanel()); }catch(e){} return; }
