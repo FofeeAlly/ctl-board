@@ -2928,12 +2928,12 @@ HB.sections.mcr = [
   exp:[['Click through rate',5,'%','Search people are already looking; 5% is a good finance search CTR.'],['Cost per click',2.50,'£','Finance search keywords are dear.',true],['Visitor to lead',15,'%','High intent.'],['Cost per lead',16.70,'£','£2.50 ÷ 15%. Dearer, but warmer leads.',true]],
   track:['quick_score_completed','GA4 import to Google Ads','Fofee','Conversion shows in Google Ads within 24 hours']}),
  MB('MCR-EM','email','Email invite · 1,440 Manchester contacts',{owner:'Fofee', also:'Anouar (sender), SJ', msg:'mcr1', when:'Launch day, Tuesday 18:30; resend to non openers on Friday 12:30',
-  what:'HubSpot holds 1,811 Manchester contacts, 1,440 of them can receive marketing. Sync them to Customer.io and send a broadcast signed by Anouar, with the Manchester webinar inside.',
-  link:'https://crowdtolive.bayuti.com/manchester?utm_source=customerio&utm_medium=email&utm_campaign=hb_mcr_invite&utm_content=MCR-EM',
-  pixel:['Customer.io open and click tracking','quick_score_completed and webinar_registered on the page'],
-  segment:SEG('MCR · Email invite','city_slug = manchester AND marketing consent AND not in the sales pipeline'), campaign:'Broadcast, then C1 Flow 1 for anyone who takes the Quick Score',
-  exp:[['Open rate',22,'%','Our campaign sends open at 20 to 23.5%.'],['Click rate',2.5,'%','Our campaigns click 0.9 to 1.5%; a local, personal hook from the CEO should do better.'],['Quick Scores',17,'','About 1.2% of 1,440.'],['Webinar sign ups',25,'','About 1.7% of 1,440.']],
-  track:['email_clicked, quick_score_completed, webinar_registered','Customer.io and the page','Fofee','Seed send to 3 test addresses first']}),
+  what:'HubSpot holds 1,811 Manchester contacts, 1,440 of them can receive marketing. Sync them to Customer.io and send a broadcast signed by Anouar. The goal is a seat at the Manchester webinar: the main green button is "Grab your seat". The Bayuti Score is a second button in a different colour.',
+  link:'https://crowdtolive.bayuti.com/webinar?utm_source=customerio&utm_medium=email&utm_campaign=hb_mcr_invite&utm_content=MCR-EM',
+  pixel:['Customer.io open and click tracking','webinar_registered on the webinar page (the goal); quick_score_completed for the second button'],
+  segment:SEG('MCR · Email invite','city_slug = manchester AND marketing consent AND not in the sales pipeline'), campaign:'Broadcast, optimised for webinar sign ups (conversion goal: webinar_registered). Anyone who takes the Bayuti Score goes into C1 Flow 1',
+  exp:[['Goal: webinar sign ups',30,'','About 2% of 1,440, now that the seat is the main button.'],['Open rate',22,'%','Our campaign sends open at 20 to 23.5%.'],['Click rate',2.5,'%','Our campaigns click 0.9 to 1.5%; a local, personal hook from the CEO should do better.'],['Bayuti Scores (second button)',10,'','About 0.7% of 1,440.']],
+  track:['webinar_registered (goal), email_clicked, quick_score_completed','Customer.io and the page','Fofee','Seed send to 3 test addresses first; set the Customer.io conversion goal to webinar_registered']}),
  MB('MCR-PR','doc','PR · the £165,600 story',{owner:'Fofee', also:'Anouar (quote), SJ', when:'Pitch on launch day, under embargo to 06:00', platform:'pr',
   what:'Pitch the Manchester rent story to local and property press, with a quote from Anouar and a link with UTMs for each outlet.',
   ad:{outlets:['Manchester Evening News, money and property desk','BBC Radio Manchester','I Love Manchester','Place North West','The Mill (Manchester newsletter)','Asian Image'],
@@ -3010,7 +3010,7 @@ Object.assign(EMAILS, {
    ['p','Today we\'re opening CrowdtoLive in Manchester. You buy a share of your home with your home deposit, pay rent only on the part you don\'t own yet, and buy more over time. No mortgage. No interest. Certified Shariah compliant.'],
    ['stats',[['£241,000','a typical first home'],['£24,100','a 10% home deposit'],['60 sec','to see how close you are']]],
    ['moment','Live: Manchester, Your Guide to Homebuying','Tuesday at 19:00 · free · bring every question']],
-  cta:['Get my Quick Score','lp'], cta2:['Grab a seat at the Manchester session','web'], ps:'P.S. Know a Mancunian who\'s done renting? Forward this. They\'ll thank you.',
+  cta:['Grab your seat','web'], cta2:['Get my Bayuti Score','score'], cta2btn:1, ps:'P.S. Know a Mancunian who\'s done renting? Forward this. They\'ll thank you.',
   push:['Manchester, about your rent 🐝','£165,600 in ten years. There\'s a third way.']},
  mcr2:{from:'Anouar at Bayuti', subject:'Manchester: your homebuying questions, answered live', preview:'Tuesday at 19:00. Free. Your city\'s numbers, a live Quick Score, and your questions.',
   kicker:'Live in Manchester', art:'🎟️', h:'Your questions. *Manchester\'s numbers.* Live.', sub:'Tuesday at 19:00 · 45 minutes · free',
@@ -4336,7 +4336,7 @@ function emailHTML(eid, F, bid){
     return '';
   };
   const cta = E.cta ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 10px"><tr><td style="background:${GREEN};border-radius:999px"><a href="${link(E.cta[1],F,bid)}" style="display:inline-block;padding:19px 38px;${DISPLAY}font-size:17px;color:${NAVY};text-decoration:none;box-shadow:0 8px 24px rgba(43,224,143,.45);border-radius:999px">${E.cta[0]} →</a></td></tr></table>` : '';
-  const cta2 = E.cta2 ? `<p style="${FONT}font-size:15px;margin:8px 0 0"><a href="${link(E.cta2[1],F,bid)}" style="color:${NAVY};font-weight:700">${E.cta2[0]}</a></p>` : '';
+  const cta2 = !E.cta2 ? '' : E.cta2btn ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:4px 0 10px"><tr><td style="background:${NAVY};border-radius:999px"><a href="${link(E.cta2[1],F,bid)}" style="display:inline-block;padding:15px 32px;${FONT}font-size:16px;font-weight:700;color:#FFFFFF;text-decoration:none">${E.cta2[0]}</a></td></tr></table>` : `<p style="${FONT}font-size:15px;margin:8px 0 0"><a href="${link(E.cta2[1],F,bid)}" style="color:${NAVY};font-weight:700">${E.cta2[0]}</a></p>`;
   const badges = E.app ? `<p style="margin:16px 0 0"><a href="${LINKS.ios}"><img src="https://7221343.fs1.hubspotusercontent-na1.net/hubfs/7221343/Logos/app-store-badge.png" alt="Download on the App Store" height="44" style="height:44px;border:0;margin-right:8px"></a><a href="${LINKS.android}"><img src="https://7221343.fs1.hubspotusercontent-na1.net/hubfs/7221343/Logos/googleplay-badge-01-getit.width-1440.png" alt="Get it on Google Play" height="44" style="height:44px;border:0"></a></p>` : '';
   const risk = reg ? `<tr><td style="background:${NAVY};border-radius:10px 10px 0 0;border-bottom:1px solid #3340B8;padding:14px 22px;${FONT}font-size:13px;line-height:1.5;color:#fff"><b>FCA Warning:</b> ${RISKLINE} <a href="${LINKS.risk}" style="color:${GREEN};font-weight:700">Take 2 mins to learn more</a>.</td></tr>` : '';
   return `<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${E.subject}</title></head><body style="margin:0;padding:0;background:#E7E9F8">
