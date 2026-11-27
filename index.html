@@ -823,6 +823,26 @@ button svg[viewBox="0 0 24 24"],.tm-h svg{width:15px!important;height:15px!impor
 .cs-v{border:1px solid #E3E4F2;border-radius:10px;padding:10px 12px;margin-bottom:8px}.cs-v.now{border:2px solid #000F96}.cs-vh{font-size:14px;color:#3D4060}.cs-vt{margin:6px 0 2px;font-size:17px}.cs-v small{font-size:12.5px;color:#6B6F8F}
 .cs del{margin-right:3px;background:#FDE2E2;color:#9B1C1C;text-decoration:line-through}.cs ins{background:#DDF4E4;color:#0B5D2A;text-decoration:none;font-weight:600}
 .bb-home{font:inherit;font-weight:800;font-size:15px;padding:10px 16px;border-radius:12px;border:2px solid #000F96;background:#000F96;color:#fff;cursor:pointer;white-space:nowrap}.bb-home:hover{background:#1a2bb5}
+
+/* 27 Nov: ad pictures open large */
+.fin{min-width:0;max-width:100%}.fin-row{min-width:0}.fin-row figure{min-width:0;overflow:hidden}.fin-row img{max-width:100%;height:auto;display:block}
+.fin-zbtn{all:unset;display:block;cursor:zoom-in;position:relative;border-radius:10px;max-width:100%}.fin-zbtn:focus-visible{outline:3px solid #000F96;outline-offset:2px}
+.fin-zbtn:hover img{filter:brightness(1.08)}.fin-zoom{position:absolute;left:10px;bottom:10px;background:rgba(0,15,150,.88);color:#fff;font-size:13px;font-weight:700;padding:5px 9px;border-radius:8px}
+.ads-img.real .fin-zbtn img{display:block;width:100%}
+.cs-ad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.cs-ad img{width:100%;border-radius:8px;border:1px solid #D5DAF0;display:block}.cs-ad span{display:block;font-size:13px;font-weight:700;margin-top:4px}
+#zoom-box{position:fixed;inset:0;z-index:10000;display:grid;place-items:center}
+.zb-back{position:absolute;inset:0;background:rgba(5,8,40,.82)}
+.zb-in{position:relative;background:#fff;border-radius:16px;width:min(1200px,96vw);max-height:94vh;overflow:auto;padding:16px 18px;box-sizing:border-box;color:#1A1A2E}
+.zb-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.zb-top b{font-size:18px;color:#000F96}.zb-top span{display:flex;gap:8px;align-items:center}
+.zb-x{border:2px solid #C9CDF0;background:#fff;border-radius:10px;font-size:20px;width:44px;height:44px;cursor:pointer}
+.zb-body{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;align-items:start}@media(max-width:860px){.zb-body{grid-template-columns:1fr}}
+.zb-pic{position:relative;display:grid;place-items:center;background:#F4F5FF;border-radius:12px;padding:10px}.zb-pic img{max-width:100%;max-height:70vh;border-radius:8px;display:block}
+.zb-nav{position:absolute;top:50%;transform:translateY(-50%);left:8px;width:46px;height:46px;border-radius:50%;border:0;background:rgba(0,15,150,.85);color:#fff;font-size:28px;cursor:pointer}.zb-nav.r{left:auto;right:8px}
+.zb-feed{border:1px solid #E3E4F2;border-radius:12px;padding:12px;font-size:15px}.zb-k{margin:0 0 6px;font-weight:800;color:#000F96;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.zb-pri{white-space:pre-line;margin:0 0 10px;line-height:1.45}.zb-card{border:1px solid #E3E4F2;border-radius:10px;overflow:hidden}.zb-card img{width:100%;display:block}
+.zb-card div{padding:8px 10px;background:#F4F5F7;display:grid;gap:2px}.zb-card small{color:#6B6F8F;text-transform:uppercase;font-size:11px}.zb-card b{font-size:15px}.zb-card span{font-size:13px;color:#3D4060}
+.zb-card i{display:block;font-style:normal;text-align:center;font-weight:800;padding:8px;border-top:1px solid #E3E4F2}
+.zb-thumbs{display:flex;gap:8px;margin-top:12px;overflow-x:auto}.zb-thumbs button{border:2px solid transparent;background:#fff;border-radius:8px;padding:3px;cursor:pointer;width:96px;flex:0 0 auto;font:inherit}.zb-thumbs button.on{border-color:#000F96}.zb-thumbs img{width:100%;border-radius:5px;display:block}.zb-thumbs span{display:block;font-size:11px;line-height:1.2;margin-top:3px}
 </style>
 <meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="light"><script>document.documentElement.setAttribute("data-theme","light");</script><style>#ctl-who{position:fixed;inset:0;z-index:9999;background:rgba(10,12,40,.55);display:grid;place-items:center;padding:16px}
 .ctl-who-card{background:#fff;color:#1A1A2E;border-radius:18px;padding:24px;max-width:440px;width:100%;font:16px/1.5 system-ui,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)}
@@ -4542,7 +4562,7 @@ function drawLinks(){
 }
 /* ---------- shell ---------- */
 function render(){
-  try{ setTimeout(notifyPanel, 0); }catch(e){}
+  try{ setTimeout(()=>{ notifyPanel(); zoomBox(); }, 0); }catch(e){}
   document.body.classList.toggle('map-light', !ST.mapDark);
   try{ if(!ST.solo) localStorage.setItem('ctl-view', ST.view); }catch(e){}
   const wrap = document.getElementById('buildwrap'); if(!wrap || wrap.hidden) return;
@@ -4744,12 +4764,13 @@ function adNums(bid, base, plat){
    <div class="az-ng">${ef(bid, base+'~n~spend', 'Spent (£)', 'num', '')}${ef(bid, base+'~n~views', gl('Impressions','Views'), 'num', '')}${ef(bid, base+'~n~clicks', 'Clicks', 'num', '')}</div>
    <dl class="az-calc"><div><dt>Real click rate</dt><dd>${actr==null?'·':actr.toFixed(2)+'%'} ${inOut(g('ctr'), actr)}</dd></div><div><dt>Real cost a click</dt><dd>${acpc==null?'·':money(acpc)} ${inOut(cpc, acpc, true)}</dd></div></dl></div>`;
 }
+function adSet(v){ const out = [['feed','Feed 4:5'],['sq','Square 1:1'],['story','Stories and Reels 9:16']].map(([k,l])=>[v.img[k], l]); (v.img.cards||[]).forEach((c,n)=>out.push([c,'Carousel card '+(n+1)])); return out; }
+const zAttr = (v, src) => `data-zoom="${esc(src)}" data-zset="${esc(JSON.stringify(adSet(v)))}" data-zcap="${esc(v.name)}" data-ztxt="${esc(JSON.stringify([v.primary||'',v.headline||'',v.desc||'',v.cta||'']))}"`;
 function finalFiles(v){
   const dl = (u, l) => `<a class="btn sm" href="${u}" download>${l}</a>`;
-  const fileName = u => u.split('/').pop();
-  return `<div class="fin"><img class="fin-main" src="${v.img.feed}" alt="${esc(v.name)}, feed size">
-    <div class="fin-row">${[['sq','Square 1:1','1080 × 1080'],['feed','Feed 4:5','1080 × 1350'],['story','Stories and Reels 9:16','1080 × 1920']].map(([k,l,d])=>`<figure><img src="${v.img[k]}" alt="${l}"><figcaption>${l}<small>${d}</small>${dl(v.img[k],'⬇ Download')}</figcaption></figure>`).join('')}</div>
-    ${v.img.cards?`<p class="fin-h">Carousel cards (1080 × 1080, in this order)</p><div class="fin-row cards">${v.img.cards.map((c,n)=>`<figure><img src="${c}" alt="Card ${n+1}"><figcaption>Card ${n+1}${dl(c,'⬇')}</figcaption></figure>`).join('')}</div>`:''}
+  return `<div class="fin"><button type="button" class="fin-zbtn" ${zAttr(v, v.img.feed)} aria-label="Open ${esc(v.name)} large"><img class="fin-main" src="${v.img.feed}" alt="${esc(v.name)}, feed size"><span class="fin-zoom">🔍 Click to open large</span></button>
+    <div class="fin-row">${[['sq','Square 1:1','1080 × 1080'],['feed','Feed 4:5','1080 × 1350'],['story','Stories and Reels 9:16','1080 × 1920']].map(([k,l,d])=>`<figure><button type="button" class="fin-zbtn" ${zAttr(v, v.img[k])} aria-label="Open ${l} large"><img src="${v.img[k]}" alt="${l}"></button><figcaption>${l}<small>${d}</small>${dl(v.img[k],'⬇ Download')}</figcaption></figure>`).join('')}</div>
+    ${v.img.cards?`<p class="fin-h">Carousel cards (1080 × 1080, in this order)</p><div class="fin-row cards">${v.img.cards.map((c,n)=>`<figure><button type="button" class="fin-zbtn" ${zAttr(v, c)} aria-label="Open card ${n+1} large"><img src="${c}" alt="Card ${n+1}"></button><figcaption>Card ${n+1}${dl(c,'⬇')}</figcaption></figure>`).join('')}</div>`:''}
     <button type="button" class="btn sm" data-copytxt="${esc(['Primary text:\n'+v.primary,'Headline: '+v.headline,'Description: '+v.desc,'Call to action: '+v.cta,'Website URL: '+v.link].join('\n\n'))}">Copy everything for Ads Manager</button></div>`;
 }
 function wayItems(b){
@@ -4976,7 +4997,7 @@ function adStrip(b){
   if(sb.lp) h = cell(0, lpMock(sb), 'full lpc');
   else if(sb.guide) h = cell(0, `<span class="gdm"><small>Free guide · Manchester</small><b>From renting to <i>owning.</i></b><span>6 chapters · prints to PDF</span></span>`, 'full gdc');
   else if(sb.type==='video' && sb.nudgevid) h = cell(0, `<span class="ads-vid"><b>▶</b><span><strong>${esc(sb.t)}</strong><small>${esc(sb.length)} · sent when they still haven't acted</small></span></span>`, 'full');
-  else if(sb.platform==='meta' || (sb.platform==='meta' && a.variants)) h = (a.variants||[]).map((v,i)=>cell(i, `${v.persona?`<span class="ads-p">${esc(v.persona)}</span>`:''}${sb.final?'<span class="ads-final">✓ Final</span>':''}${v.img?`<span class="ads-img real"><img src="${v.img.sq}" alt="${esc(v.name)}" loading="lazy"></span>`:`<span class="ads-img"><b>${esc(v.bigline)}</b><small>${esc(v.smallline)}</small>`}${v.img?'<span hidden>':''}</span><span class="ads-h">${esc(v.headline)}</span><span class="ads-n">${esc(v.name)}${v.lp?` → ${esc(v.lp)}`:''}</span>`)).join('');
+  else if(sb.platform==='meta' || (sb.platform==='meta' && a.variants)) h = (a.variants||[]).map((v,i)=>cell(i, `${v.persona?`<span class="ads-p">${esc(v.persona)}</span>`:''}${sb.final?'<span class="ads-final">✓ Final</span>':''}${v.img?`<span class="ads-img real"><button type="button" class="fin-zbtn" ${zAttr(v, v.img.sq)} aria-label="Open ${esc(v.name)} large"><img src="${v.img.sq}" alt="${esc(v.name)}" loading="lazy"></button></span>`:`<span class="ads-img"><b>${esc(v.bigline)}</b><small>${esc(v.smallline)}</small>`}${v.img?'<span hidden>':''}</span><span class="ads-h">${esc(v.headline)}</span><span class="ads-n">${esc(v.name)}${v.lp?` → ${esc(v.lp)}`:''}</span>`)).join('');
   else if(sb.platform==='tiktok') h = (a.videos||[]).map((v,i)=>cell(i, `${v.persona?`<span class="ads-p">${esc(v.persona)}</span>`:''}<span class="ads-img tt"><b>${esc(v.bigline)}</b><small>${esc(v.smallline)}</small></span><span class="ads-n">${esc(v.name)}</span>`, 'tt')).join('');
   else if(sb.platform==='google') h = cell(0, `<span class="ads-g"><small>Sponsored · bayuti.com</small><b>${esc((a.headlines||[]).slice(0,2).join(' | '))}</b><span>${esc((a.descriptions||[])[0]||'')}</span></span>`, 'full');
   else if(sb.platform==='linkedin12') h = (a.posts||[]).map((p,i)=>cell(i, `<span class="ads-t"><i>${p.n}</i>${esc(p.hook)}</span>`, 'chip')).join('');
@@ -5326,6 +5347,20 @@ async function clTick(bid, i){
   if(ST.db){ await ST.db.doc('tests/'+bid).set(cur).catch(()=>alertBox('Could not save that tick. Try again.')); } else localSave();
 }
 
+/* 27 Nov: click an ad picture to see it large, with the words around it like in the feed */
+function zoomBox(){
+  let el = document.getElementById('zoom-box'); const z = ST.zb;
+  if(!z){ if(el) el.remove(); return; }
+  const w = document.getElementById('buildwrap'); if(!w) return;
+  if(!el){ el = document.createElement('div'); el.id = 'zoom-box'; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label', 'Ad picture, large'); w.appendChild(el); }
+  const [pri, head, desc, cta] = z.txt || ['','','',''], i = Math.max(0, z.set.findIndex(x=>x[0]===z.src)), cur = z.set[i] || [z.src, ''];
+  el.innerHTML = `<div class="zb-back" data-zclose="1"></div><div class="zb-in">
+   <div class="zb-top"><b>${esc(z.cap||'')} · ${esc(cur[1])}</b><span><a class="btn sm" href="${esc(cur[0])}" download>⬇ Download</a><button type="button" class="zb-x" data-zclose="1" aria-label="Close">✕</button></span></div>
+   <div class="zb-body"><div class="zb-pic">${z.set.length>1?`<button type="button" class="zb-nav" data-zgo="${(i-1+z.set.length)%z.set.length}" aria-label="Previous picture">‹</button>`:''}<img src="${esc(cur[0])}" alt="${esc((z.cap||'')+' '+cur[1])}">${z.set.length>1?`<button type="button" class="zb-nav r" data-zgo="${(i+1)%z.set.length}" aria-label="Next picture">›</button>`:''}</div>
+   ${pri||head?`<div class="zb-feed"><p class="zb-k">How it looks in the feed</p><p class="zb-pri">${esc(pri)}</p><div class="zb-card"><img src="${esc(cur[0])}" alt=""><div><small>crowdtolive.bayuti.com</small><b>${esc(head)}</b><span>${esc(desc)}</span></div><i>${esc(cta)}</i></div></div>`:''}</div>
+   <div class="zb-thumbs">${z.set.map((x,n)=>`<button type="button" class="${n===i?'on':''}" data-zgo="${n}" aria-label="${esc(x[1])}"><img src="${esc(x[0])}" alt=""><span>${esc(x[1])}</span></button>`).join('')}</div></div>`;
+}
+
 /* ================= COPY LIBRARY: one row per sentence ================= */
 const CL_GROUPS = ['Ads','Social and press','Landing pages','Emails','Push and SMS','In app','Video scripts'];
 function clRid(bid, path){ return (bid+'.'+path).replace(/[^A-Za-z0-9_-]/g,'_'); }
@@ -5474,6 +5509,7 @@ function clSide(){
   <aside class="cs" role="dialog" aria-modal="true" aria-labelledby="cs-h">
    <div class="cs-top"><div><h2 id="cs-h">${esc(r.id)}</h2><p>${esc(r.label)} · ${esc(r.where)} · ${esc(r.ch)}</p></div><button type="button" class="cs-x" data-clside="" aria-label="Close">✕</button></div>
    <span class="cl-st st-${k}">${esc(lab)}</span>
+   ${(()=>{ const m = /variants~(\d+)/.exec(r.path), sb = findBlock(r.bid), v = m && sb && sb.ad && sb.ad.variants && sb.ad.variants[+m[1]]; return v && v.img ? `<h3>The ad</h3><div class="cs-ad">${adSet(v).slice(0,3).map(([src,l])=>`<button type="button" class="fin-zbtn" ${zAttr(v, src)} aria-label="Open ${esc(l)} large"><img src="${esc(src)}" alt="${esc(l)}"><span>${esc(l)}</span></button>`).join('')}</div><p class="cs-meta">Click a picture to open it large.</p>` : ''; })()}
    <h3>The line now</h3><p class="cs-now">${esc(r.v)}</p>
    <p class="cs-meta">${n}${r.lim?' of '+r.lim:''} characters${fl.map(x=>` · ⚠ ${esc(x)}`).join('')}</p>
    <h3>Every change <span class="az-cnt">${vers.length}</span></h3><ol class="cs-vs">${vHTML}</ol>
@@ -5560,6 +5596,9 @@ function apCount(w){ const F = flowOf(ST.flow); let n = blocksOf(F,true).filter(
 function boxLink(id){ return location.origin + location.pathname + '?box=' + encodeURIComponent(id); }
 function onClick(e){
   const t = e.target.closest('button, a, [data-close]'); if(!t || !document.getElementById('buildwrap').contains(t)) return;
+  if(t.dataset.zoom){ try{ ST.zb = {src:t.dataset.zoom, set:JSON.parse(t.dataset.zset||'[]'), cap:t.dataset.zcap||'', txt:JSON.parse(t.dataset.ztxt||'[]')}; }catch(e){ ST.zb = {src:t.dataset.zoom, set:[[t.dataset.zoom,'']], cap:''}; } ST.zoomFrom = t; zoomBox(); setTimeout(()=>{ const x = document.querySelector('#zoom-box .zb-x'); if(x) x.focus(); }, 30); return; }
+  if(t.dataset.zgo!=null){ if(ST.zb){ ST.zb.src = ST.zb.set[+t.dataset.zgo][0]; zoomBox(); } return; }
+  if(t.dataset.zclose){ ST.zb = null; zoomBox(); if(ST.zoomFrom && document.body.contains(ST.zoomFrom)) ST.zoomFrom.focus(); return; }
   if(t.dataset.clside!=null){ ST.clSide = t.dataset.clside || null; render(); if(ST.clSide) setTimeout(()=>{ const x = document.querySelector('.cs .cs-x'); if(x) x.focus(); }, 30); return; }
   if(t.dataset.home){ ST.view = 'journey'; ST.open = null; ST.clSide = null; ST.owner = ''; ST.q = ''; ST.apFor = (HOSTED && (meName()==='SJ'||meName()==='Anouar')) ? meName() : ST.apFor; render(); window.scrollTo({top:0, behavior:'smooth'}); return; }
   if(t.dataset.cmtread){ try{ localStorage.setItem('ctl-seen', new Date().toISOString()); }catch(e){} notifyPanel(); return; }
@@ -5665,7 +5704,7 @@ function onSubmit(e){
   const ta = f.querySelector('textarea'); const v = ta.value.trim(); if(!v) return;
   const F = flowOf(ST.flow); const b = blocksOf(F,true).find(x=>x.id===f.dataset.note); ta.value=''; addNote(b, v);
 }
-function onKey(e){ if(e.key==='Escape' && ST.clSide){ ST.clSide = null; render(); return; } if(e.key==='Escape' && $('#bb-modal') && !$('#bb-modal').hidden){ $('#bb-modal').hidden=true; $('#bb-modal').innerHTML=''; return; } if(e.key==='Escape' && ST.open){ const id=ST.open; ST.open=null; render(); const back=document.querySelector(`[data-open="${id}"]`); if(back) back.focus(); } }
+function onKey(e){ if(ST.zb && (e.key==='Escape'||e.key==='ArrowLeft'||e.key==='ArrowRight')){ if(e.key==='Escape') ST.zb = null; else { const n = ST.zb.set.length, i = Math.max(0, ST.zb.set.findIndex(x=>x[0]===ST.zb.src)); ST.zb.src = ST.zb.set[(i+(e.key==='ArrowRight'?1:n-1))%n][0]; } zoomBox(); return; } if(e.key==='Escape' && ST.clSide){ ST.clSide = null; render(); return; } if(e.key==='Escape' && $('#bb-modal') && !$('#bb-modal').hidden){ $('#bb-modal').hidden=true; $('#bb-modal').innerHTML=''; return; } if(e.key==='Escape' && ST.open){ const id=ST.open; ST.open=null; render(); const back=document.querySelector(`[data-open="${id}"]`); if(back) back.focus(); } }
 
 let wired = false;
 window.BuildBoard = {
